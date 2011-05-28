@@ -6,6 +6,7 @@ contact: marcin.ploska@gmail.com
 authors of the source code that i have used/modified/inspired by:
 - intraFont by BenHur
 - mathlib from www.dhpoware.com
+- part of sound code from http://oslib.playeradvance.org <- that saved my ass ^^
 
 
 Installation:

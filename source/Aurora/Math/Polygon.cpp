@@ -1,4 +1,4 @@
-#include <Aurora\Math\Polygon.h>
+#include <Aurora/Math/Polygon.h>
 
 namespace Aurora
 {

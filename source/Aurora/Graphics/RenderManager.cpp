@@ -1,4 +1,4 @@
-#include <Aurora\Graphics\RenderManager.h>
+#include <Aurora/Graphics/RenderManager.h>
 
 namespace Aurora
 {

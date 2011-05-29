@@ -6,12 +6,9 @@
 #include <time.h>
 #include <string>
 
-
 //framework
 #include <Aurora/Math/Frustum.h>
-
 #include "SimpleMeshChunk2.h"
-//#include "NoiseMap.h"
 
 typedef unsigned char block_t;
 

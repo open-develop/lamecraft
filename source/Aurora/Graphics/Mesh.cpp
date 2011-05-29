@@ -1,4 +1,4 @@
-#include <Aurora\Graphics\Mesh.h>
+#include <Aurora/Graphics/Mesh.h>
 
 namespace Aurora
 {

@@ -6,11 +6,11 @@
 #include <stdlib.h>
 #include <vector>
 
-#include <Aurora\Math\Vector3.h>
-#include <Aurora\Math\BoundingBox.h>
+#include <Aurora/Math/Vector3.h>
+#include <Aurora/Math/BoundingBox.h>
 #include <Aurora/Math/Polygon.h>
 #include <Aurora/Math/Ray.h>
-#include <Aurora\Graphics\Vertex.h>
+#include <Aurora/Graphics/Vertex.h>
 
 using namespace Aurora::Math;
 

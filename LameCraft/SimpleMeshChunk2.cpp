@@ -3,7 +3,7 @@
 #include <string.h>
 #include <malloc.h>
 
-#include <Aurora\Graphics\RenderManager.h>
+#include <Aurora/Graphics/RenderManager.h>
 
 SimpleMeshChunk::SimpleMeshChunk()
 {

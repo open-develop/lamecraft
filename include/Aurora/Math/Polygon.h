@@ -2,7 +2,7 @@
 #define POLYGON_H_
 
 #include <math.h>
-#include <Aurora\Math\Vector3.h>
+#include <Aurora/Math/Vector3.h>
 
 namespace Aurora
 {

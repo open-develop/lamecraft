@@ -3,9 +3,9 @@
 
 #include <stdarg.h>
 
-#include <Aurora\Graphics\vram.h>
-#include <Aurora\Graphics\vram.h>
-#include <Aurora\Graphics\common.h>
+#include <Aurora/Graphics/vram.h>
+#include <Aurora/Graphics/vram.h>
+#include <Aurora/Graphics/common.h>
 
 #include <Aurora/Graphics/Models/ObjModel.h>
 #include <Aurora/Graphics/Mesh.h>

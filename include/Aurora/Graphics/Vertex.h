@@ -1,7 +1,7 @@
 #ifndef AURORA_VERTEX_H
 #define AURORA_VERTEX_H
 
-#include <Aurora\Math\Vector3.h>
+#include <Aurora/Math/Vector3.h>
 
 namespace Aurora
 {

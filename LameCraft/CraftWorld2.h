@@ -8,6 +8,12 @@
 #include "Blocks.h"
 #include "SimpleMeshChunk2.h"
 
+typedef struct
+{
+	int distance;
+	int chunk;
+}TransparentOrder;
+
 class CraftWorld
 {
 public:
@@ -46,7 +52,7 @@ public:
 	void destroyMap();
 
 	//rendering
-	void drawWorld(Frustum &camFrustum);
+	void drawWorld(Frustum &camFrustum,bool camUpdate);
 	void drawCubes(int i);
 
 	//pickin,collision etc
@@ -66,6 +72,8 @@ public:
 	Vector3 GetPlayerPos();
 	void UpdatePlayerZoneBB(Vector3 playerPosition);
 	void UpdateWorldTime(float dt);
+
+
 
 	char worldName[50];
 	int createdChunksCount;
@@ -102,6 +110,11 @@ private:
 
 	//information
 	int drawnTriangles;
+
+	//transparent order rendering
+	TransparentOrder transOrder[512];
+	int transOrderCont;
+
 
 };
 

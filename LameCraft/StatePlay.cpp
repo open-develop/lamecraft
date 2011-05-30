@@ -878,6 +878,7 @@ void StatePlay::Update(StateManager* sManager)
 void StatePlay::Draw(StateManager* sManager)
 {
 	//start rendering
+	bool needUpdate = fppCam->needUpdate;
 	mRender->StartFrame();
 
 	TextureManager::Instance()->SetTextureModeulate(texture);
@@ -888,7 +889,7 @@ void StatePlay::Draw(StateManager* sManager)
 	sceGuEnable(GU_FOG );	// Enable fog
 
 	sceGumPushMatrix();
-	mWorld->drawWorld(fppCam->mFrustum);
+	mWorld->drawWorld(fppCam->mFrustum,needUpdate);
 	sceGumPopMatrix();
 
 	sceGuDisable(GU_FOG );	// Enable fog

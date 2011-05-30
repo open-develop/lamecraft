@@ -23,7 +23,3 @@ Installation:
 10. Create there "Save" and "Config" folders.
 11. Copy there also whole Assets folder.
 12. In PSP menu you should have icon with Lamecraft.
-
-
-----
-- moved blocks to different files

@@ -155,9 +155,7 @@ namespace Aurora
 		inline float Vector3::distanceSq(const Vector3 &pt1, const Vector3 &pt2)
 		{
 			// Calculates the squared distance between 2 points.
-			return ((pt1.x - pt2.x) * (pt1.x - pt2.x))
-				+ ((pt1.y - pt2.y) * (pt1.y - pt2.y))
-				+ ((pt1.z - pt2.z) * (pt1.z - pt2.z));
+			return ((pt1.x - pt2.x) * (pt1.x - pt2.x))+ ((pt1.y - pt2.y) * (pt1.y - pt2.y))	+ ((pt1.z - pt2.z) * (pt1.z - pt2.z));
 		}
 
 		inline float Vector3::dot(const Vector3 &p, const Vector3 &q)

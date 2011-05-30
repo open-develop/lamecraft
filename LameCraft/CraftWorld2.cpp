@@ -79,6 +79,8 @@ CraftWorld::CraftWorld()
 
 	//can't destroy this one
 	blockTypes.push_back(IronBlock());
+
+	transOrderCont = 0;
 }
 
 CraftWorld::~CraftWorld()
@@ -1859,10 +1861,18 @@ void CraftWorld::drawCubes(int i)
 	sceGuDisable(GU_TEXTURE_2D);
 }
 
-void CraftWorld::drawWorld(Frustum &camFrustum)
+int compareTarnsSort (const void * a, const void * b)
+{
+	TransparentOrder *ia = (TransparentOrder *)a;
+	TransparentOrder *ib = (TransparentOrder *)b;
+	return (int)( ia->distance - ib->distance );
+}
+
+void CraftWorld::drawWorld(Frustum &camFrustum,bool camUpdate)
 {
 	drawnTriangles = 0;
 
+	//normal not transparend chunks
 	sceGuColor(0xFFFFFFFF);
 	sceGuEnable(GU_TEXTURE_2D);
 	for(unsigned int i = 0;i < mChunks.size();i++)
@@ -1891,34 +1901,57 @@ void CraftWorld::drawWorld(Frustum &camFrustum)
 	}
 
 
-	sceGuColor(0x55FFFFFF);
-	sceGuEnable(GU_BLEND);
-	for(unsigned int i = 0;i < mWaterChunks.size();i++)
+	//transparent chunks
+	//transparent sorting
+	if(camUpdate)
 	{
-		if(mWaterChunks[i]->trienglesCount > 0 || !mWaterChunks[i]->created)
-		{
-			if(playerZoneBB.intersect(mWaterChunks[i]->bBox))
-			{
-				if(camFrustum.BoxInFrustum(mWaterChunks[i]->bBox) == Frustum::Intersects)
-				{
-					//check if wee need to build vertices of this chunk
-					if(!mWaterChunks[i]->created /*&& mChunks[i]->lastTriangleCount != 0*/ && transparentchunksCreatedInFrameCount == 0)
-					{
-						rebuildTransparentChunk(i);
-						transparentchunksCreatedInFrameCount++;
-					}
+		transOrderCont = 0;
+		int j = 0;
 
-					mWaterChunks[i]->drawChunk();
-					drawnTriangles += mChunks[i]->trienglesCount;
-				}
-			}else if(mWaterChunks[i]->created)
+		for(unsigned int i = 0;i < mWaterChunks.size();i++)
+		{
+			if(mWaterChunks[i]->trienglesCount > 0 || !mWaterChunks[i]->created)
 			{
-				mWaterChunks[i]->reset();
+				if(playerZoneBB.intersect(mWaterChunks[i]->bBox))
+				{
+					transOrder[j].distance =  Vector3::distanceSq(playerPos,mWaterChunks[i]->bBox.getCenter());
+					transOrder[j].chunk = i;
+					j++;
+					transOrderCont++;
+				}else
+				{
+					mWaterChunks[i]->reset();
+				}
 			}
 		}
+
+		//sorting
+		qsort(transOrder,transOrderCont,sizeof(TransparentOrder),compareTarnsSort);
 	}
-	sceGuDisable(GU_BLEND);
-	sceGuDisable(GU_TEXTURE_2D);
+
+	//transparent rendering
+	if(transOrderCont > 0)
+	{
+		//draw
+		sceGuColor(0x55FFFFFF);
+		sceGuEnable(GU_BLEND);
+		for(int i = transOrderCont - 1;i >=0;i--)
+		{
+			int chunk = transOrder[i].chunk;
+
+			//check if wee need to build vertices of this chunk
+			if(!mWaterChunks[chunk]->created && transparentchunksCreatedInFrameCount == 0)
+			{
+				rebuildTransparentChunk(chunk);
+				transparentchunksCreatedInFrameCount++;
+			}
+
+			mWaterChunks[chunk]->drawChunk();
+			drawnTriangles += mChunks[chunk]->trienglesCount;
+		}
+		sceGuDisable(GU_BLEND);
+		sceGuDisable(GU_TEXTURE_2D);
+	}
 }
 
 void CraftWorld::UpdatePlayerZoneBB(Vector3 playerPosition)

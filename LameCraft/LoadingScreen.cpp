@@ -34,9 +34,7 @@ int LoadingScreen::RunLoadingScreen(SceSize args, void *argp)
 	backSprite = new Sprite("Assets/Lamecraft/dirt.png",0,0,16,16);
 	backSprite->Scale(2,2);
 
-	// set animation to 0
-	int	animation_ = 0;
-	
+
 	// start the render loop
 	while(1)
 	{

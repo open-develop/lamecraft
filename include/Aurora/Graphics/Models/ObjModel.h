@@ -2,8 +2,6 @@
 #define AURORA_OBJMODEL_H
 
 #include <string>
-#include <stdio.h>
-#include <stdlib.h>
 #include <vector>
 
 #include <Aurora/Math/Vector3.h>
@@ -107,10 +105,6 @@ namespace Aurora
 			std::vector<ObjFace> mFace;
 			std::vector<ObjFace> mUVFace;
 			std::vector<ObjFace> mNormalFace;
-
-			//Vector3 *Vertex;
-			//Vector3 *Normal;
-			//ObjUV *UVMap;
 
 			TexturesPSPVertex * meshVertices;
 

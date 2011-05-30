@@ -9,8 +9,6 @@ namespace Aurora
 		void RenderManager::Init()
 		{
 			mVerticalSync = false;
-			shouldClip = false;
-			//cleanColor = 0xFFFFFFFF;
 			listNum = 0;
 			cleanColor = 0xFFF5B783;
 			fov = 54.0f;
@@ -310,38 +308,6 @@ namespace Aurora
 			CleanBuffers();
 		}
 
-		void RenderManager::SoftwareClipping(bool active)
-		{
-			shouldClip = active;
-		}
-
-		void RenderManager::DrawPlane( Vector3 position,Image* texture)
-		{
-			sceGumPushMatrix();
-
-			ScePspFVector3 pos = {position.x,position.y,position.z };
-			sceGumTranslate(&pos);
-
-			sceGuTexMode(texture->ColorMode,0,0,0);
-			sceGuTexImage(0,texture->power2Width,texture->power2Height,texture->power2Width,texture->ImageData);
-			sceGuTexFunc(GU_TFX_REPLACE,GU_TCC_RGBA);
-			sceGuTexFilter(GU_LINEAR,GU_LINEAR);
-			sceGuTexScale(1.0f,1.0f);
-			sceGuTexOffset(0.0f,0.0f);
-			sceGuAmbientColor(0xffffffff);
-
-			sceGuDisable(GU_CULL_FACE);
-			sceGuEnable(GU_TEXTURE_2D);
-
-			sceGumDrawArray(GU_TRIANGLES,GU_TEXTURE_32BITF|GU_VERTEX_32BITF|GU_TRANSFORM_3D,6,0,plane_vertices);
-
-
-			sceGuDisable(GU_TEXTURE_2D);
-			sceGuEnable(GU_CULL_FACE);
-
-			sceGumPopMatrix();
-		}
-
 		void RenderManager::Draw(ObjModel *model)
 		{
 			sceGuEnable(GU_TEXTURE_2D);
@@ -411,7 +377,7 @@ namespace Aurora
 			u16* vram16;
 			int bufferwidth;
 			int pixelformat;
-			int unknown;
+			int unknown = 0;
 			int i, x, y;
 			png_structp png_ptr;
 			png_infop info_ptr;

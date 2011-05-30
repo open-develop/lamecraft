@@ -28,16 +28,12 @@ int main()
 
 	scePowerSetClockFrequency(333, 333, 166);
 
-	//initialize logger
-	Logger::Instance()->Init();
-
 	//initialize render manager
 	RenderManager::InstancePtr()->Init();
 	RenderManager::InstancePtr()->CollectPerformance(true);
 	RenderManager::InstancePtr()->InitDebugFont();
 
 	//set perspectives
-	//RenderManager::InstancePtr()->SetPerspective(45.0f, 480.0f / 272.0f, 0.1f, 128.f);
 	RenderManager::InstancePtr()->SetOrtho(0,0,0,0,0,0);
 	
 	//init and load sounds
@@ -74,8 +70,6 @@ int main()
 		stateManager.Update();
 		stateManager.Draw();
 	}
-
-	Logger::Instance()->Close();
 
 	sceGuTerm();			// Terminating the Graphics System
 	sceKernelExitGame();	// Quits Application

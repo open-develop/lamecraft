@@ -1,14 +1,13 @@
 #ifndef AURORA_COMMONPSP_H
 #define AURORA_COMMONPSP_H
 
-#include <malloc.h>		//For memalign()
 #include <pspkernel.h>
 #include <pspdisplay.h>
 #include <pspdebug.h>
-#include <stdio.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
  
 
@@ -20,8 +19,6 @@ int CallbackThread(SceSize args, void *argp);
 
 // Sets up the callback thread and returns its thread id
 int SetupCallbacks(void);
-
-void memCopy(void* inDest, void* inSrc, u32 inSize);
 
 #ifdef __cplusplus
 }

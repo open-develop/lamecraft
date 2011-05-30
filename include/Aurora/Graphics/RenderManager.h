@@ -8,7 +8,6 @@
 #include <Aurora/Graphics/common.h>
 
 #include <Aurora/Graphics/Models/ObjModel.h>
-#include <Aurora/Graphics/Mesh.h>
 #include <Aurora/Graphics/Vertex.h>
 #include <Aurora/Graphics/Camera.h>
 #include <Aurora/Graphics/TextureManager.h>
@@ -59,21 +58,6 @@ namespace Aurora
 {
 	namespace Graphics
 	{
-		namespace
-		{
-			//static
-
-			TexturesPSPVertex __attribute__((aligned(16))) plane_vertices[6] =
-			{
-				{0, 1, -1.5f,-1.5f, 0}, // 0
-				{0, 0, -1.5f, 1.5f, 0}, // 4
-				{1, 0,  1.5f, 1.5f, 0}, // 5
-				{0, 1, -1.5f,-1.5f, 0}, // 0
-				{1, 0,  1.5f, 1.5f, 0}, // 5
-				{1, 1,  1.5f,-1.5f, 0}, // 1
-			};
-		}
-
 		class RenderManager
 		{
 		public:
@@ -108,22 +92,17 @@ namespace Aurora
 			void StartDialog();
 			void EndDialog();
 
-			//
-
 			void UseVerticalSync(bool Enabled);
 			void SetClearColor(float r,float g,float b,float a);
 
 			void SetOrtho(float left, float right, float bottom, float top, float zNear, float zFar);
 			void SetPerspective(float _fov,float _aspect,float _znear,float _zfar);
 			void LookAt();
-			void DrawPlane( Vector3 position,Image* texture);
 
 			void DrawToTexture(Image* offscreenTexture );
 			void SetRTT();
 
 			void Draw(ObjModel *model);
-
-			void SoftwareClipping(bool active);
 
 			void SetActiveCamera(Camera *camera);
 			void UpdateFrustumMatrix();
@@ -152,12 +131,9 @@ namespace Aurora
 			unsigned int cleanColor;
 
 			char list[0x20000] __attribute__((aligned(64)));//__attribute__((aligned(16))) list[262144]
-			//unsigned int __attribute__((aligned(16))) list[2][262144];
-			//unsigned int __attribute__((aligned(16))) callList[64];
 			int listNum;
 
 			bool mVerticalSync;
-			bool shouldClip;
 
 			ScePspFMatrix4 proj;
 			ScePspFMatrix4 view;

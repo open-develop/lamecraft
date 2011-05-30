@@ -1,7 +1,6 @@
 #ifndef SIMPLEMESHCHUNK_H
 #define SIMPLEMESHCHUNK_H
 
-#include <stdlib.h>
 #include <vector>
 
 //framework
@@ -28,7 +27,6 @@ public:
 	~SimpleMeshChunk();
 
 	int trienglesCount;
-	int lastTriangleCount;
 	bool created;
 
 	void position(float x,float y,float z);
@@ -50,9 +48,6 @@ private:
 	std::vector<Vector3*> mTriangle;
 
 	CraftPSPVertex * meshVertices;
-
-
-
 };
 
 #endif

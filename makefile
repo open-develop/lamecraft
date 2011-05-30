@@ -23,6 +23,8 @@ source/Aurora/Utils/Logger.o \
 source/Aurora/Utils/Timer.o \
 source/Aurora/Utils/StateManager.o \
 source/Aurora/System/SystemManager.o \
+LameCraft/BaseBlock.o \
+LameCraft/Blocks.o \
 LameCraft/SimpleMeshChunk2.o \
 LameCraft/CraftWorld2.o \
 LameCraft/StateMenu.o \
@@ -38,7 +40,7 @@ LameCraft/sound_utils/audio.o \
 LameCraft/sound_utils/bgm.o \
 LameCraft/sound_utils/media.o \
 LameCraft/sound_utils/mod.o \
-Tutorial_Lamecraft.o
+Lamecraft.o
 
 INCDIR = $(PSPPATH)/include
 #INCDIR += $(PSPPATH)/include/Tokamak

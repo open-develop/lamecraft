@@ -1,14 +1,9 @@
 #include "SimpleMeshChunk2.h"
-
-#include <string.h>
-#include <malloc.h>
-
 #include <Aurora/Graphics/RenderManager.h>
 
 SimpleMeshChunk::SimpleMeshChunk()
 {
 	trienglesCount = 0;
-	lastTriangleCount = -1;
 	created = true;
 }
 
@@ -17,7 +12,6 @@ SimpleMeshChunk::~SimpleMeshChunk()
 	if(trienglesCount > 0)
 	{
 		free(meshVertices);
-		//delete [] meshVertices;
 	}
 }
 
@@ -98,15 +92,11 @@ void SimpleMeshChunk::end()
 		for(unsigned int aa = 0;aa < mTriangle.size();aa++)
 			delete 		mTriangle[aa];
 		mTriangle.clear();
-
-
-
 	}else
 	{
 		trienglesCount = 0;
 	}
 
-	lastTriangleCount = trienglesCount;
 	created = true;
 }
 

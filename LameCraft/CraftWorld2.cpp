@@ -22,7 +22,7 @@ CraftWorld::CraftWorld()
 	transparentchunksCreatedInFrameCount = 0;
 
 	//air
-	blockTypes.push_back(WBlock());
+	blockTypes.push_back(BaseBlock());
 
 	//normal blocks
 	blockTypes.push_back(GrassBlock());
@@ -104,46 +104,6 @@ CraftWorld::~CraftWorld()
 
 	//delete block vertices
 	blockTypes.clear();
-
-}
-
-void CraftWorld::initmap(int worldSize,int chunkSize,const char *mapFile)
-{
-	//inicjuj mape
-	WORLD_SIZE = worldSize;
-	CHUNK_SIZE = chunkSize;
-
-	m_Blocks = new block_t[WORLD_SIZE * WORLD_SIZE * WORLD_SIZE];
-	memset(m_Blocks, 0, sizeof(block_t) * WORLD_SIZE * WORLD_SIZE * WORLD_SIZE);
-
-	m_BlockLight = new block_t[WORLD_SIZE * WORLD_SIZE * WORLD_SIZE];
-	memset(m_BlockLight, 255, sizeof(block_t) * WORLD_SIZE * WORLD_SIZE * WORLD_SIZE);
-
-	//laduje mape
-
-
-	FILE * pFile;
-	pFile = fopen (mapFile,"rb");//"Assets/Minecraft/map128.bin","rb");
-	if (pFile!=NULL)
-	{
-		for(int x = 0;x < WORLD_SIZE;x++)
-		{
-			for(int y = 0;y < WORLD_SIZE;y++)
-			{
-				fread (&mineMap[x][y],sizeof(unsigned char),1,pFile);
-			}
-		}
-
-		for(int x = 0;x < WORLD_SIZE;x++)
-		{
-			for(int y = 0;y < WORLD_SIZE;y++)
-			{
-				mineMap[x][y] = ((int)mineMap[x][y]) / 3;//od razu skaluje trochê w y
-			}
-		}
-
-		fclose (pFile);
-	}
 
 }
 
@@ -791,11 +751,6 @@ void CraftWorld::initTrees(int treeChoose)
 	}
 }
 
-void CraftWorld::setWorldLightValues(const float WorldTime)
-{
-
-}
-
 void CraftWorld::initWorldBlocksLight()
 {
 	int x, y, z;
@@ -889,7 +844,7 @@ void CraftWorld::buildblocksVerts()
 	//create vertices for each block type
 	for(unsigned int i = 1;i < blockTypes.size();i++)
 	{
-		WBlock *blockType = &blockTypes[i];
+		BaseBlock *blockType = &blockTypes[i];
 
 		float down = 1.0f - percent * (blockType->textureRow + 1);
 		float up = down + percent;
@@ -1025,7 +980,7 @@ void CraftWorld::buildblocksVerts()
 		sceKernelDcacheWritebackInvalidateRange(blockTypes[i].vertices,( mTriangle.size() * 3) * sizeof(CraftPSPVertex));
 		//sceKernelDcacheWritebackInvalidateAll();
 
-		for(int aa = 0;aa < mPosition.size();aa++)
+		for(unsigned int aa = 0;aa < mPosition.size();aa++)
 		{
 			delete mPosition[aa];
 			delete mtextures[aa];
@@ -1035,7 +990,7 @@ void CraftWorld::buildblocksVerts()
 		mtextures.clear();
 		mColour.clear();
 
-		for(int aa = 0;aa < mTriangle.size();aa++)
+		for(unsigned int aa = 0;aa < mTriangle.size();aa++)
 			delete 		mTriangle[aa];
 		mTriangle.clear();
 	}
@@ -1078,7 +1033,7 @@ void CraftWorld::createChunks(const int StartX, const int StartY, const int Star
 					if(BlockTransparent(x,y,z) == true)continue;//if block is transparent don't continue
 
 					//texture stuff
-					WBlock *blockType = &blockTypes[Block];
+					BaseBlock *blockType = &blockTypes[Block];
 
 					float down = 1.0f - percent * (blockType->textureRow + 1);
 					float up = down + percent;
@@ -1267,7 +1222,7 @@ void CraftWorld::createTransparentChunks(const int StartX, const int StartY, con
 					Block = GetBlock(x,y,z);
 					if (BlockTransparent(x,y,z) == false || Block == 0) continue;
 
-					WBlock *blockType = &blockTypes[Block];
+					BaseBlock *blockType = &blockTypes[Block];
 
 					float down = 1.0f - percent * (blockType->textureRow + 1);
 					float up = down + percent;
@@ -1476,7 +1431,7 @@ void CraftWorld::rebuildChunk(int id)
 				Block = GetBlock(x,y,z);
 				if(BlockTransparent(x,y,z) == true)continue;
 
-				WBlock *blockType = &blockTypes[Block];
+				BaseBlock *blockType = &blockTypes[Block];
 
 				float down = 1.0f - percent * (blockType->textureRow + 1);
 				float up = down + percent;
@@ -1653,7 +1608,7 @@ void CraftWorld::rebuildTransparentChunk(int id)
 				Block = GetBlock(x,y,z);
 				if (BlockTransparent(x,y,z) == false || Block == 0) continue;
 
-				WBlock *blockType = &blockTypes[Block];
+				BaseBlock *blockType = &blockTypes[Block];
 
 				float down = 1.0f - percent * (blockType->textureRow + 1);
 				float up = down + percent;
@@ -1997,12 +1952,6 @@ void CraftWorld::UpdateWorldTime(float dt)
 	{
 		worldTime = 0.0f;
 	}
-}
-
-int CraftWorld::getHeightAt(int x,int z)
-{
-	//return m_HeightMap.GetValue(x,z)* WORLD_SIZE/4 + WORLD_SIZE/2;
-	return mineMap[x][z];
 }
 
 int CraftWorld::groundHeight(const int x, const int z)

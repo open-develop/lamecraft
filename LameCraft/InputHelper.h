@@ -54,9 +54,6 @@ private:
 	std::string actionNames[16];
 	std::string buttonNames[16];
 	InputConection connections[16];
-
-
-
 };
 
 #endif

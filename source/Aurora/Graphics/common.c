@@ -34,31 +34,5 @@ int SetupCallbacks(void)
 	return thid;
 }
 
-void memCopy(void* inDest, void* inSrc, u32 inSize)
-{
-     if(!inDest || !inSrc || !inSize)
-          return;
-
-     inSize += (u32)inSrc;
-     if(((u32)inDest & 3) || ((u32)inSrc & 3) || ((u32)inSize & 3)) {
-          if(((u32)inDest & 1) || ((u32)inSrc & 1) || ((u32)inSize & 1)) {
-               u8* tempDest1 = (u8*)inDest;
-               u8* tempSrc1 = (u8*)inSrc;
-               while((u32)tempSrc1 < inSize)
-                    *(tempDest1++) = *(tempSrc1++);
-          } else {
-               u16* tempDest2 = (u16*)inDest;
-               u16* tempSrc2 = (u16*)inSrc;
-               while((u32)tempSrc2 < inSize)
-                    *(tempDest2++) = *(tempSrc2++);
-          }
-     } else {
-          u32* tempDest4 = (u32*)inDest;
-          u32* tempSrc4 = (u32*)inSrc;
-          while((u32)tempSrc4 < inSize)
-               *(tempDest4++) = *(tempSrc4++);
-     }
-}
-
 
 

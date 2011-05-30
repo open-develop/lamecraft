@@ -877,7 +877,7 @@ void StateMenu::ScanSaveFiles(const char* dirName)
 			//dont load lmsc files
 			size_t found = plik.find(".lmsc");
 			size_t found2 = plik.find(".LMSc");
-			if(found==string::npos && found2==string::npos)//nie znaleziono
+			if(found==std::string::npos && found2==std::string::npos)//nie znaleziono
 			{
 				newSaveFile.fileName = plik;
 				saveFilesList.push_back(newSaveFile);

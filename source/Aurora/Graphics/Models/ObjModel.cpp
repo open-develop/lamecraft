@@ -733,12 +733,6 @@ namespace Aurora
 				//aabb max
 				fread(&mesh->aabb.max,sizeof(Vector3),1,binaryFile);
 
-				//triangle count
-				//fread(&mesh->triangleCount,sizeof(int),1,binaryFile);
-
-				//vertices count
-				//fread(&mesh->vertexCount,sizeof(int),1,binaryFile);
-
 				//indices count
 				fread(&mesh->indicesCount,sizeof(int),1,binaryFile);
 
@@ -746,42 +740,14 @@ namespace Aurora
 				mesh->meshVertices = (TexturesPSPVertex*)memalign(16,mesh->indicesCount * sizeof(TexturesPSPVertex));
 				fread(mesh->meshVertices,sizeof(TexturesPSPVertex),mesh->indicesCount,binaryFile);
 
-				//write all indieces
-				//mesh->indices = new int[mesh->indicesCount];
-				//int *test = new int[mesh->indicesCount];
-				//fread(test,sizeof(int),mesh->indicesCount,binaryFile);
-
-				//for(int d = 0;d< mesh->indicesCount ;d++)
-				//{
-				//	mesh->indices[d] = test[d];
-				//}
-
-
-
 				mMeshes.push_back(mesh);
 			}
-
-			BuildBBoxVertices();
 
 			//clear the cache or there will be some errors
 			sceKernelDcacheWritebackInvalidateAll();
 
 
 			fclose(binaryFile);
-		}
-
-		void ObjModel::BuildBBoxVertices()
-		{
-			for (unsigned int i = 0; i < mMeshes.size();i++)
-			{
-				ObjMesh *mesh = mMeshes[i];
-
-				Vector3 c((mesh->aabb.min + mesh->aabb.max) * 0.5f);
-				float sizex = mesh->aabb.max.x - mesh->aabb.min.x;
-				float sizey = mesh->aabb.max.y - mesh->aabb.min.y;
-				float sizez = mesh->aabb.max.z - mesh->aabb.min.z;
-
-			}
 		}
 
 		bool ObjModel::RayIntersection()

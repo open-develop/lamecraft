@@ -23,6 +23,7 @@ source/Aurora/Utils/Logger.o \
 source/Aurora/Utils/Timer.o \
 source/Aurora/Utils/StateManager.o \
 source/Aurora/System/SystemManager.o \
+source/Aurora/System/NetworkManager.o \
 LameCraft/BaseBlock.o \
 LameCraft/Blocks.o \
 LameCraft/SimpleMeshChunk2.o \
@@ -43,7 +44,6 @@ LameCraft/sound_utils/mod.o \
 Lamecraft.o
 
 INCDIR = $(PSPPATH)/include
-#INCDIR += $(PSPPATH)/include/Tokamak
 INCDIR += ./include
 INCDIR += ./source
 CFLAGS = -O2 -G0 -Wall #-mpreferred-stack-boundary=4 #-enable-newlib-hw-fp -ffast-math
@@ -56,7 +56,7 @@ PSP_FW_VERSION=371
 
 LIBDIR = 
 LDFLAGS =
-LIBS= -lNoisepp -lpspaudiolib -lpspaudio -lmikmod -lmmio -lpspaudiocodec -lpng -lz -lpspgum -lpspgu -lstdc++ -lpsprtc -lpspctrl -lm -lpspvfpu -lpspsdk -lpsppower #-lTiny -lbulletdynamics -lbulletcollision -lbulletmath#-lpspprof
+LIBS=  -lNoisepp -lpspaudiolib -lpspaudio -lmikmod -lmmio -lpspaudiocodec -lpng -lz -lpspgum -lpspgu -lstdc++ -lpsprtc -lpspctrl -lm -lpspvfpu -lpspsdk -lpsppower #-lpsp_req -lcurl -lTiny
 
 EXTRA_TARGETS = EBOOT.PBP
 PSP_EBOOT_TITLE = LameCraft

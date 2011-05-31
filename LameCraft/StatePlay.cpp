@@ -505,6 +505,7 @@ void StatePlay::HandleEvents(StateManager* sManager)
 									mWorld->rebuildChunk(chunkTarget);
 									mWorld->rebuildTransparentChunk(chunkTarget);
 									mWorld->rebuildNearestChunks(chunkTarget,testPos2);
+
 								}
 
 								fppCam->needUpdate = true;

@@ -104,27 +104,27 @@ namespace Aurora
 
 			int x = min.x - pt.x;
 			if(x == 0)
-				result.x = -1;
+				result.x = -2;
 
 			x = max.x - pt.x;
 			if(x == 0)
-				result.x = 1;
+				result.x = 2;
 
 			int y =  min.y - pt.y;
 			if(y == 0)
-				result.y = -1;
+				result.y = -2;
 
 			y = max.y - pt.y;
 			if(y == 0)
-				result.y = 1;
+				result.y = 2;
 
 			int z =  min.z - pt.z;
 			if(z == 0)
-				result.z = -1;
+				result.z = -2;
 
 			z = max.z - pt.z;
 			if(z == 0)
-				result.z = 1;
+				result.z = 2;
 
 
 			return result;

@@ -19,7 +19,8 @@ namespace Aurora
 		{
 		private:
 
-
+			//static access
+			static SystemManager m_SystemManager;
 
 			//dialog params
 			pspUtilityMsgDialogParams dialog;
@@ -33,8 +34,7 @@ namespace Aurora
 
 		public:
 
-			//static access
-			static SystemManager m_SystemManager;
+
 			static SystemManager* Instance();
 
 			void Init();

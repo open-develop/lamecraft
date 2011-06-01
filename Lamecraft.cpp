@@ -48,12 +48,12 @@ int main()
 	RenderManager::InstancePtr()->SetClearColour(0xFF000000);
 
 	//splash screens
-	/*SplashScreen *screen = new SplashScreen("Assets/Lamecraft/genesis.png",0,0,480,272,3);
+	SplashScreen *screen = new SplashScreen("Assets/Lamecraft/genesis.png",0,0,480,272,3);
 	screen->ShowSplash();
 	delete screen;
 	SplashScreen *screen2 = new SplashScreen("Assets/Lamecraft/pspteam.png",0,0,424,72,3);
 	screen2->ShowSplash();
-	delete screen2;*/
+	delete screen2;
 
 	RenderManager::InstancePtr()->SetClearColour(0xFFF5B783);
 

@@ -81,6 +81,8 @@ CraftWorld::CraftWorld()
 	blockTypes.push_back(IronBlock());
 
 	transOrderCont = 0;
+	lightShadowFactor = 0.5f;
+	lightFactor = 1.0f;
 }
 
 CraftWorld::~CraftWorld()
@@ -1014,7 +1016,6 @@ void CraftWorld::createChunks(const int StartX, const int StartY, const int Star
 	int MaxSize = WORLD_SIZE;
 	float light1,light2,light3,light4;
 
-
 	MeshChunk->chunkStartZ = StartZ;
 	MeshChunk->chunkStartY = StartY;
 	MeshChunk->chunkStartX = StartX;
@@ -1058,18 +1059,36 @@ void CraftWorld::createChunks(const int StartX, const int StartY, const int Star
 						left = percent * blockType->sidePlane;
 						right = left + percent;
 
-						light1 = BlockLight;
+						light1 = light2 = light3 = light4 = BlockLight;
+						lightFactor = BlockLight * lightShadowFactor;
 
 						//simple shadows
-						if(!BlockTransparent(x-1,y-1,z))
+						//up
+						if(!BlockTransparent(x-1,y+1,z) || !BlockTransparent(x-1,y,z+1) || !BlockTransparent(x-1,y+1,z+1))
 						{
-							light1-=0.2f;
+							light2-=lightFactor;
+						}
+
+						if(!BlockTransparent(x-1,y+1,z) || !BlockTransparent(x-1,y,z-1) || !BlockTransparent(x-1,y+1,z-1))
+						{
+							light4-=lightFactor;
+						}
+
+						//down
+						if(!BlockTransparent(x-1,y-1,z) || !BlockTransparent(x-1,y,z+1) || !BlockTransparent(x-1,y-1,z+1))
+						{
+							light1-=lightFactor;
+						}
+
+						if(!BlockTransparent(x-1,y-1,z) || !BlockTransparent(x-1,y,z-1) || !BlockTransparent(x-1,y-1,z-1))
+						{
+							light3-=lightFactor;
 						}
 
 						MeshChunk->position(x, y,   z+1);	MeshChunk->textureCoord(right, down); MeshChunk->colour(light1,light1,light1);
-						MeshChunk->position(x, y+1, z+1);	MeshChunk->textureCoord(right, up); MeshChunk->colour(BlockLight,BlockLight,BlockLight);
-						MeshChunk->position(x, y+1, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(BlockLight,BlockLight,BlockLight);
-						MeshChunk->position(x, y,   z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(light1,light1,light1);
+						MeshChunk->position(x, y+1, z+1);	MeshChunk->textureCoord(right, up); MeshChunk->colour(light2,light2,light2);
+						MeshChunk->position(x, y+1, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(light4,light4,light4);
+						MeshChunk->position(x, y,   z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(light3,light3,light3);
 
 						MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
 						MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
@@ -1087,17 +1106,35 @@ void CraftWorld::createChunks(const int StartX, const int StartY, const int Star
 						left = percent * blockType->sidePlane;
 						right = left + percent;
 
-						light1 = BlockLight;
+						light1 = light2 = light3 = light4 = BlockLight;
+						lightFactor = BlockLight * lightShadowFactor;
 
 						//simple shadows
-						if(!BlockTransparent(x+1,y-1,z))
+						//up
+						if(!BlockTransparent(x+1,y+1,z) || !BlockTransparent(x+1,y,z+1) || !BlockTransparent(x+1,y+1,z+1))
 						{
-							light1-=0.2f;
+							light2-=lightFactor;
 						}
 
-						MeshChunk->position(x+1, y,   z);	MeshChunk->textureCoord(right, down);MeshChunk->colour(light1,light1,light1);
-						MeshChunk->position(x+1, y+1, z);	MeshChunk->textureCoord(right, up);MeshChunk->colour(BlockLight,BlockLight,BlockLight);
-						MeshChunk->position(x+1, y+1, z+1);	MeshChunk->textureCoord(left, up);MeshChunk->colour(BlockLight,BlockLight,BlockLight);
+						if(!BlockTransparent(x+1,y+1,z) || !BlockTransparent(x+1,y,z-1) || !BlockTransparent(x+1,y+1,z-1))
+						{
+							light4-=lightFactor;
+						}
+
+						//down
+						if(!BlockTransparent(x+1,y-1,z) || !BlockTransparent(x+1,y,z+1) || !BlockTransparent(x+1,y-1,z+1))
+						{
+							light1-=lightFactor;
+						}
+
+						if(!BlockTransparent(x+1,y-1,z) || !BlockTransparent(x+1,y,z-1) || !BlockTransparent(x+1,y-1,z-1))
+						{
+							light3-=lightFactor;
+						}
+
+						MeshChunk->position(x+1, y,   z);	MeshChunk->textureCoord(right, down);MeshChunk->colour(light3,light3,light3);
+						MeshChunk->position(x+1, y+1, z);	MeshChunk->textureCoord(right, up);MeshChunk->colour(light4,light4,light4);
+						MeshChunk->position(x+1, y+1, z+1);	MeshChunk->textureCoord(left, up);MeshChunk->colour(light2,light2,light2);
 						MeshChunk->position(x+1, y,   z+1);	MeshChunk->textureCoord(left, down);MeshChunk->colour(light1,light1,light1);
 
 						MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
@@ -1116,10 +1153,34 @@ void CraftWorld::createChunks(const int StartX, const int StartY, const int Star
 						left = percent * blockType->downPlane;
 						right = left + percent;
 
-						MeshChunk->position(x,   y, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(BlockLight2,BlockLight2,BlockLight2);
-						MeshChunk->position(x+1, y, z);		MeshChunk->textureCoord(right, up); MeshChunk->colour(BlockLight2,BlockLight2,BlockLight2);
-						MeshChunk->position(x+1, y, z+1);	MeshChunk->textureCoord(right, down); MeshChunk->colour(BlockLight2,BlockLight2,BlockLight2);
-						MeshChunk->position(x,   y, z+1);	MeshChunk->textureCoord(left, down); MeshChunk->colour(BlockLight2,BlockLight2,BlockLight2);
+						light1 = light2 = light3 = light4 = BlockLight2;
+						lightFactor = BlockLight2 * lightShadowFactor;
+
+						//simple shadows
+						if(!BlockTransparent(x-1,y-1,z) || !BlockTransparent(x-1,y-1,z-1) || !BlockTransparent(x,y-1,z-1))
+						{
+							light1-=lightFactor;
+						}
+
+						if(!BlockTransparent(x,y-1,z-1) || !BlockTransparent(x+1,y-1,z-1) || !BlockTransparent(x+1,y-1,z))
+						{
+							light2-=lightFactor;
+						}
+
+						if(!BlockTransparent(x+1,y-1,z) || !BlockTransparent(x+1,y-1,z+1) || !BlockTransparent(x,y-1,z+1))
+						{
+							light3-=lightFactor;
+						}
+
+						if(!BlockTransparent(x,y-1,z+1) || !BlockTransparent(x-1,y-1,z+1) || !BlockTransparent(x-1,y-1,z))
+						{
+							light4-=lightFactor;
+						}
+
+						MeshChunk->position(x,   y, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(light1,light1,light1);
+						MeshChunk->position(x+1, y, z);		MeshChunk->textureCoord(right, up); MeshChunk->colour(light2,light2,light2);
+						MeshChunk->position(x+1, y, z+1);	MeshChunk->textureCoord(right, down); MeshChunk->colour(light3,light3,light3);
+						MeshChunk->position(x,   y, z+1);	MeshChunk->textureCoord(left, down); MeshChunk->colour(light4,light4,light4);
 
 						MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
 						MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
@@ -1135,27 +1196,28 @@ void CraftWorld::createChunks(const int StartX, const int StartY, const int Star
 
 					if (transparentBlock == true)
 					{
-						light1=light2=light3=light4 = BlockLight2;
+						light1 = light2 = light3 = light4 = BlockLight2;
+						lightFactor = BlockLight2 * lightShadowFactor;
 
 						//simple shadows
 						if(!BlockTransparent(x,y+1,z+1) || !BlockTransparent(x-1,y+1,z+1) || !BlockTransparent(x-1,y+1,z))
 						{
-							light1-=0.2f;
+							light1-=lightFactor;
 						}
 
 						if(!BlockTransparent(x,y+1,z+1) || !BlockTransparent(x+1,y+1,z+1) || !BlockTransparent(x+1,y+1,z))
 						{
-							light2-=0.2f;
+							light2-=lightFactor;
 						}
 
 						if(!BlockTransparent(x+1,y+1,z) || !BlockTransparent(x+1,y+1,z-1) || !BlockTransparent(x,y+1,z-1))
 						{
-							light3-=0.2f;
+							light3-=lightFactor;
 						}
 
 						if(!BlockTransparent(x,y+1,z-1) || !BlockTransparent(x-1,y+1,z-1) || !BlockTransparent(x-1,y+1,z))
 						{
-							light4-=0.2f;
+							light4-=lightFactor;
 						}
 
 						//down
@@ -1182,17 +1244,35 @@ void CraftWorld::createChunks(const int StartX, const int StartY, const int Star
 						left = percent * blockType->sidePlane;
 						right = left + percent;
 
-						light1 = BlockLight1;
+						light1 = light2 = light3 = light4 = BlockLight1;
+						lightFactor = BlockLight1 * lightShadowFactor;
 
 						//simple shadows
-						if(!BlockTransparent(x,y-1,z-1))
+						//up
+						if(!BlockTransparent(x,y+1,z-1) || !BlockTransparent(x-1,y,z-1) || !BlockTransparent(x-1,y+1,z-1))
 						{
-							light1-=0.2f;
+							light2-=lightFactor;
 						}
 
-						MeshChunk->position(x,   y+1, z);		MeshChunk->textureCoord(right, up); MeshChunk->colour(BlockLight1,BlockLight1,BlockLight1);
-						MeshChunk->position(x+1, y+1, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(BlockLight1,BlockLight1,BlockLight1);
-						MeshChunk->position(x+1, y,   z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(light1,light1,light1);
+						if(!BlockTransparent(x,y+1,z-1) || !BlockTransparent(x+1,y,z-1) || !BlockTransparent(x+1,y+1,z-1))
+						{
+							light4-=lightFactor;
+						}
+
+						//down
+						if(!BlockTransparent(x,y-1,z-1) || !BlockTransparent(x-1,y,z-1) || !BlockTransparent(x-1,y-1,z-1))
+						{
+							light1-=lightFactor;
+						}
+
+						if(!BlockTransparent(x,y-1,z-1) || !BlockTransparent(x+1,y,z-1) || !BlockTransparent(x+1,y-1,z-1))
+						{
+							light3-=lightFactor;
+						}
+
+						MeshChunk->position(x,   y+1, z);		MeshChunk->textureCoord(right, up); MeshChunk->colour(light2,light2,light2);
+						MeshChunk->position(x+1, y+1, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(light4,light4,light4);
+						MeshChunk->position(x+1, y,   z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(light3,light3,light3);
 						MeshChunk->position(x,   y,   z);		MeshChunk->textureCoord(right, down); MeshChunk->colour(light1,light1,light1);
 
 						MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
@@ -1211,18 +1291,35 @@ void CraftWorld::createChunks(const int StartX, const int StartY, const int Star
 						left = percent * blockType->sidePlane;
 						right = left + percent;
 
-						light1 = BlockLight1;
+						light1 = light2 = light3 = light4 = BlockLight1;
+						lightFactor = BlockLight1 * lightShadowFactor;
 
 						//simple shadows
-						if(!BlockTransparent(x,y-1,z+1))
+						//up
+						if(!BlockTransparent(x,y+1,z+1) || !BlockTransparent(x-1,y,z+1) || !BlockTransparent(x-1,y+1,z+1))
 						{
-							light1-=0.2f;
+							light2-=lightFactor;
+						}
+						if(!BlockTransparent(x,y+1,z+1) || !BlockTransparent(x+1,y,z+1) || !BlockTransparent(x+1,y+1,z+1))
+						{
+							light4-=lightFactor;
+						}
+
+						//down
+						if(!BlockTransparent(x,y-1,z+1) || !BlockTransparent(x-1,y,z+1) || !BlockTransparent(x-1,y-1,z+1))
+						{
+							light1-=lightFactor;
+						}
+
+						if(!BlockTransparent(x,y-1,z+1) || !BlockTransparent(x+1,y,z+1) || !BlockTransparent(x+1,y-1,z+1))
+						{
+							light3-=lightFactor;
 						}
 
 						MeshChunk->position(x,   y,   z+1);		MeshChunk->textureCoord(left, down); MeshChunk->colour(light1,light1,light1);
-						MeshChunk->position(x+1, y,   z+1);		MeshChunk->textureCoord(right, down); MeshChunk->colour(light1,light1,light1);
-						MeshChunk->position(x+1, y+1, z+1);		MeshChunk->textureCoord(right, up); MeshChunk->colour(BlockLight1,BlockLight1,BlockLight1);
-						MeshChunk->position(x,   y+1, z+1);		MeshChunk->textureCoord(left, up); MeshChunk->colour(BlockLight1,BlockLight1,BlockLight1);
+						MeshChunk->position(x+1, y,   z+1);		MeshChunk->textureCoord(right, down); MeshChunk->colour(light3,light3,light3);
+						MeshChunk->position(x+1, y+1, z+1);		MeshChunk->textureCoord(right, up); MeshChunk->colour(light4,light4,light4);
+						MeshChunk->position(x,   y+1, z+1);		MeshChunk->textureCoord(left, up); MeshChunk->colour(light2,light2,light2);
 
 						MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
 						MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
@@ -1475,6 +1572,7 @@ void CraftWorld::rebuildChunk(int id)
 	int SZ = 0;
 	int MaxSize = WORLD_SIZE;
 	float light1,light2,light3,light4;
+	//float lightFactor = 1.0f;
 
 	int StartZ = MeshChunk->chunkStartZ;
 	int StartY = MeshChunk->chunkStartY;
@@ -1514,18 +1612,36 @@ void CraftWorld::rebuildChunk(int id)
 					left = percent * blockType->sidePlane;
 					right = left + percent;
 
-					light1 = BlockLight;
+					light1 = light2 = light3 = light4 = BlockLight;
+					lightFactor = BlockLight * lightShadowFactor;
 
 					//simple shadows
-					if(!BlockTransparent(x-1,y-1,z))
+					//up
+					if(!BlockTransparent(x-1,y+1,z) || !BlockTransparent(x-1,y,z+1) || !BlockTransparent(x-1,y+1,z+1))
 					{
-						light1-=0.2f;
+						light2-=lightFactor;
+					}
+
+					if(!BlockTransparent(x-1,y+1,z) || !BlockTransparent(x-1,y,z-1) || !BlockTransparent(x-1,y+1,z-1))
+					{
+						light4-=lightFactor;
+					}
+
+					//down
+					if(!BlockTransparent(x-1,y-1,z) || !BlockTransparent(x-1,y,z+1) || !BlockTransparent(x-1,y-1,z+1))
+					{
+						light1-=lightFactor;
+					}
+
+					if(!BlockTransparent(x-1,y-1,z) || !BlockTransparent(x-1,y,z-1) || !BlockTransparent(x-1,y-1,z-1))
+					{
+						light3-=lightFactor;
 					}
 
 					MeshChunk->position(x, y,   z+1);	MeshChunk->textureCoord(right, down); MeshChunk->colour(light1,light1,light1);
-					MeshChunk->position(x, y+1, z+1);	MeshChunk->textureCoord(right, up); MeshChunk->colour(BlockLight,BlockLight,BlockLight);
-					MeshChunk->position(x, y+1, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(BlockLight,BlockLight,BlockLight);
-					MeshChunk->position(x, y,   z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(light1,light1,light1);
+					MeshChunk->position(x, y+1, z+1);	MeshChunk->textureCoord(right, up); MeshChunk->colour(light2,light2,light2);
+					MeshChunk->position(x, y+1, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(light4,light4,light4);
+					MeshChunk->position(x, y,   z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(light3,light3,light3);
 
 					MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
 					MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
@@ -1542,18 +1658,36 @@ void CraftWorld::rebuildChunk(int id)
 					left = percent * blockType->sidePlane;
 					right = left + percent;
 
-					light1 = BlockLight;
+					light1 = light2 = light3 = light4 = BlockLight;
+					lightFactor = BlockLight * lightShadowFactor;
 
 					//simple shadows
-					if(!BlockTransparent(x+1,y-1,z))
+					//up
+					if(!BlockTransparent(x+1,y+1,z) || !BlockTransparent(x+1,y,z+1) || !BlockTransparent(x+1,y+1,z+1))
 					{
-						light1-=0.2f;
+						light2-=lightFactor;
 					}
 
-					MeshChunk->position(x+1, y,   z);	MeshChunk->textureCoord(right, down);MeshChunk->colour(light1, light1, light1);
-					MeshChunk->position(x+1, y+1, z);	MeshChunk->textureCoord(right, up);MeshChunk->colour(BlockLight, BlockLight, BlockLight);
-					MeshChunk->position(x+1, y+1, z+1);	MeshChunk->textureCoord(left, up);MeshChunk->colour(BlockLight, BlockLight, BlockLight);
-					MeshChunk->position(x+1, y,   z+1);	MeshChunk->textureCoord(left, down);MeshChunk->colour(light1, light1, light1);
+					if(!BlockTransparent(x+1,y+1,z) || !BlockTransparent(x+1,y,z-1) || !BlockTransparent(x+1,y+1,z-1))
+					{
+						light4-=lightFactor;
+					}
+
+					//down
+					if(!BlockTransparent(x+1,y-1,z) || !BlockTransparent(x+1,y,z+1) || !BlockTransparent(x+1,y-1,z+1))
+					{
+						light1-=lightFactor;
+					}
+
+					if(!BlockTransparent(x+1,y-1,z) || !BlockTransparent(x+1,y,z-1) || !BlockTransparent(x+1,y-1,z-1))
+					{
+						light3-=lightFactor;
+					}
+
+					MeshChunk->position(x+1, y,   z);	MeshChunk->textureCoord(right, down);MeshChunk->colour(light3,light3,light3);
+					MeshChunk->position(x+1, y+1, z);	MeshChunk->textureCoord(right, up);MeshChunk->colour(light4,light4,light4);
+					MeshChunk->position(x+1, y+1, z+1);	MeshChunk->textureCoord(left, up);MeshChunk->colour(light2,light2,light2);
+					MeshChunk->position(x+1, y,   z+1);	MeshChunk->textureCoord(left, down);MeshChunk->colour(light1,light1,light1);
 
 					MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
 					MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
@@ -1571,10 +1705,34 @@ void CraftWorld::rebuildChunk(int id)
 					left = percent * blockType->downPlane;
 					right = left + percent;
 
-					MeshChunk->position(x,   y, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(BlockLight2 , BlockLight2 , BlockLight2 );
-					MeshChunk->position(x+1, y, z);		MeshChunk->textureCoord(right, up); MeshChunk->colour(BlockLight2 , BlockLight2 , BlockLight2 );
-					MeshChunk->position(x+1, y, z+1);	MeshChunk->textureCoord(right, down); MeshChunk->colour(BlockLight2 , BlockLight2 , BlockLight2 );
-					MeshChunk->position(x,   y, z+1);	MeshChunk->textureCoord(left, down); MeshChunk->colour(BlockLight2 , BlockLight2 , BlockLight2 );
+					light1 = light2 = light3 = light4 = BlockLight2;
+					lightFactor = BlockLight2 * lightShadowFactor;
+
+					//simple shadows
+					if(!BlockTransparent(x-1,y-1,z) || !BlockTransparent(x-1,y-1,z-1) || !BlockTransparent(x,y-1,z-1))
+					{
+						light1-=lightFactor;
+					}
+
+					if(!BlockTransparent(x,y-1,z-1) || !BlockTransparent(x+1,y-1,z-1) || !BlockTransparent(x+1,y-1,z))
+					{
+						light2-=lightFactor;
+					}
+
+					if(!BlockTransparent(x+1,y-1,z) || !BlockTransparent(x+1,y-1,z+1) || !BlockTransparent(x,y-1,z+1))
+					{
+						light3-=lightFactor;
+					}
+
+					if(!BlockTransparent(x,y-1,z+1) || !BlockTransparent(x-1,y-1,z+1) || !BlockTransparent(x-1,y-1,z))
+					{
+						light4-=lightFactor;
+					}
+
+					MeshChunk->position(x,   y, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(light1,light1,light1);
+					MeshChunk->position(x+1, y, z);		MeshChunk->textureCoord(right, up); MeshChunk->colour(light2,light2,light2);
+					MeshChunk->position(x+1, y, z+1);	MeshChunk->textureCoord(right, down); MeshChunk->colour(light3,light3,light3);
+					MeshChunk->position(x,   y, z+1);	MeshChunk->textureCoord(left, down); MeshChunk->colour(light4,light4,light4);
 
 					MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
 					MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
@@ -1591,26 +1749,27 @@ void CraftWorld::rebuildChunk(int id)
 				{
 
 					light1=light2=light3=light4 = BlockLight2;
+					lightFactor = BlockLight2 * lightShadowFactor;
 
 					//simple shadows
 					if(!BlockTransparent(x,y+1,z+1) || !BlockTransparent(x-1,y+1,z+1) || !BlockTransparent(x-1,y+1,z))
 					{
-						light1-=0.2f;
+						light1-=lightFactor;
 					}
 
 					if(!BlockTransparent(x,y+1,z+1) || !BlockTransparent(x+1,y+1,z+1) || !BlockTransparent(x+1,y+1,z))
 					{
-						light2-=0.2f;
+						light2-=lightFactor;
 					}
 
 					if(!BlockTransparent(x+1,y+1,z) || !BlockTransparent(x+1,y+1,z-1) || !BlockTransparent(x,y+1,z-1))
 					{
-						light3-=0.2f;
+						light3-=lightFactor;
 					}
 
 					if(!BlockTransparent(x,y+1,z-1) || !BlockTransparent(x-1,y+1,z-1) || !BlockTransparent(x-1,y+1,z))
 					{
-						light4-=0.2f;
+						light4-=lightFactor;
 					}
 
 					//down
@@ -1637,18 +1796,36 @@ void CraftWorld::rebuildChunk(int id)
 					left = percent * blockType->sidePlane;
 					right = left + percent;
 
-					light1 = BlockLight1;
+					light1 = light2 = light3 = light4 = BlockLight1;
+					lightFactor = BlockLight1 * lightShadowFactor;
 
 					//simple shadows
-					if(!BlockTransparent(x,y-1,z-1))
+					//up
+					if(!BlockTransparent(x,y+1,z-1) || !BlockTransparent(x-1,y,z-1) || !BlockTransparent(x-1,y+1,z-1))
 					{
-						light1-=0.2f;
+						light2-=lightFactor;
 					}
 
-					MeshChunk->position(x,   y+1, z);		MeshChunk->textureCoord(right, up); MeshChunk->colour(BlockLight1 , BlockLight1 , BlockLight1 );
-					MeshChunk->position(x+1, y+1, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(BlockLight1 , BlockLight1 , BlockLight1 );
-					MeshChunk->position(x+1, y,   z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(light1 , light1 , light1 );
-					MeshChunk->position(x,   y,   z);		MeshChunk->textureCoord(right, down); MeshChunk->colour(light1 , light1 , light1 );
+					if(!BlockTransparent(x,y+1,z-1) || !BlockTransparent(x+1,y,z-1) || !BlockTransparent(x+1,y+1,z-1))
+					{
+						light4-=lightFactor;
+					}
+
+					//down
+					if(!BlockTransparent(x,y-1,z-1) || !BlockTransparent(x-1,y,z-1) || !BlockTransparent(x-1,y-1,z-1))
+					{
+						light1-=lightFactor;
+					}
+
+					if(!BlockTransparent(x,y-1,z-1) || !BlockTransparent(x+1,y,z-1) || !BlockTransparent(x+1,y-1,z-1))
+					{
+						light3-=lightFactor;
+					}
+
+					MeshChunk->position(x,   y+1, z);		MeshChunk->textureCoord(right, up); MeshChunk->colour(light2,light2,light2);
+					MeshChunk->position(x+1, y+1, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(light4,light4,light4);
+					MeshChunk->position(x+1, y,   z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(light3,light3,light3);
+					MeshChunk->position(x,   y,   z);		MeshChunk->textureCoord(right, down); MeshChunk->colour(light1,light1,light1);
 
 					MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
 					MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
@@ -1666,18 +1843,35 @@ void CraftWorld::rebuildChunk(int id)
 					left = percent * blockType->sidePlane;
 					right = left + percent;
 
-					light1 = BlockLight1;
+					light1 = light2 = light3 = light4 = BlockLight1;
+					lightFactor = BlockLight1 * lightShadowFactor;
 
 					//simple shadows
-					if(!BlockTransparent(x,y-1,z+1))
+					//up
+					if(!BlockTransparent(x,y+1,z+1) || !BlockTransparent(x-1,y,z+1) || !BlockTransparent(x-1,y+1,z+1))
 					{
-						light1-=0.2f;
+						light2-=lightFactor;
+					}
+					if(!BlockTransparent(x,y+1,z+1) || !BlockTransparent(x+1,y,z+1) || !BlockTransparent(x+1,y+1,z+1))
+					{
+						light4-=lightFactor;
 					}
 
-					MeshChunk->position(x,   y,   z+1);		MeshChunk->textureCoord(left, down); MeshChunk->colour(light1 , light1 , light1 );
-					MeshChunk->position(x+1, y,   z+1);		MeshChunk->textureCoord(right, down); MeshChunk->colour(light1 , light1 , light1 );
-					MeshChunk->position(x+1, y+1, z+1);		MeshChunk->textureCoord(right, up); MeshChunk->colour(BlockLight1 , BlockLight1 , BlockLight1 );
-					MeshChunk->position(x,   y+1, z+1);		MeshChunk->textureCoord(left, up); MeshChunk->colour(BlockLight1 , BlockLight1 , BlockLight1 );
+					//down
+					if(!BlockTransparent(x,y-1,z+1) || !BlockTransparent(x-1,y,z+1) || !BlockTransparent(x-1,y-1,z+1))
+					{
+						light1-=lightFactor;
+					}
+
+					if(!BlockTransparent(x,y-1,z+1) || !BlockTransparent(x+1,y,z+1) || !BlockTransparent(x+1,y-1,z+1))
+					{
+						light3-=lightFactor;
+					}
+
+					MeshChunk->position(x,   y,   z+1);		MeshChunk->textureCoord(left, down); MeshChunk->colour(light1,light1,light1);
+					MeshChunk->position(x+1, y,   z+1);		MeshChunk->textureCoord(right, down); MeshChunk->colour(light3,light3,light3);
+					MeshChunk->position(x+1, y+1, z+1);		MeshChunk->textureCoord(right, up); MeshChunk->colour(light4,light4,light4);
+					MeshChunk->position(x,   y+1, z+1);		MeshChunk->textureCoord(left, up); MeshChunk->colour(light2,light2,light2);
 
 					MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
 					MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);

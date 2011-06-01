@@ -114,6 +114,8 @@ private:
 	//transparent order rendering
 	TransparentOrder transOrder[512];
 	int transOrderCont;
+	float lightShadowFactor;
+	float lightFactor;
 
 
 };

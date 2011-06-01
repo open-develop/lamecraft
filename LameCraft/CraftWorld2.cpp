@@ -81,7 +81,7 @@ CraftWorld::CraftWorld()
 	blockTypes.push_back(IronBlock());
 
 	transOrderCont = 0;
-	lightShadowFactor = 0.5f;
+	lightShadowFactor = 0.4f;
 	lightFactor = 1.0f;
 }
 
@@ -1752,7 +1752,7 @@ void CraftWorld::rebuildChunk(int id)
 					lightFactor = BlockLight2 * lightShadowFactor;
 
 					//simple shadows
-					if(!BlockTransparent(x,y+1,z+1) || !BlockTransparent(x-1,y+1,z+1) || !BlockTransparent(x-1,y+1,z))
+					if(!BlockTransparent(x-1,y+1,z) || !BlockTransparent(x-1,y+1,z+1) || !BlockTransparent(x,y+1,z+1))
 					{
 						light1-=lightFactor;
 					}
@@ -2092,15 +2092,25 @@ void CraftWorld::rebuildNearestChunks(int id,Vector3 pos)
 {
 	Vector3 test = mChunks[id]->bBox.onBorder(pos);
 	Vector3 temp = pos;
+	int chunkNumber = -1;
+
 	if(test.x != 0)
 	{
 		temp.x +=test.x;
 
-		//check if there is air
-		if(GetBlock(temp.x,temp.y,temp.z) != 0)
+		chunkNumber = getChunkId(temp);
+		if(chunkNumber != -1)
 		{
-			int chunkNumber = getChunkId(temp);
+			rebuildChunk(chunkNumber);
+			rebuildTransparentChunk(chunkNumber);
+		}
 
+
+		//now check for other with this... //needed by shadows
+		if(test.y != 0)
+		{
+			temp.y +=test.y;
+			chunkNumber = getChunkId(temp);
 			if(chunkNumber != -1)
 			{
 				rebuildChunk(chunkNumber);
@@ -2108,30 +2118,14 @@ void CraftWorld::rebuildNearestChunks(int id,Vector3 pos)
 			}
 		}
 
-		//now check for other with this... //needed by shadows
-		if(test.y != 0)
-		{
-			temp.y +=test.y;
-			//check if there is air
-			if(GetBlock(temp.x,temp.y,temp.z) != 0)
-			{
-				int chunkNumber = getChunkId(temp);
-
-				if(chunkNumber != -1)
-					rebuildChunk(chunkNumber);
-			}
-		}
-
 		if(test.z != 0)
 		{
 			temp.z +=test.z;
-			//check if there is air
-			if(GetBlock(temp.x,temp.y,temp.z) != 0)
+			chunkNumber = getChunkId(temp);
+			if(chunkNumber != -1)
 			{
-				int chunkNumber = getChunkId(temp);
-
-				if(chunkNumber != -1)
-					rebuildChunk(chunkNumber);
+				rebuildChunk(chunkNumber);
+				rebuildTransparentChunk(chunkNumber);
 			}
 		}
 	}
@@ -2141,25 +2135,22 @@ void CraftWorld::rebuildNearestChunks(int id,Vector3 pos)
 	{
 		temp = pos;
 		temp.y +=test.y;
-		//check if there is air
-		if(GetBlock(temp.x,temp.y,temp.z) != 0)
-		{
-			int chunkNumber = getChunkId(temp);
 
-			if(chunkNumber != -1)
-				rebuildChunk(chunkNumber);
+		chunkNumber = getChunkId(temp);
+		if(chunkNumber != -1)
+		{
+			rebuildChunk(chunkNumber);
+			rebuildTransparentChunk(chunkNumber);
 		}
 
 		if(test.z != 0)
 		{
 			temp.z +=test.z;
-			//check if there is air
-			if(GetBlock(temp.x,temp.y,temp.z) != 0)
+			chunkNumber = getChunkId(temp);
+			if(chunkNumber != -1)
 			{
-				int chunkNumber = getChunkId(temp);
-
-				if(chunkNumber != -1)
-					rebuildChunk(chunkNumber);
+				rebuildChunk(chunkNumber);
+				rebuildTransparentChunk(chunkNumber);
 			}
 		}
 	}
@@ -2168,29 +2159,23 @@ void CraftWorld::rebuildNearestChunks(int id,Vector3 pos)
 	{
 		temp = pos;
 		temp.z +=test.z;
-		//check if there is air
-		if(GetBlock(temp.x,temp.y,temp.z) != 0)
-		{
-			int chunkNumber = getChunkId(temp);
 
-			if(chunkNumber != -1)
-				rebuildChunk(chunkNumber);
+		chunkNumber = getChunkId(temp);
+		if(chunkNumber != -1)
+		{
+			rebuildChunk(chunkNumber);
+			rebuildTransparentChunk(chunkNumber);
 		}
 
 		if(test.x != 0)
 		{
 			temp.x +=test.x;
 
-			//check if there is air
-			if(GetBlock(temp.x,temp.y,temp.z) != 0)
+			chunkNumber = getChunkId(temp);
+			if(chunkNumber != -1)
 			{
-				int chunkNumber = getChunkId(temp);
-
-				if(chunkNumber != -1)
-				{
-					rebuildChunk(chunkNumber);
-					rebuildTransparentChunk(chunkNumber);
-				}
+				rebuildChunk(chunkNumber);
+				rebuildTransparentChunk(chunkNumber);
 			}
 		}
 	}
@@ -2298,10 +2283,7 @@ void CraftWorld::drawWorld(Frustum &camFrustum,bool camUpdate)
 	//transparent rendering
 	if(transOrderCont > 0)
 	{
-		//draw
-		sceGuColor(0x55FFFFFF);
-		sceGuEnable(GU_BLEND);
-		for(int i = transOrderCont - 1;i >=0;i--)
+		for(int i = 0;i < transOrderCont;i++)
 		{
 			int chunk = transOrder[i].chunk;
 
@@ -2311,7 +2293,17 @@ void CraftWorld::drawWorld(Frustum &camFrustum,bool camUpdate)
 				rebuildTransparentChunk(chunk);
 				transparentchunksCreatedInFrameCount++;
 			}
+		}
+	}
 
+	if(transOrderCont > 0)
+	{
+		//draw
+		sceGuColor(0x55FFFFFF);
+		sceGuEnable(GU_BLEND);
+		for(int i = transOrderCont - 1;i >=0;i--)
+		{
+			int chunk = transOrder[i].chunk;
 			mWaterChunks[chunk]->drawChunk();
 			drawnTriangles += mChunks[chunk]->trienglesCount;
 		}

@@ -502,6 +502,8 @@ void StatePlay::HandleEvents(StateManager* sManager)
 								{
 									mSoundMgr->PlayPlopSound();
 									//rebuild
+									Logger::Instance()->LogMessage("chunk: %d\n",chunkTarget);
+
 									mWorld->rebuildChunk(chunkTarget);
 									mWorld->rebuildTransparentChunk(chunkTarget);
 									mWorld->rebuildNearestChunks(chunkTarget,testPos2);

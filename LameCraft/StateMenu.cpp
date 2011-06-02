@@ -720,7 +720,7 @@ void StateMenu::Draw(StateManager* sManager)
 			mRender->DebugPrint(40,120,"graphics:    Marcin Ploska(Drakon)");
 			mRender->DebugPrint(40,140,"inspiration: Minecraft by Notch");
 			mRender->DebugPrint(40,160,"www:        drakon.com.pl");
-			mRender->DebugPrint(40,180,"rev:         115");
+			mRender->DebugPrint(40,180,"rev:         op-10");
 
 			//button text
 			mRender->SetFontStyle(0.5f,0xFFFFFFFF,0xFF000000,0x00000200);

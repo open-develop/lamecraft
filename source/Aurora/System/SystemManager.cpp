@@ -59,6 +59,64 @@ namespace Aurora
 			}
 		}
 
+		bool SystemManager::ShowNetworkDialog()
+		{
+			bool done = true;
+			int result = -1;
+
+			memset(&networkData, 0, sizeof(pspUtilityNetconfData));
+			networkData.base.size = sizeof(networkData);
+			sceUtilityGetSystemParamInt(PSP_SYSTEMPARAM_ID_INT_LANGUAGE, &networkData.base.language);
+			sceUtilityGetSystemParamInt(PSP_SYSTEMPARAM_ID_INT_UNKNOWN, &networkData.base.buttonSwap);
+			networkData.base.graphicsThread = 17;
+			networkData.base.accessThread = 19;
+			networkData.base.fontThread = 18;
+			networkData.base.soundThread = 16;
+			networkData.action = PSP_NETCONF_ACTION_CONNECTAP;
+
+			struct pspUtilityNetconfAdhoc adhocparam;
+			memset(&adhocparam, 0, sizeof(adhocparam));
+			networkData.adhocparam = &adhocparam;
+
+			sceUtilityNetconfInitStart(&networkData);
+
+			while(done)
+			{
+				Graphics::RenderManager::InstancePtr()->StartDialog();
+
+				switch(sceUtilityNetconfGetStatus())
+				{
+					case PSP_UTILITY_DIALOG_NONE:
+					{
+						result = networkData.base.result;
+						done = false;
+					}
+					break;
+
+					case PSP_UTILITY_DIALOG_VISIBLE:
+						sceUtilityNetconfUpdate(1);
+						break;
+
+					case PSP_UTILITY_DIALOG_QUIT:
+						sceUtilityNetconfShutdownStart();
+					break;
+
+					case PSP_UTILITY_DIALOG_FINISHED:
+					break;
+
+					default:
+					break;
+				}
+
+				Graphics::RenderManager::InstancePtr()->EndDialog();
+			}
+
+			if(result == 0)
+				return true;
+
+			return false;
+		}
+
 		int SystemManager::ShowMessageYesNo(const char *message)
 		{
 			ConfigureDialog(&dialog, sizeof(dialog));

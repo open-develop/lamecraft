@@ -24,6 +24,7 @@ namespace Aurora
 
 			//dialog params
 			pspUtilityMsgDialogParams dialog;
+			pspUtilityNetconfData networkData;
 			void ConfigureDialog(pspUtilityMsgDialogParams *dialog, size_t dialog_size);
 
 			//memory
@@ -47,6 +48,7 @@ namespace Aurora
 			void ShowMessageError(const char *message,int error);
 			int ShowMessageYesNo(const char *message);
 			int ShowOSK(unsigned short *descritpion,unsigned short *outtext,int maxtextinput);
+			bool ShowNetworkDialog();
 
 			//input
 			void InputUpdate();

@@ -66,6 +66,7 @@ private:
 	int selectPos;
 	int loadSelectPos;
 	int loadSavePos;
+	int aboutPos;
 	char worldName[32];
 
 	bool saveSubmenu;
@@ -89,6 +90,9 @@ private:
 	bool makeWater;
 	bool makeCaves;
 	int generateSelectPose;
+
+	//game version
+	int currentVersion;
 };
 
 #endif

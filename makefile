@@ -46,7 +46,7 @@ Lamecraft.o
 INCDIR = $(PSPPATH)/include
 INCDIR += ./include
 INCDIR += ./source
-CFLAGS = -g -G0 -Wall #-mpreferred-stack-boundary=4 #-enable-newlib-hw-fp -ffast-math
+CFLAGS = -O2 -G0 -Wall #-mpreferred-stack-boundary=4 #-enable-newlib-hw-fp -ffast-math
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS = $(CFLAGS)
 

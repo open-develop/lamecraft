@@ -29,111 +29,121 @@ namespace Aurora
 			connectionInitialized = false;
 		}
 
-		int NetworkManager::InitializeConnection()
+		bool NetworkManager::InitializeConnection()
 		{
-			int result;
+			if(!connectionInitialized)
+			{
+				int result;
 
-			result = sceUtilityLoadNetModule(PSP_NET_MODULE_COMMON);
+				result = sceUtilityLoadNetModule(PSP_NET_MODULE_COMMON);
 
-			if(result < 0)
-				return result;
+				if(result < 0)
+					return false;
 
-			result = sceUtilityLoadNetModule(PSP_NET_MODULE_INET);
+				result = sceUtilityLoadNetModule(PSP_NET_MODULE_INET);
 
-			if(result < 0)
-				return result;
+				if(result < 0)
+					return false;
 
-			result = sceUtilityLoadNetModule(PSP_NET_MODULE_PARSEURI);
+				result = sceUtilityLoadNetModule(PSP_NET_MODULE_PARSEURI);
 
-			if(result < 0)
-				return result;
+				if(result < 0)
+					return false;
 
-			result = sceUtilityLoadNetModule(PSP_NET_MODULE_PARSEHTTP);
+				result = sceUtilityLoadNetModule(PSP_NET_MODULE_PARSEHTTP);
 
-			if(result < 0)
-				return result;
+				if(result < 0)
+					return false;
 
-			result = sceUtilityLoadNetModule(PSP_NET_MODULE_HTTP);
+				result = sceUtilityLoadNetModule(PSP_NET_MODULE_HTTP);
 
-			if(result < 0)
-				return result;
+				if(result < 0)
+					return false;
 
-			result = sceNetInit(128*1024, 42, 0, 42, 0);
+				result = sceNetInit(128*1024, 42, 0, 42, 0);
 
-			if(result < 0)
-				return result;
+				if(result < 0)
+					return false;
 
-			result = sceNetInetInit();
+				result = sceNetInetInit();
 
-			if(result < 0)
-				return result;
+				if(result < 0)
+					return false;
 
-			result = sceNetApctlInit(0x10000, 48);
+				result = sceNetApctlInit(0x10000, 48);
 
-			if(result < 0)
-				return result;
+				if(result < 0)
+					return false;
 
-			result = sceNetResolverInit();
+				result = sceNetResolverInit();
 
-			if(result < 0)
-				return result;
+				if(result < 0)
+					return false;
 
-			return(1);
+				connectionInitialized = true;
+			}
+
+			return connectionInitialized;
 		}
 
-		int NetworkManager::ShutDownConnection()
+		bool NetworkManager::ShutDownConnection()
 		{
-			int result;
+			if(connectionInitialized)
+			{
+				int result;
 
-			result = sceNetApctlTerm();
+				result = sceNetApctlTerm();
 
-			if(result < 0)
-				return result;
+				if(result < 0)
+					return false;
 
-			result = sceNetResolverTerm();
+				result = sceNetResolverTerm();
 
-			if(result < 0)
-				return result;
+				if(result < 0)
+					return false;
 
-			result = sceNetInetTerm();
+				result = sceNetInetTerm();
 
-			if(result < 0)
-				return result;
+				if(result < 0)
+					return false;
 
-			result = sceNetTerm();
+				result = sceNetTerm();
 
-			if(result < 0)
-				return result;
+				if(result < 0)
+					return false;
 
-			result = sceUtilityUnloadNetModule(PSP_NET_MODULE_HTTP);
+				result = sceUtilityUnloadNetModule(PSP_NET_MODULE_HTTP);
 
-			if(result < 0)
-				return result;
+				if(result < 0)
+					return false;
 
-			result = sceUtilityUnloadNetModule(PSP_NET_MODULE_PARSEHTTP);
+				result = sceUtilityUnloadNetModule(PSP_NET_MODULE_PARSEHTTP);
 
-			if(result < 0)
-				return result;
+				if(result < 0)
+					return false;
 
-			result = sceUtilityUnloadNetModule(PSP_NET_MODULE_PARSEURI);
+				result = sceUtilityUnloadNetModule(PSP_NET_MODULE_PARSEURI);
 
-			if(result < 0)
-				return result;
+				if(result < 0)
+					return false;
 
-			result = sceUtilityUnloadNetModule(PSP_NET_MODULE_INET);
+				result = sceUtilityUnloadNetModule(PSP_NET_MODULE_INET);
 
-			if(result < 0)
-				return result;
+				if(result < 0)
+					return false;
 
-			result = sceUtilityUnloadNetModule(PSP_NET_MODULE_COMMON);
+				result = sceUtilityUnloadNetModule(PSP_NET_MODULE_COMMON);
 
-			if(result < 0)
-				return result;
+				if(result < 0)
+					return false;
 
-			return 1;
+				connectionInitialized = false;
+			}
+
+			return true;
 		}
 
-		int NetworkManager::GetFile(const char *url, const char *filepath)
+		bool NetworkManager::GetFile(const char *url, const char *filepath)
 		{
 			int templ, connection, request, ret, status, dataend, fd, byteswritten;
 			SceULong64 contentsize;
@@ -142,55 +152,55 @@ namespace Aurora
 			ret = sceHttpInit(20000);
 
 			if(ret < 0)
-				return 0;
+				return false;
 
-			templ = sceHttpCreateTemplate("PGE-agent/0.0.1 libhttp/1.0.0", 1, 1);
+			templ = sceHttpCreateTemplate("xxx-agent/0.0.1 libhttp/1.0.0", 1, 1);
 
 			if(templ < 0)
-				return 0;
+				return false;
 
 			ret = sceHttpSetResolveTimeOut(templ, 3000000);
 
 			if(ret < 0)
-				return 0;
+				return false;
 
 			ret = sceHttpSetRecvTimeOut(templ, 60000000);
 
 			if(ret < 0)
-				return 0;
+				return false;
 
 			ret = sceHttpSetSendTimeOut(templ, 60000000);
 
 			if(ret < 0)
-				return 0;
+				return false;
 
 			connection = sceHttpCreateConnectionWithURL(templ, url, 0);
 
 			if(connection < 0)
-				return 0;
+				return false;
 
 			request = sceHttpCreateRequestWithURL(connection, PSP_HTTP_METHOD_GET, (char*)url, 0);
 
 			if(request < 0)
-				return 0;
+				return false;
 
 			ret = sceHttpSendRequest(request, 0, 0);
 
 			if(ret < 0)
-				return 0;
+				return false;
 
 			ret = sceHttpGetStatusCode(request, &status);
 
 			if(ret < 0)
-				return 0;
+				return false;
 
 			if(status != 200)
-				return 0;
+				return false;
 
 			ret = sceHttpGetContentLength(request, &contentsize);
 
 			if(ret < 0)
-				return 0;
+				return false;
 
 			dataend = 0;
 			byteswritten = 0;
@@ -205,7 +215,7 @@ namespace Aurora
 				{
 					sceIoWrite(fd, filepath, 4);
 					sceIoClose(fd);
-					return 0;
+					return false;
 				}
 
 				if(ret == 0)
@@ -231,7 +241,7 @@ namespace Aurora
 
 			sceHttpEnd();
 
-			return 1;
+			return true;
 		}
 
 

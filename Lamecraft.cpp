@@ -5,7 +5,7 @@
 #include <Aurora/Utils/Logger.h>
 #include <Aurora/Utils/Timer.h>
 #include <Aurora/System/SystemManager.h>
-#include <Aurora/System/NetworkManager.h>
+
 #include <Aurora/Graphics/Camera.h>
 
 #include <Aurora/Utils/StateManager.h>
@@ -56,24 +56,6 @@ int main()
 	screen2->ShowSplash();
 	delete screen2;
 
-	/*NetworkManager::Instance()->Init();
-	if(NetworkManager::Instance()->InitializeConnection() == 1)
-	{
-		Logger::Instance()->LogMessage("Net initialized\n");
-	}else
-	{
-		Logger::Instance()->LogMessage("Net not initialized\n");
-	}
-	if(SystemManager::Instance()->ShowNetworkDialog())
-	{
-		Logger::Instance()->LogMessage("Connected\n");
-	}else
-	{
-		Logger::Instance()->LogMessage("Not connected\n");
-	}
-
-	NetworkManager::Instance()->GetFile("http://drakon.ixan.net/psp/version.txt","version.txt");*/
-
 	RenderManager::InstancePtr()->SetClearColour(0xFFF5B783);
 
 	//new active state
@@ -89,8 +71,6 @@ int main()
 		stateManager.Update();
 		stateManager.Draw();
 	}
-
-	//NetworkManager::Instance()->ShutDownConnection();
 
 	sceGuTerm();			// Terminating the Graphics System
 	sceKernelExitGame();	// Quits Application

@@ -498,15 +498,18 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize,int terrainType,bool
 		water = 0;//there is no water on desert ;)
 		sandUnderWater = 7;
 	}
+
 	//
 	if(!makeFlat)
 	{
 		noisepp::PerlinModule perlin;
 		perlin.setSeed(seed);
-		perlin.setOctaveCount(4);
 		perlin.setQuality(noisepp::NOISE_QUALITY_FAST_STD);
 
 		data = new float[worldSize * worldSize];
+
+		float *data2 = new float[worldSize * worldSize];
+		float *data3 = new float[worldSize * worldSize];
 
 		noisepp::utils::PlaneBuilder2D builder;
 		builder.setModule(perlin);
@@ -518,19 +521,21 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize,int terrainType,bool
 		builder.setDestination(data);
 		builder.build ();
 
+		int Height = 0;
+
 		//build map
 		for (int z = 0; z < WORLD_SIZE; ++z)
 		{
 			for (int x = 0; x < WORLD_SIZE; ++x)
 			{
-				int Height  = data[x + z*WORLD_SIZE]* WORLD_SIZE/12 + WORLD_SIZE/2;
+				Height = data[x + z*WORLD_SIZE]* WORLD_SIZE/12 + WORLD_SIZE/2;
 				//int Height = m_HeightMap.GetValue(x, z) * WORLD_SIZE/12 + WORLD_SIZE/2;
 
 				for (int y = 0; y < Height; ++y)
 				{
 					if(y == Height-1)
 						GetBlock(x, y, z) = grass;//grass
-					else if(y < Height/2)
+					else if(y < Height-3)
 						GetBlock(x, y, z) = rock;
 					else
 						GetBlock(x, y, z) = dirt;
@@ -538,6 +543,49 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize,int terrainType,bool
 
 			}
 		}
+
+		//carve terrain
+		perlin.setSeed(seed+1);
+		noisepp::utils::PlaneBuilder2D builder2;
+		builder2.setModule(perlin);
+		builder2.setSize(worldSize, worldSize);
+		builder2.setBounds(0.0, 0.0, 4.0, 4.0);
+		builder2.setDestination(data2);
+		builder2.build ();
+
+		perlin.setSeed(seed+2);
+		noisepp::utils::PlaneBuilder2D builder3;
+		builder3.setModule(perlin);
+		builder3.setSize(worldSize, worldSize);
+		builder3.setBounds(0.0, 0.0, 4.0, 4.0);
+		builder3.setDestination(data3);
+		builder3.build ();
+
+		int height1= 0;
+		int height2= 0;
+
+		for (int z = 0; z < WORLD_SIZE; ++z)
+		{
+			for (int x = 0; x < WORLD_SIZE; ++x)
+			{
+				height1 = data2[x + z*WORLD_SIZE]* 10/*WORLD_SIZE/12*/ + WORLD_SIZE/2;
+				height2 = data3[x + z*WORLD_SIZE]* 12/*WORLD_SIZE/12*/ + WORLD_SIZE/2;
+
+				if (height2 > height1)
+				{
+					for (int y = height1; y < height2; y++)
+					{
+						GetBlock(x, y, z) = 0;
+					}
+				}
+			}
+		}
+
+
+		//delete tempdata
+		delete []data2;
+		delete []data3;
+
 	}else
 	{
 		for (int z = 0; z < WORLD_SIZE; ++z)
@@ -550,12 +598,11 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize,int terrainType,bool
 				{
 					if(y == Height-1)
 						GetBlock(x, y, z) = grass;//grass
-					else if(y < Height/2)
+					else if(y < Height-3)
 						GetBlock(x, y, z) = rock;
 					else
 						GetBlock(x, y, z) = dirt;
 				}
-
 			}
 		}
 	}
@@ -594,11 +641,8 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize,int terrainType,bool
 						max = test;
 
 					if(test > 0.8f)
-						if(GetBlock(x,y,z) != 0)
-							GetBlock(x,y,z) = 0;
-
+						GetBlock(x,y,z) = 0;
 				}
-
 			}
 		}
 
@@ -636,9 +680,9 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize,int terrainType,bool
 				}
 			}
 		}
-
-		delete []data;
 	}
+
+	delete []data;
 
 	//make the most bottom layer of cube not destroyable
 	for (int z = 0; z < WORLD_SIZE; ++z)
@@ -648,8 +692,6 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize,int terrainType,bool
 			GetBlock(x, 0, z) = 46;//last one in set
 		}
 	}
-
-
 
 	//init trees
 	if(makeTrees)
@@ -676,7 +718,7 @@ void CraftWorld::initTrees(int treeChoose)
 		int flag = 1;
 		for (int y1 = y; y1 < y + 1 + TrunkHeight && y1 < WORLD_SIZE; ++y1)
 		{
-			if(GetBlock(x, y1, z) == 4 || GetBlock(x, y1, z) == 8 || GetBlock(x, y1, z) == 9 || GetBlock(x, y1, z) == 31 || GetBlock(x, y1, z) == 38 || GetBlock(x, y1, z) == 25 || GetBlock(x, y1, z) == 32)
+			if(GetBlock(x, y1, z) == 4 || GetBlock(x, y1, z) == 3 || GetBlock(x, y1, z) == 8 || GetBlock(x, y1, z) == 9 || GetBlock(x, y1, z) == 31 || GetBlock(x, y1, z) == 38 || GetBlock(x, y1, z) == 25 || GetBlock(x, y1, z) == 32)
 				flag = 0;
 		}
 
@@ -2299,16 +2341,22 @@ void CraftWorld::drawWorld(Frustum &camFrustum,bool camUpdate)
 	if(transOrderCont > 0)
 	{
 		//draw
+		sceGuDepthMask(1);
 		sceGuColor(0x55FFFFFF);
 		sceGuEnable(GU_BLEND);
+		//sceGuDisable(GU_CULL_FACE);
+
 		for(int i = transOrderCont - 1;i >=0;i--)
 		{
 			int chunk = transOrder[i].chunk;
 			mWaterChunks[chunk]->drawChunk();
 			drawnTriangles += mChunks[chunk]->trienglesCount;
 		}
+
+		//sceGuEnable(GU_CULL_FACE);
 		sceGuDisable(GU_BLEND);
 		sceGuDisable(GU_TEXTURE_2D);
+		sceGuDepthMask(0);
 	}
 }
 

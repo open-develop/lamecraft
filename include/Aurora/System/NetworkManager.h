@@ -28,10 +28,10 @@ namespace Aurora
 
 			void Init();
 
-			int InitializeConnection();
-			int ShutDownConnection();
+			bool InitializeConnection();
+			bool ShutDownConnection();
 
-			int GetFile(const char *url, const char *filepath);
+			bool GetFile(const char *url, const char *filepath);
 		};
 	}
 }

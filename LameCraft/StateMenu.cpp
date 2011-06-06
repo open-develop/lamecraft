@@ -4,8 +4,11 @@
 #include "LoadingScreen.h"
 #include "InputHelper.h"
 
+#include <Aurora/System/NetworkManager.h>
+
 #include <zlib.h>
 #include <dirent.h>
+#include <fcntl.h>
 
 
 StateMenu::StateMenu()
@@ -49,6 +52,7 @@ void StateMenu::Init()
 	menuState = 0;
 	loadSelectPos = 0;
 	loadSavePos = 0;
+	aboutPos = 0;
 
 	//for map generation
 	terrainType = 0;
@@ -60,6 +64,8 @@ void StateMenu::Init()
 
 	saveSubmenu = false;
 	saveSubMenuSelect = 2;
+
+	currentVersion = 10;
 
 	//input helper
 	InputHelper::Instance()->Init();
@@ -157,6 +163,7 @@ void StateMenu::HandleEvents(StateManager* sManager)
 				{
 					//about
 					menuState = 3;
+					aboutPos = 1;
 				}
 			}
 		}
@@ -337,9 +344,84 @@ void StateMenu::HandleEvents(StateManager* sManager)
 		break;
 		case 3://about
 		{
+			if(mSystemMgr->KeyPressed(PSP_CTRL_UP))
+			{
+				aboutPos--;
+				if(aboutPos < 0)
+					aboutPos = 1;
+
+				mSoundMgr->PlayMenuSound();
+			}
+
+			if(mSystemMgr->KeyPressed(PSP_CTRL_DOWN))
+			{
+				aboutPos++;
+				if(aboutPos > 1)
+					aboutPos = 0;
+
+				mSoundMgr->PlayMenuSound();
+			}
+
 			if(mSystemMgr->KeyPressed(PSP_CTRL_CROSS))
 			{
-				menuState = 0;
+				if(aboutPos == 1)
+				{
+					menuState = 0;
+				}
+				if(aboutPos == 0)
+				{
+					//checking for new update
+					NetworkManager::Instance()->Init();
+					//initialize connection
+					if(NetworkManager::Instance()->InitializeConnection())
+					{
+						//show network dialog and connect to ap
+						if(SystemManager::Instance()->ShowNetworkDialog())
+						{
+							//download update info
+							if(NetworkManager::Instance()->GetFile("http://drakon.ixan.net/psp/version.txt","version.txt"))
+							{
+								//check what version is inside
+								int fileVersion = 0;
+								FILE * pFile;
+								pFile = fopen("version.txt","r");
+								if (pFile!=NULL)
+								{
+									char buffer[3];
+									fread(buffer,1,3,pFile);
+									fileVersion = atoi(buffer);
+									fclose (pFile);
+
+									if(fileVersion > currentVersion)
+									{
+										SystemManager::Instance()->ShowMessage("There is new version!!!");
+
+										//make new directory
+										//mkdir("../Updater1",777);
+										//download updater there
+										//NetworkManager::Instance()->GetFile("http://drakon.ixan.net/psp/updater/EBOOT.PBP","../Updater1/EBOOT.PBP");
+									}
+								}else
+								{
+									SystemManager::Instance()->ShowMessage("Can't open version.txt .");
+								}
+							}else
+							{
+								SystemManager::Instance()->ShowMessage("Can't download update info.");
+							}
+						}else
+						{
+							SystemManager::Instance()->ShowMessage("You must connect to AP.");
+						}
+					}
+					else
+					{
+						SystemManager::Instance()->ShowMessage("Can't initialize network.");
+					}
+
+					//turn off connection
+					NetworkManager::Instance()->ShutDownConnection();
+				}
 			}
 
 			if(mSystemMgr->KeyPressed(PSP_CTRL_CIRCLE))
@@ -542,6 +624,11 @@ void StateMenu::HandleEvents(StateManager* sManager)
 			}
 		}
 		break;
+		case 6://check new version menu
+		{
+
+		}
+		break;
 	}
 
 }
@@ -707,6 +794,10 @@ void StateMenu::Draw(StateManager* sManager)
 				}
 			}
 
+			//check for update
+			buttonSprite->SetPosition(240,235);
+			buttonSprite->Draw();
+
 			//back
 			sbuttonSprite->SetPosition(240,260);
 			sbuttonSprite->Draw();
@@ -724,6 +815,7 @@ void StateMenu::Draw(StateManager* sManager)
 
 			//button text
 			mRender->SetFontStyle(0.5f,0xFFFFFFFF,0xFF000000,0x00000200);
+			mRender->DebugPrint(240,240,"Check for update");
 			mRender->DebugPrint(240,265,"Back");
 		}
 		break;

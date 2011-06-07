@@ -363,7 +363,7 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize)
 			{
 				if(y == Height-1)
 					GetBlock(x, y, z) = grass;//grass
-				else if(y < Height/2)
+				else if(y < Height-3)
 					GetBlock(x, y, z) = rock;
 				else
 					GetBlock(x, y, z) = dirt;
@@ -371,6 +371,56 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize)
 
 		}
 	}
+
+	//carve terrain
+	float *data2 = new float[worldSize * worldSize];
+	float *data3 = new float[worldSize * worldSize];
+
+	perlin.setSeed(seed+1);
+	noisepp::utils::PlaneBuilder2D builder2;
+	builder2.setModule(perlin);
+	builder2.setSize(worldSize, worldSize);
+	builder2.setBounds(0.0, 0.0, 4.0, 4.0);
+	builder2.setDestination(data2);
+	builder2.build ();
+
+	perlin.setSeed(seed+2);
+	noisepp::utils::PlaneBuilder2D builder3;
+	builder3.setModule(perlin);
+	builder3.setSize(worldSize, worldSize);
+	builder3.setBounds(0.0, 0.0, 4.0, 4.0);
+	builder3.setDestination(data3);
+	builder3.build ();
+
+	int height1= 0;
+	int height2= 0;
+
+	for (int z = 0; z < WORLD_SIZE; ++z)
+	{
+		for (int x = 0; x < WORLD_SIZE; ++x)
+		{
+			height1 = data2[x + z*WORLD_SIZE]* 10/*WORLD_SIZE/12*/ + WORLD_SIZE/2;
+			height2 = data3[x + z*WORLD_SIZE]* 12/*WORLD_SIZE/12*/ + WORLD_SIZE/2;
+
+			if (height2 > height1)
+			{
+				//put at height1 grass
+				if(GetBlock(x, height1, z) != 0)
+					GetBlock(x, height1, z) = grass;
+
+				//delete blocks
+				for (int y = height1+1; y < height2; y++)
+				{
+					GetBlock(x, y, z) = 0;
+				}
+			}
+		}
+	}
+
+
+	//delete tempdata
+	delete []data2;
+	delete []data3;
 
 	//caves?
 	noisepp::RidgedMultiModule NoiseSource;
@@ -573,7 +623,12 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize,int terrainType,bool
 
 				if (height2 > height1)
 				{
-					for (int y = height1; y < height2; y++)
+					//put at height1 grass
+					if(GetBlock(x, height1, z) != 0)
+						GetBlock(x, height1, z) = grass;
+
+					//delete blocks
+					for (int y = height1+1; y < height2; y++)
 					{
 						GetBlock(x, y, z) = 0;
 					}
@@ -623,7 +678,6 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize,int terrainType,bool
 		noisepp::Cache *cache = pipeline->createCache ();
 
 		float nx, ny, nz;
-		float max = 0.0f;
 
 		for (int z = 2; z < WORLD_SIZE - 4; ++z)
 		{
@@ -635,12 +689,7 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize,int terrainType,bool
 					ny = (float)y / WORLD_SIZE;
 					nz = (float)z / WORLD_SIZE;
 
-					float test = element->getValue(nx,ny,nz,cache);
-
-					if(test > max)
-						max = test;
-
-					if(test > 0.8f)
+					if(element->getValue(nx,ny,nz,cache) > 0.8f)
 						GetBlock(x,y,z) = 0;
 				}
 			}

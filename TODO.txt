@@ -1,10 +1,13 @@
-- add carving terrain to normal world generation
-- add another pass after carving thats add grass
++ add carving terrain to normal world generation
++ add another pass after carving thats add grass
+- day night colours changing
+- day/night system sky from jj
+
 - add flat laddrs like in normal minecraft:
 	- add property to block actLikeLadder - if collided with it and with normal ladder block then act like ladder
 	- add specialObject property for block generation - working like air
 	- add different block generators like in Mn. ex BlockGenrator,LadderGenerator,TreesGenerator
-- day/night system from jj
+
 - fix autoupdater downloading to correct folder
 - fix strange error with map rewriting - if copied from elswhere
 - add quiestion when exiting from game

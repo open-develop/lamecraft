@@ -1,0 +1,21 @@
+- add carving terrain to normal world generation
+- add another pass after carving thats add grass
+- add flat laddrs like in normal minecraft:
+	- add property to block actLikeLadder - if collided with it and with normal ladder block then act like ladder
+	- add specialObject property for block generation - working like air
+	- add different block generators like in Mn. ex BlockGenrator,LadderGenerator,TreesGenerator
+- day/night system from jj
+- fix autoupdater downloading to correct folder
+- fix strange error with map rewriting - if copied from elswhere
+- add quiestion when exiting from game
+- add example map with all features of the game
+- add flowers generator
+- add torch generator
+- check if i can render intrafont text in perspective view - not only ortho - it would be cool to have signs
+- change splash screens since genesis ended
+- add walking in water sound
+- add rename map option to load menu... (that will be interesting, altought - just load map,rename it,save it :>)
+- add texture pack selection in menu. By folders in TexturePack->Lamecraft etc
+- add octree rendering especially for transparent objects
+- change sound libarary - current one causing some strange noise sometimes
+- add background music playing from "Music" folder in game or ms0;/Music

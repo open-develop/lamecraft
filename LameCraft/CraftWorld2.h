@@ -47,6 +47,10 @@ public:
 	void LoadWorld(const char *filename);
 	void LoadCompressedWorld(std::string filename);
 
+	//lightening
+	void InitLightValues();
+	void SetWolrdTime(float time);
+
 	//
 	void buildMap();
 	void destroyMap();
@@ -77,6 +81,7 @@ public:
 
 	char worldName[50];
 	int createdChunksCount;
+	Vector3	fogColor;
 
 private:
 
@@ -115,9 +120,15 @@ private:
 	TransparentOrder transOrder[512];
 	int transOrderCont;
 	float lightShadowFactor;
-	float lightFactor;
+	Vector3 lightFactor;
 
-
+	//lightining
+	Vector3 lightColor;
+	Vector3	ambientColor;
+	float lightAngle;
+	float factor1;
+	float factor2;
+	float factor3;
 };
 
 

@@ -72,6 +72,7 @@ void StatePlay::Init()
 	mWorld->initRandompMap(128,16);
 	mWorld->setTextureSize(128,16);
 	mWorld->initWorldBlocksLight();
+	mWorld->SetWolrdTime(12);
 	mWorld->UpdatePlayerZoneBB(playerPosition);
 	mWorld->buildMap();
 	mWorld->buildblocksVerts();
@@ -139,6 +140,7 @@ void StatePlay::InitParametric(int terrainType,bool makeFlat,bool makeTrees,bool
 	mWorld->initRandompMap(128,16,terrainType,makeFlat,makeTrees,makeWater,makeCaves);
 	mWorld->setTextureSize(128,16);
 	mWorld->initWorldBlocksLight();
+	mWorld->SetWolrdTime(12);
 	mWorld->UpdatePlayerZoneBB(playerPosition);
 	mWorld->buildMap();
 	mWorld->buildblocksVerts();
@@ -224,6 +226,8 @@ void StatePlay::LoadMap(std::string fileName,bool compressed)
 	}
 	else
 		mWorld->LoadWorld(saveFileName.c_str());
+
+	mWorld->SetWolrdTime(12);
 
 	mWorld->setTextureSize(128,16);
 
@@ -885,10 +889,12 @@ void StatePlay::Draw(StateManager* sManager)
 	mRender->StartFrame();
 
 	TextureManager::Instance()->SetTextureModeulate(texture);
-	sceGuAmbientColor(0xff282828);
 
 	//draw level
-	sceGuFog( 0.0f, 128.75f, 0x00CCCCff );	// Fog parameters
+
+	sceGuFog( 0.0f, 100.75f,GU_COLOR(mWorld->fogColor.x,mWorld->fogColor.y,mWorld->fogColor.z,1.0f));	// Fog parameters
+	sceGuAmbientColor(0xff282828);
+	//sceGuFog( 0.0f, 128.75f, 0x00CCCCff );	// Fog parameters
 	sceGuEnable(GU_FOG );	// Enable fog
 
 	sceGumPushMatrix();

@@ -83,7 +83,10 @@ CraftWorld::CraftWorld()
 	transOrderCont = 0;
 	lightShadowFactor = 0.4f;
 	lightFactor = Vector3(1.0f,1.0f,1.0f);
-	worldTime = 12.0f;
+	worldTime = 0.0f;
+
+	worldDayTime = 12.0f;
+	worldHour = 0.0f;
 }
 
 CraftWorld::~CraftWorld()
@@ -100,11 +103,11 @@ CraftWorld::~CraftWorld()
 	mChunks.clear();
 
 	//water chunks
-	for(unsigned int i = 0;i < mWaterChunks.size();i++)
+	for(unsigned int i = 0;i < mTransparentChunks.size();i++)
 	{
-		delete mWaterChunks[i];
+		delete mTransparentChunks[i];
 	}
-	mWaterChunks.clear();
+	mTransparentChunks.clear();
 
 
 	//delete block vertices
@@ -918,42 +921,42 @@ void CraftWorld::SetWolrdTime(float time)
 	//6am color = (1, 0.6, 0.04)
 	//8am color = (1, 1, 1)
 
-	worldTime = std::fmod(time, 24);
+	worldDayTime = time;//std::fmod(time, 24);
 
-	lightAngle = worldTime / 24.0f * 360.0f - 90.0f;
+	lightAngle = worldDayTime / 24.0f * 360.0f - 90.0f;
 	if (lightAngle < 0)lightAngle += 360.0f;
 
-	if (worldTime <= 4 || worldTime >= 20)
+	if (worldDayTime <= 4 || worldDayTime >= 22)
 	{
 		lightColor = Vector3(0.1f, 0.1f, 0.1f);
 	}
-	else if (worldTime >= 8 && worldTime <= 16)
+	else if (worldDayTime >= 8 && worldDayTime <= 16)
 	{
 		lightColor = Vector3(1, 1, 1);
 	}
-	else if (worldTime >= 4 && worldTime <= 6)
+	else if (worldDayTime >= 4 && worldDayTime <= 6)
 	{
-		lightColor.x = (worldTime - 4.0f)/2.0f * 0.9f + 0.1f;
-		lightColor.y = (worldTime - 4.0f)/2.0f * 0.5f + 0.1f;
-		lightColor.z = (worldTime - 4.0f)/2.0f * -0.06f + 0.1f;
+		lightColor.x = (worldDayTime - 4.0f)/2.0f * 0.9f + 0.1f;
+		lightColor.y = (worldDayTime - 4.0f)/2.0f * 0.5f + 0.1f;
+		lightColor.z = (worldDayTime - 4.0f)/2.0f * -0.06f + 0.1f;
 	}
-	else if (worldTime >= 6 && worldTime <= 8)
+	else if (worldDayTime >= 6 && worldDayTime <= 8)
 	{
 		lightColor.x = 1.0f;
-		lightColor.y = (worldTime - 6.0f)/2.0f * 0.4f + 0.6f;
-		lightColor.z = (worldTime - 6.0f)/2.0f * 0.96f + 0.04f;
+		lightColor.y = (worldDayTime - 6.0f)/2.0f * 0.4f + 0.6f;
+		lightColor.z = (worldDayTime - 6.0f)/2.0f * 0.96f + 0.04f;
 	}
-	else if (worldTime >= 16 && worldTime <= 18)
+	else if (worldDayTime >= 16 && worldDayTime <= 18)
 	{
 		lightColor.x = 1.0f;
-		lightColor.y = (18.0f - worldTime)/2.0f * 0.4f + 0.6f;
-		lightColor.z = (18.0f - worldTime)/2.0f * 0.96f + 0.04f;
+		lightColor.y = (18.0f - worldDayTime)/2.0f * 0.4f + 0.6f;
+		lightColor.z = (18.0f - worldDayTime)/2.0f * 0.96f + 0.04f;
 	}
-	else if (worldTime >= 18 && worldTime <= 20)
+	else if (worldDayTime >= 18 && worldDayTime <= 22)
 	{
-		lightColor.x = (20.0f - worldTime)/2.0f * 0.9f + 0.1f;
-		lightColor.y = (20.0f - worldTime)/2.0f * 0.5f + 0.1f;
-		lightColor.z = (20.0f - worldTime)/2.0f * -0.06f + 0.1f;
+		lightColor.x = (20.0f - worldDayTime)/2.0f * 0.9f + 0.3f;
+		lightColor.y = (20.0f - worldDayTime)/2.0f * 0.5f + 0.3f;
+		lightColor.z = (20.0f - worldDayTime)/2.0f * -0.06f + 0.3f;
 	}
 	else	//Shouldn't get here
 	{
@@ -1001,9 +1004,9 @@ void CraftWorld::destroyMap()
 		mChunks[i]->reset();
 	}
 
-	for(unsigned int i = 0;i < mWaterChunks.size();i++)
+	for(unsigned int i = 0;i < mTransparentChunks.size();i++)
 	{
-		mWaterChunks[i]->reset();
+		mTransparentChunks[i]->reset();
 	}
 }
 
@@ -1259,8 +1262,6 @@ void CraftWorld::createChunks(const int StartX, const int StartY, const int Star
 
 					//light
 					BaseLight  = GetBlockLight(x, y, z) / 255.0f;  //For the two x faces
-					//float BlockLight1 = BlockLight * 0.9f;		//For the two z faces
-					//float BlockLight2 = BlockLight * 0.8f;		//For the two y faces
 
 					BlockColory1 = lightColor * (factor1 * BaseLight) + ambientColor;
 					BlockColory1.saturate();
@@ -1383,7 +1384,7 @@ void CraftWorld::createChunks(const int StartX, const int StartY, const int Star
 						left = percent * blockType->downPlane;
 						right = left + percent;
 
-						light1 = light2 = light3 = light4 = BlockColory1;
+						light1 = light2 = light3 = light4 = BlockColory2;
 						lightFactor = BlockColory1 * lightShadowFactor;
 
 						//simple shadows
@@ -1426,7 +1427,7 @@ void CraftWorld::createChunks(const int StartX, const int StartY, const int Star
 
 					if (transparentBlock == true)
 					{
-						light1 = light2 = light3 = light4 = BlockColory2;
+						light1 = light2 = light3 = light4 = BlockColory1;
 						lightFactor = BlockColory2 * lightShadowFactor;
 
 						//simple shadows
@@ -1589,6 +1590,14 @@ void CraftWorld::createTransparentChunks(const int StartX, const int StartY, con
 	int SZ = 0;
 	int MaxSize = WORLD_SIZE;
 
+	float BaseLight = 1.0f;
+
+	Vector3 BlockColory1;    //Top face
+	Vector3 BlockColory2;    //Bottom face
+	Vector3 BlockColorx1;    //Sunset face
+	Vector3 BlockColorx2;    //Sunrise face
+	Vector3 BlockColorz;     //Front/back faces
+
 
 	MeshChunk->chunkStartZ = StartZ;
 	MeshChunk->chunkStartY = StartY;
@@ -1616,6 +1625,26 @@ void CraftWorld::createTransparentChunks(const int StartX, const int StartY, con
 					float left = percent * blockType->upPlane;
 					float right = left + percent;
 
+					//light
+					BaseLight  = GetBlockLight(x, y, z) / 255.0f;  //For the two x faces
+
+					BlockColory1 = lightColor * (factor1 * BaseLight) + ambientColor;
+					BlockColory1.saturate();
+					BlockColory2 = lightColor * (factor1 / 2.0f * BaseLight) + ambientColor;
+					BlockColory2.saturate();
+					BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
+					BlockColorz.saturate();
+					BlockColorz *= 0.80f;
+
+
+					BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
+					BlockColorx1.saturate();
+					BlockColorx1 *= 0.95f;
+
+					BlockColorx2 = lightColor * (factor3 * 0.80f * BaseLight) + ambientColor;
+					BlockColorx2.saturate();
+					BlockColorx2 *= 0.95f;
+
 					//x-1
 					transparentBlock = DefaultBlock;
 					Block1 = 1;
@@ -1630,10 +1659,10 @@ void CraftWorld::createTransparentChunks(const int StartX, const int StartY, con
 						left = percent * blockType->sidePlane;
 						right = left + percent;
 
-						MeshChunk->position(x, y,   z+1);	MeshChunk->textureCoord(right, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-						MeshChunk->position(x, y+1, z+1);	MeshChunk->textureCoord(right, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-						MeshChunk->position(x, y+1, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-						MeshChunk->position(x, y,   z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
+						MeshChunk->position(x, y,   z+1);	MeshChunk->textureCoord(right, down); MeshChunk->colour(BlockColorx1.x,BlockColorx1.y,BlockColorx1.z);
+						MeshChunk->position(x, y+1, z+1);	MeshChunk->textureCoord(right, up); MeshChunk->colour(BlockColorx1.x,BlockColorx1.y,BlockColorx1.z);
+						MeshChunk->position(x, y+1, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(BlockColorx1.x,BlockColorx1.y,BlockColorx1.z);
+						MeshChunk->position(x, y,   z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(BlockColorx1.x,BlockColorx1.y,BlockColorx1.z);
 
 						MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
 						MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
@@ -1655,10 +1684,10 @@ void CraftWorld::createTransparentChunks(const int StartX, const int StartY, con
 						left = percent * blockType->sidePlane;
 						right = left + percent;
 
-						MeshChunk->position(x+1, y,   z);	MeshChunk->textureCoord(right, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-						MeshChunk->position(x+1, y+1, z);	MeshChunk->textureCoord(right, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-						MeshChunk->position(x+1, y+1, z+1);	MeshChunk->textureCoord(left, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-						MeshChunk->position(x+1, y,   z+1);	MeshChunk->textureCoord(left, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
+						MeshChunk->position(x+1, y,   z);	MeshChunk->textureCoord(right, down); MeshChunk->colour(BlockColorx2.x,BlockColorx2.y,BlockColorx2.z);
+						MeshChunk->position(x+1, y+1, z);	MeshChunk->textureCoord(right, up); MeshChunk->colour(BlockColorx2.x,BlockColorx2.y,BlockColorx2.z);
+						MeshChunk->position(x+1, y+1, z+1);	MeshChunk->textureCoord(left, up); MeshChunk->colour(BlockColorx2.x,BlockColorx2.y,BlockColorx2.z);
+						MeshChunk->position(x+1, y,   z+1);	MeshChunk->textureCoord(left, down); MeshChunk->colour(BlockColorx2.x,BlockColorx2.y,BlockColorx2.z);
 
 						MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
 						MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
@@ -1681,10 +1710,10 @@ void CraftWorld::createTransparentChunks(const int StartX, const int StartY, con
 						left = percent * blockType->downPlane;
 						right = left + percent;
 
-						MeshChunk->position(x,   y, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-						MeshChunk->position(x+1, y, z);		MeshChunk->textureCoord(right, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-						MeshChunk->position(x+1, y, z+1);	MeshChunk->textureCoord(right, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-						MeshChunk->position(x,   y, z+1);	MeshChunk->textureCoord(left, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
+						MeshChunk->position(x,   y, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(BlockColory2.x,BlockColory2.y,BlockColory2.z);
+						MeshChunk->position(x+1, y, z);		MeshChunk->textureCoord(right, up); MeshChunk->colour(BlockColory2.x,BlockColory2.y,BlockColory2.z);
+						MeshChunk->position(x+1, y, z+1);	MeshChunk->textureCoord(right, down); MeshChunk->colour(BlockColory2.x,BlockColory2.y,BlockColory2.z);
+						MeshChunk->position(x,   y, z+1);	MeshChunk->textureCoord(left, down); MeshChunk->colour(BlockColory2.x,BlockColory2.y,BlockColory2.z);
 
 						MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
 						MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
@@ -1708,10 +1737,10 @@ void CraftWorld::createTransparentChunks(const int StartX, const int StartY, con
 						left = percent * blockType->upPlane;
 						right = left + percent;
 
-						MeshChunk->position(x,   y+1, z+1);		MeshChunk->textureCoord(left, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-						MeshChunk->position(x+1, y+1, z+1);		MeshChunk->textureCoord(right, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-						MeshChunk->position(x+1, y+1, z);		MeshChunk->textureCoord(right, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-						MeshChunk->position(x,   y+1, z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
+						MeshChunk->position(x,   y+1, z+1);		MeshChunk->textureCoord(left, up); MeshChunk->colour(BlockColory1.x,BlockColory1.y,BlockColory1.z);
+						MeshChunk->position(x+1, y+1, z+1);		MeshChunk->textureCoord(right, up); MeshChunk->colour(BlockColory1.x,BlockColory1.y,BlockColory1.z);
+						MeshChunk->position(x+1, y+1, z);		MeshChunk->textureCoord(right, down); MeshChunk->colour(BlockColory1.x,BlockColory1.y,BlockColory1.z);
+						MeshChunk->position(x,   y+1, z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(BlockColory1.x,BlockColory1.y,BlockColory1.z);
 
 						MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
 						MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
@@ -1733,10 +1762,10 @@ void CraftWorld::createTransparentChunks(const int StartX, const int StartY, con
 						left = percent * blockType->sidePlane;
 						right = left + percent;
 
-						MeshChunk->position(x,   y+1, z);		MeshChunk->textureCoord(right, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-						MeshChunk->position(x+1, y+1, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-						MeshChunk->position(x+1, y,   z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-						MeshChunk->position(x,   y,   z);		MeshChunk->textureCoord(right, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
+						MeshChunk->position(x,   y+1, z);		MeshChunk->textureCoord(right, up); MeshChunk->colour(BlockColorz.x,BlockColorz.y,BlockColorz.z);
+						MeshChunk->position(x+1, y+1, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(BlockColorz.x,BlockColorz.y,BlockColorz.z);
+						MeshChunk->position(x+1, y,   z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(BlockColorz.x,BlockColorz.y,BlockColorz.z);
+						MeshChunk->position(x,   y,   z);		MeshChunk->textureCoord(right, down); MeshChunk->colour(BlockColorz.x,BlockColorz.y,BlockColorz.z);
 
 						MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
 						MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
@@ -1759,10 +1788,10 @@ void CraftWorld::createTransparentChunks(const int StartX, const int StartY, con
 						left = percent * blockType->sidePlane;
 						right = left + percent;
 
-						MeshChunk->position(x,   y,   z+1);		MeshChunk->textureCoord(left, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-						MeshChunk->position(x+1, y,   z+1);		MeshChunk->textureCoord(right, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-						MeshChunk->position(x+1, y+1, z+1);		MeshChunk->textureCoord(right, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-						MeshChunk->position(x,   y+1, z+1);		MeshChunk->textureCoord(left, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
+						MeshChunk->position(x,   y,   z+1);		MeshChunk->textureCoord(left, down); MeshChunk->colour(BlockColorz.x,BlockColorz.y,BlockColorz.z);
+						MeshChunk->position(x+1, y,   z+1);		MeshChunk->textureCoord(right, down); MeshChunk->colour(BlockColorz.x,BlockColorz.y,BlockColorz.z);
+						MeshChunk->position(x+1, y+1, z+1);		MeshChunk->textureCoord(right, up); MeshChunk->colour(BlockColorz.x,BlockColorz.y,BlockColorz.z);
+						MeshChunk->position(x,   y+1, z+1);		MeshChunk->textureCoord(left, up); MeshChunk->colour(BlockColorz.x,BlockColorz.y,BlockColorz.z);
 
 						MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
 						MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
@@ -1784,7 +1813,7 @@ void CraftWorld::createTransparentChunks(const int StartX, const int StartY, con
 
 	//MeshChunk->end();
 	MeshChunk->id = mChunks.size();
-	mWaterChunks.push_back(MeshChunk);
+	mTransparentChunks.push_back(MeshChunk);
 }
 
 void CraftWorld::rebuildChunk(int id)
@@ -1961,7 +1990,7 @@ void CraftWorld::rebuildChunk(int id)
 					left = percent * blockType->downPlane;
 					right = left + percent;
 
-					light1 = light2 = light3 = light4 = BlockColory1;
+					light1 = light2 = light3 = light4 = BlockColory2;
 					lightFactor = BlockColory1 * lightShadowFactor;
 
 					//simple shadows
@@ -2004,7 +2033,7 @@ void CraftWorld::rebuildChunk(int id)
 
 				if (transparentBlock == true)
 				{
-					light1 = light2 = light3 = light4 = BlockColory2;
+					light1 = light2 = light3 = light4 = BlockColory1;
 					lightFactor = BlockColory2 * lightShadowFactor;
 
 					//simple shadows
@@ -2144,7 +2173,7 @@ void CraftWorld::rebuildChunk(int id)
 
 void CraftWorld::rebuildTransparentChunk(int id)
 {
-	SimpleMeshChunk* MeshChunk = mWaterChunks[id];
+	SimpleMeshChunk* MeshChunk = mTransparentChunks[id];
 
 	int iVertex = 0;
 	block_t Block;
@@ -2157,6 +2186,14 @@ void CraftWorld::rebuildTransparentChunk(int id)
 	int SY = 0;
 	int SZ = 0;
 	int MaxSize = WORLD_SIZE;
+
+	float BaseLight = 1.0f;
+
+	Vector3 BlockColory1;    //Top face
+	Vector3 BlockColory2;    //Bottom face
+	Vector3 BlockColorx1;    //Sunset face
+	Vector3 BlockColorx2;    //Sunrise face
+	Vector3 BlockColorz;     //Front/back faces
 
 	int StartZ = MeshChunk->chunkStartZ;
 	int StartY = MeshChunk->chunkStartY;
@@ -2181,6 +2218,26 @@ void CraftWorld::rebuildTransparentChunk(int id)
 				float left = percent * blockType->upPlane;
 				float right = left + percent;
 
+				//light
+				BaseLight  = GetBlockLight(x, y, z) / 255.0f;  //For the two x faces
+
+				BlockColory1 = lightColor * (factor1 * BaseLight) + ambientColor;
+				BlockColory1.saturate();
+				BlockColory2 = lightColor * (factor1 / 2.0f * BaseLight) + ambientColor;
+				BlockColory2.saturate();
+				BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
+				BlockColorz.saturate();
+				BlockColorz *= 0.80f;
+
+
+				BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
+				BlockColorx1.saturate();
+				BlockColorx1 *= 0.95f;
+
+				BlockColorx2 = lightColor * (factor3 * 0.80f * BaseLight) + ambientColor;
+				BlockColorx2.saturate();
+				BlockColorx2 *= 0.95f;
+
 				//x-1
 				transparentBlock = DefaultBlock;
 				Block1 = 1;
@@ -2195,10 +2252,10 @@ void CraftWorld::rebuildTransparentChunk(int id)
 					left = percent * blockType->sidePlane;
 					right = left + percent;
 
-					MeshChunk->position(x, y,   z+1);	MeshChunk->textureCoord(right, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-					MeshChunk->position(x, y+1, z+1);	MeshChunk->textureCoord(right, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-					MeshChunk->position(x, y+1, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-					MeshChunk->position(x, y,   z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
+					MeshChunk->position(x, y,   z+1);	MeshChunk->textureCoord(right, down); MeshChunk->colour(BlockColorx1.x,BlockColorx1.y,BlockColorx1.z);
+					MeshChunk->position(x, y+1, z+1);	MeshChunk->textureCoord(right, up); MeshChunk->colour(BlockColorx1.x,BlockColorx1.y,BlockColorx1.z);
+					MeshChunk->position(x, y+1, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(BlockColorx1.x,BlockColorx1.y,BlockColorx1.z);
+					MeshChunk->position(x, y,   z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(BlockColorx1.x,BlockColorx1.y,BlockColorx1.z);
 
 					MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
 					MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
@@ -2220,10 +2277,10 @@ void CraftWorld::rebuildTransparentChunk(int id)
 					left = percent * blockType->sidePlane;
 					right = left + percent;
 
-					MeshChunk->position(x+1, y,   z);	MeshChunk->textureCoord(right, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-					MeshChunk->position(x+1, y+1, z);	MeshChunk->textureCoord(right, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-					MeshChunk->position(x+1, y+1, z+1);	MeshChunk->textureCoord(left, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-					MeshChunk->position(x+1, y,   z+1);	MeshChunk->textureCoord(left, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
+					MeshChunk->position(x+1, y,   z);	MeshChunk->textureCoord(right, down); MeshChunk->colour(BlockColorx2.x,BlockColorx2.y,BlockColorx2.z);
+					MeshChunk->position(x+1, y+1, z);	MeshChunk->textureCoord(right, up); MeshChunk->colour(BlockColorx2.x,BlockColorx2.y,BlockColorx2.z);
+					MeshChunk->position(x+1, y+1, z+1);	MeshChunk->textureCoord(left, up); MeshChunk->colour(BlockColorx2.x,BlockColorx2.y,BlockColorx2.z);
+					MeshChunk->position(x+1, y,   z+1);	MeshChunk->textureCoord(left, down); MeshChunk->colour(BlockColorx2.x,BlockColorx2.y,BlockColorx2.z);
 
 					MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
 					MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
@@ -2246,10 +2303,10 @@ void CraftWorld::rebuildTransparentChunk(int id)
 					left = percent * blockType->downPlane;
 					right = left + percent;
 
-					MeshChunk->position(x,   y, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-					MeshChunk->position(x+1, y, z);		MeshChunk->textureCoord(right, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-					MeshChunk->position(x+1, y, z+1);	MeshChunk->textureCoord(right, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-					MeshChunk->position(x,   y, z+1);	MeshChunk->textureCoord(left, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
+					MeshChunk->position(x,   y, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(BlockColory2.x,BlockColory2.y,BlockColory2.z);
+					MeshChunk->position(x+1, y, z);		MeshChunk->textureCoord(right, up); MeshChunk->colour(BlockColory2.x,BlockColory2.y,BlockColory2.z);
+					MeshChunk->position(x+1, y, z+1);	MeshChunk->textureCoord(right, down); MeshChunk->colour(BlockColory2.x,BlockColory2.y,BlockColory2.z);
+					MeshChunk->position(x,   y, z+1);	MeshChunk->textureCoord(left, down); MeshChunk->colour(BlockColory2.x,BlockColory2.y,BlockColory2.z);
 
 					MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
 					MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
@@ -2273,10 +2330,10 @@ void CraftWorld::rebuildTransparentChunk(int id)
 					left = percent * blockType->upPlane;
 					right = left + percent;
 
-					MeshChunk->position(x,   y+1, z+1);		MeshChunk->textureCoord(left, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-					MeshChunk->position(x+1, y+1, z+1);		MeshChunk->textureCoord(right, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-					MeshChunk->position(x+1, y+1, z);		MeshChunk->textureCoord(right, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-					MeshChunk->position(x,   y+1, z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
+					MeshChunk->position(x,   y+1, z+1);		MeshChunk->textureCoord(left, up); MeshChunk->colour(BlockColory1.x,BlockColory1.y,BlockColory1.z);
+					MeshChunk->position(x+1, y+1, z+1);		MeshChunk->textureCoord(right, up); MeshChunk->colour(BlockColory1.x,BlockColory1.y,BlockColory1.z);
+					MeshChunk->position(x+1, y+1, z);		MeshChunk->textureCoord(right, down); MeshChunk->colour(BlockColory1.x,BlockColory1.y,BlockColory1.z);
+					MeshChunk->position(x,   y+1, z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(BlockColory1.x,BlockColory1.y,BlockColory1.z);
 
 					MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
 					MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
@@ -2298,10 +2355,10 @@ void CraftWorld::rebuildTransparentChunk(int id)
 					left = percent * blockType->sidePlane;
 					right = left + percent;
 
-					MeshChunk->position(x,   y+1, z);		MeshChunk->textureCoord(right, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-					MeshChunk->position(x+1, y+1, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-					MeshChunk->position(x+1, y,   z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-					MeshChunk->position(x,   y,   z);		MeshChunk->textureCoord(right, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
+					MeshChunk->position(x,   y+1, z);		MeshChunk->textureCoord(right, up); MeshChunk->colour(BlockColorz.x,BlockColorz.y,BlockColorz.z);
+					MeshChunk->position(x+1, y+1, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(BlockColorz.x,BlockColorz.y,BlockColorz.z);
+					MeshChunk->position(x+1, y,   z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(BlockColorz.x,BlockColorz.y,BlockColorz.z);
+					MeshChunk->position(x,   y,   z);		MeshChunk->textureCoord(right, down); MeshChunk->colour(BlockColorz.x,BlockColorz.y,BlockColorz.z);
 
 					MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
 					MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
@@ -2324,17 +2381,16 @@ void CraftWorld::rebuildTransparentChunk(int id)
 					left = percent * blockType->sidePlane;
 					right = left + percent;
 
-					MeshChunk->position(x,   y,   z+1);		MeshChunk->textureCoord(left, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-					MeshChunk->position(x+1, y,   z+1);		MeshChunk->textureCoord(right, down); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-					MeshChunk->position(x+1, y+1, z+1);		MeshChunk->textureCoord(right, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
-					MeshChunk->position(x,   y+1, z+1);		MeshChunk->textureCoord(left, up); MeshChunk->colour(1.0f , 1.0f , 1.0f );
+					MeshChunk->position(x,   y,   z+1);		MeshChunk->textureCoord(left, down); MeshChunk->colour(BlockColorz.x,BlockColorz.y,BlockColorz.z);
+					MeshChunk->position(x+1, y,   z+1);		MeshChunk->textureCoord(right, down); MeshChunk->colour(BlockColorz.x,BlockColorz.y,BlockColorz.z);
+					MeshChunk->position(x+1, y+1, z+1);		MeshChunk->textureCoord(right, up); MeshChunk->colour(BlockColorz.x,BlockColorz.y,BlockColorz.z);
+					MeshChunk->position(x,   y+1, z+1);		MeshChunk->textureCoord(left, up); MeshChunk->colour(BlockColorz.x,BlockColorz.y,BlockColorz.z);
 
 					MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
 					MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
 
 					iVertex += 4;
 				}
-
 			}
 		}
 	}
@@ -2452,7 +2508,19 @@ void CraftWorld::createWorldChunkss()
 			}
 		}
 	}
+}
 
+void CraftWorld::SetAllChunksToUpdate()
+{
+	for(unsigned int i = 0;i < mChunks.size();i++)
+	{
+		mChunks[i]->needUpdate = true;
+	}
+
+	for(unsigned int i = 0;i < mTransparentChunks.size();i++)
+	{
+		mTransparentChunks[i]->needUpdate = true;
+	}
 }
 
 void CraftWorld::drawCubes(int i)
@@ -2490,7 +2558,7 @@ void CraftWorld::drawWorld(Frustum &camFrustum,bool camUpdate)
 				if(camFrustum.BoxInFrustum(mChunks[i]->bBox) == Frustum::Intersects)
 				{
 					//check if wee need to build vertices of this chunk
-					if(!mChunks[i]->created && /*mChunks[i]->lastTriangleCount != 0 &&*/ chunksCreatedInFrameCount == 0)
+					if((!mChunks[i]->created || mChunks[i]->needUpdate) && chunksCreatedInFrameCount == 0)
 					{
 						rebuildChunk(i);
 						chunksCreatedInFrameCount++;
@@ -2514,19 +2582,19 @@ void CraftWorld::drawWorld(Frustum &camFrustum,bool camUpdate)
 		transOrderCont = 0;
 		int j = 0;
 
-		for(unsigned int i = 0;i < mWaterChunks.size();i++)
+		for(unsigned int i = 0;i < mTransparentChunks.size();i++)
 		{
-			if(mWaterChunks[i]->trienglesCount > 0 || !mWaterChunks[i]->created)
+			if(mTransparentChunks[i]->trienglesCount > 0 || !mTransparentChunks[i]->created)
 			{
-				if(playerZoneBB.intersect(mWaterChunks[i]->bBox))
+				if(playerZoneBB.intersect(mTransparentChunks[i]->bBox))
 				{
-					transOrder[j].distance =  Vector3::distanceSq(playerPos,mWaterChunks[i]->bBox.getCenter());
+					transOrder[j].distance =  Vector3::distanceSq(playerPos,mTransparentChunks[i]->bBox.getCenter());
 					transOrder[j].chunk = i;
 					j++;
 					transOrderCont++;
 				}else
 				{
-					mWaterChunks[i]->reset();
+					mTransparentChunks[i]->reset();
 				}
 			}
 		}
@@ -2543,7 +2611,7 @@ void CraftWorld::drawWorld(Frustum &camFrustum,bool camUpdate)
 			int chunk = transOrder[i].chunk;
 
 			//check if wee need to build vertices of this chunk
-			if(!mWaterChunks[chunk]->created && transparentchunksCreatedInFrameCount == 0)
+			if((!mTransparentChunks[chunk]->created || mTransparentChunks[chunk]->needUpdate) && transparentchunksCreatedInFrameCount == 0)
 			{
 				rebuildTransparentChunk(chunk);
 				transparentchunksCreatedInFrameCount++;
@@ -2562,7 +2630,7 @@ void CraftWorld::drawWorld(Frustum &camFrustum,bool camUpdate)
 		for(int i = transOrderCont - 1;i >=0;i--)
 		{
 			int chunk = transOrder[i].chunk;
-			mWaterChunks[chunk]->drawChunk();
+			mTransparentChunks[chunk]->drawChunk();
 			drawnTriangles += mChunks[chunk]->trienglesCount;
 		}
 
@@ -2603,6 +2671,20 @@ void CraftWorld::UpdateWorldTime(float dt)
 	if(worldTime > 1.0f)
 	{
 		worldTime = 0.0f;
+	}
+
+	//world day/night time
+	worldHour += dt;
+	if(worldHour > 50.0f)//one game hour = 50 sec
+	{
+		worldHour = 0.0f;
+		worldDayTime += 1.0f;
+
+		if(worldDayTime > 24.0f)
+			worldDayTime = 0.0f;
+
+		SetWolrdTime(worldDayTime);
+		SetAllChunksToUpdate();
 	}
 }
 

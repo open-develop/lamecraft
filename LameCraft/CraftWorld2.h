@@ -40,6 +40,7 @@ public:
 	void rebuildTransparentChunk(int id);
 	void rebuildNearestChunks(int id,Vector3 pos);
 	void createWorldChunkss();
+	void SetAllChunksToUpdate();
 
 	//load/save options
 	void SaveWorld(const char *filename);
@@ -82,6 +83,7 @@ public:
 	char worldName[50];
 	int createdChunksCount;
 	Vector3	fogColor;
+	float worldDayTime;
 
 private:
 
@@ -93,7 +95,7 @@ private:
 	float percent;
 
 	std::vector<SimpleMeshChunk*> mChunks;
-	std::vector<SimpleMeshChunk*> mWaterChunks;
+	std::vector<SimpleMeshChunk*> mTransparentChunks;
 
 	block_t* m_Blocks;
 	block_t* m_BlockLight;
@@ -111,7 +113,11 @@ private:
 	float updateChunkTimer;
 	bool updateChunksSwitch;
 
+	//world time
 	float worldTime;
+
+
+	float worldHour;//1 game hour = 50 real seconds = 24 game hours = 20 real minutes
 
 	//information
 	int drawnTriangles;

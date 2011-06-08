@@ -28,6 +28,7 @@ public:
 
 	int trienglesCount;
 	bool created;
+	bool needUpdate;
 
 	void position(float x,float y,float z);
 	void textureCoord(float u,float v);

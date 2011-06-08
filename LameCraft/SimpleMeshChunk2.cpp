@@ -5,6 +5,7 @@ SimpleMeshChunk::SimpleMeshChunk()
 {
 	trienglesCount = 0;
 	created = true;
+	needUpdate = false;
 }
 
 SimpleMeshChunk::~SimpleMeshChunk()
@@ -98,6 +99,7 @@ void SimpleMeshChunk::end()
 	}
 
 	created = true;
+	needUpdate = false;
 }
 
 void SimpleMeshChunk::drawChunk()

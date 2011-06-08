@@ -140,7 +140,7 @@ void StatePlay::InitParametric(int terrainType,bool makeFlat,bool makeTrees,bool
 	mWorld->initRandompMap(128,16,terrainType,makeFlat,makeTrees,makeWater,makeCaves);
 	mWorld->setTextureSize(128,16);
 	mWorld->initWorldBlocksLight();
-	mWorld->SetWolrdTime(12);
+	mWorld->SetWolrdTime(6);
 	mWorld->UpdatePlayerZoneBB(playerPosition);
 	mWorld->buildMap();
 	mWorld->buildblocksVerts();
@@ -1127,6 +1127,7 @@ void StatePlay::Draw(StateManager* sManager)
 		mRender->DebugPrint(20,50,"memory: %d",freeMemory);
 		mRender->DebugPrint(20,60,"poly: %d",(mWorld->GetDrawntTrianglesCount() / 3));
 		mRender->DebugPrint(20,70,"verts: %d",mWorld->GetDrawntTrianglesCount());
+		mRender->DebugPrint(20,80,"day time: %f",mWorld->worldDayTime);
 
 		mRender->SetFontStyle(0.5f,0xFFFFFFFF,0xFF000000,0x00000200);
 	}

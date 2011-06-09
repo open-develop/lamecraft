@@ -354,6 +354,7 @@ void StatePlay::CleanUp()
 	delete crossSprite;
 	delete cubeModel;
 	delete skyDome;
+	delete skyLight;
 	//delete fppCam;
 	delete mWorld;
 }

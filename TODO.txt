@@ -2,8 +2,9 @@
 + add another pass after carving thats add grass
 + day night colours changing
 + day/night automatic change - 20 minutes each cycle/ 1 hour = 50 seconds.
-
-- day/night system sky from jj
++ day/night system sky from jj
+	- change timing of sun
+	- add moon when sun is not visible
 
 - add flat ladders like in normal minecraft:
 	- add property to block actLikeLadder - if collided with it and with normal ladder block then act like ladder

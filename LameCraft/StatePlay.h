@@ -14,6 +14,7 @@
 #include <Aurora/Graphics/Models/ObjModel.h>
 #include <Aurora/Graphics/Camera.h>
 #include <Aurora/Graphics/Sprite.h>
+#include <Aurora/Graphics/Effects/SkyDome.h>
 
 #include "CraftWorld2.h"
 #include "InputHelper.h"
@@ -70,6 +71,8 @@ private:
 
 	CraftWorld *mWorld;
 	ObjModel *cubeModel;
+	SkyDome *skyDome;
+
 	Vector3 cubePos;
 	bool showCube;
 

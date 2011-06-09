@@ -140,7 +140,7 @@ void StatePlay::InitParametric(int terrainType,bool makeFlat,bool makeTrees,bool
 	mWorld->initRandompMap(128,16,terrainType,makeFlat,makeTrees,makeWater,makeCaves);
 	mWorld->setTextureSize(128,16);
 	mWorld->initWorldBlocksLight();
-	mWorld->SetWolrdTime(6);
+	mWorld->SetWolrdTime(9);
 	mWorld->UpdatePlayerZoneBB(playerPosition);
 	mWorld->buildMap();
 	mWorld->buildblocksVerts();
@@ -181,6 +181,15 @@ void StatePlay::InitParametric(int terrainType,bool makeFlat,bool makeTrees,bool
 	cubeModel = new ObjModel();
 	cubeModel->LoadObj("Assets/Lamecraft/textureCube.obj");
 	cubeModel->Optimize();
+
+	//sky dome
+	skyDome = new SkyDome();
+	skyDome->CreateSkyDomeMesh();
+
+	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/sky.png");
+	skyDome->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sky.png"));
+	skyDome->timeOfDay = 0.1f;
+
 
 	menuOptions = false;
 	optionsMenuPos = 0;
@@ -284,7 +293,7 @@ void StatePlay::LoadMap(std::string fileName,bool compressed)
 
 void StatePlay::Enter()
 {
-	RenderManager::InstancePtr()->SetPerspective(55.0f, 480.0f / 272.0f, 0.18f, 128.f);
+	RenderManager::InstancePtr()->SetPerspective(55.0f, 480.0f / 272.0f, 0.18f, 1000.f);
 }
 
 void StatePlay::CleanUp()
@@ -298,6 +307,7 @@ void StatePlay::CleanUp()
 	delete selectSprite;
 	delete crossSprite;
 	delete cubeModel;
+	delete skyDome;
 	//delete fppCam;
 	delete mWorld;
 }
@@ -888,6 +898,12 @@ void StatePlay::Draw(StateManager* sManager)
 	bool needUpdate = fppCam->needUpdate;
 	mRender->StartFrame();
 
+	//draw skydome
+	skyDome->timeOfDay += 0.0001f;
+	if(skyDome->timeOfDay > 1.0f)
+		skyDome->timeOfDay = 0.0f;
+	skyDome->Render();
+
 	TextureManager::Instance()->SetTextureModeulate(texture);
 
 	//draw level
@@ -901,7 +917,9 @@ void StatePlay::Draw(StateManager* sManager)
 	mWorld->drawWorld(fppCam->mFrustum,needUpdate);
 	sceGumPopMatrix();
 
-	sceGuDisable(GU_FOG );	// Enable fog
+	sceGuDisable(GU_FOG );	// disable fog
+
+
 
 
 	if(makeScreen)

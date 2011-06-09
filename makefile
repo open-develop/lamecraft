@@ -17,6 +17,9 @@ source/Aurora/Graphics/TextureManager.o \
 source/Aurora/Graphics/Camera.o \
 source/Aurora/Graphics/Sprite.o \
 source/Aurora/Graphics/Models/ObjModel.o \
+source/Aurora/Graphics/Effects/SkyLight.o \
+source/Aurora/Graphics/Effects/SkyDome.o \
+source/Aurora/Graphics/Models/ObjModel.o \
 source/Aurora/Graphics/intraFont/libccc.o \
 source/Aurora/Graphics/intraFont/intraFont.o \
 source/Aurora/Utils/Logger.o \

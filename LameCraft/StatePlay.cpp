@@ -29,6 +29,8 @@ StatePlay::StatePlay()
 	ram1 = 0;
 	ram2 = 0;
 	dt = 0.0f;
+	sunTime = 32400;
+	sunTimeTick = 0.0f;
 
 	cameraSpeed = 2.0f / 60.0f;
 	cameraMoveSpeed = 4.0f/ 60.0f;
@@ -72,7 +74,7 @@ void StatePlay::Init()
 	mWorld->initRandompMap(128,16);
 	mWorld->setTextureSize(128,16);
 	mWorld->initWorldBlocksLight();
-	mWorld->SetWolrdTime(12);
+	mWorld->SetWolrdTime(9);
 	mWorld->UpdatePlayerZoneBB(playerPosition);
 	mWorld->buildMap();
 	mWorld->buildblocksVerts();
@@ -113,6 +115,24 @@ void StatePlay::Init()
 	cubeModel = new ObjModel();
 	cubeModel->LoadObj("Assets/Lamecraft/textureCube.obj");
 	cubeModel->Optimize();
+
+	//sky dome
+	skyDome = new SkyDome();
+	skyDome->CreateSkyDomeMesh();
+
+	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/sky.png");
+	skyDome->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sky.png"));
+	skyDome->timeOfDay = 0.1f;
+
+	//sky light
+	//8 am = 28800 seconds
+	// 10 am = 36000 seconds
+	// 12 pm = 43200 seconds
+	//1 second = 72
+	//1 hour = 3600
+	skyLight = new SkyLight();
+	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/sun.png");
+	skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sun.png"));
 
 	menuOptions = false;
 	optionsMenuPos = 0;
@@ -189,6 +209,15 @@ void StatePlay::InitParametric(int terrainType,bool makeFlat,bool makeTrees,bool
 	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/sky.png");
 	skyDome->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sky.png"));
 	skyDome->timeOfDay = 0.1f;
+
+	//sky light
+	//8 am = 28800 seconds
+	// 10 am = 36000 seconds
+	// 12 pm = 43200 seconds
+	skyLight = new SkyLight();
+	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/sun.png");
+	skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sun.png"));
+
 
 
 	menuOptions = false;
@@ -281,6 +310,23 @@ void StatePlay::LoadMap(std::string fileName,bool compressed)
 	cubeModel = new ObjModel();
 	cubeModel->LoadObj("Assets/Lamecraft/textureCube.obj");
 	cubeModel->Optimize();
+
+	//sky dome
+	skyDome = new SkyDome();
+	skyDome->CreateSkyDomeMesh();
+
+	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/sky.png");
+	skyDome->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sky.png"));
+	skyDome->timeOfDay = 0.1f;
+
+	//sky light
+	//8 am = 28800 seconds
+	// 10 am = 36000 seconds
+	// 12 pm = 43200 seconds
+	skyLight = new SkyLight();
+	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/sun.png");
+	skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sun.png"));
+
 
 	menuOptions = false;
 	optionsMenuPos = 0;
@@ -767,8 +813,7 @@ void StatePlay::Update(StateManager* sManager)
 
 		int soundBlockType = -1;
 
-		//updatej kolizji playera bleblebleble
-		//ale nie chcemy te¿ aby player móg³ wyjechaæ za mape
+		//update player position
 		if(dt < 0.1f)
 		{
 			Vector3 delta = fppCam->m_vView - fppCam->m_vPosition;
@@ -890,6 +935,21 @@ void StatePlay::Update(StateManager* sManager)
 	}
 
 	mWorld->UpdateWorldTime(dt);
+
+	//update skydome - every hour
+	skyDome->timeOfDay = mWorld->worldDayTime * 0.041666f;
+
+	//update sky and sun light time
+	sunTimeTick += dt;
+	if(sunTimeTick > 1.0f)
+	{
+		sunTime += 72.0f;
+		sunTimeTick = 0.0f;
+	}
+
+	if(sunTime >= 86400)
+		sunTime = 0;
+
 }
 
 void StatePlay::Draw(StateManager* sManager)
@@ -899,17 +959,18 @@ void StatePlay::Draw(StateManager* sManager)
 	mRender->StartFrame();
 
 	//draw skydome
-	skyDome->timeOfDay += 0.0001f;
-	if(skyDome->timeOfDay > 1.0f)
-		skyDome->timeOfDay = 0.0f;
 	skyDome->Render();
+
+	//draw sun/moon
+	skyLight->UpdateLightSource(skyLight->TimeToAngle(sunTime));
+	skyLight->Render();
 
 	TextureManager::Instance()->SetTextureModeulate(texture);
 
 	//draw level
 
 	sceGuFog( 0.0f, 100.75f,GU_COLOR(mWorld->fogColor.x,mWorld->fogColor.y,mWorld->fogColor.z,1.0f));	// Fog parameters
-	sceGuAmbientColor(0xff282828);
+	//sceGuAmbientColor(0xff282828);
 	//sceGuFog( 0.0f, 128.75f, 0x00CCCCff );	// Fog parameters
 	sceGuEnable(GU_FOG );	// Enable fog
 
@@ -1146,6 +1207,7 @@ void StatePlay::Draw(StateManager* sManager)
 		mRender->DebugPrint(20,60,"poly: %d",(mWorld->GetDrawntTrianglesCount() / 3));
 		mRender->DebugPrint(20,70,"verts: %d",mWorld->GetDrawntTrianglesCount());
 		mRender->DebugPrint(20,80,"day time: %f",mWorld->worldDayTime);
+		mRender->DebugPrint(20,90,"sky time: %f",skyDome->timeOfDay);
 
 		mRender->SetFontStyle(0.5f,0xFFFFFFFF,0xFF000000,0x00000200);
 	}

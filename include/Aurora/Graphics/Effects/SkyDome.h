@@ -28,10 +28,8 @@ namespace Aurora
 
 		private:
 
-			CraftPSPVertex *domeVertices;
-
+			TexturesPSPVertex *domeVertices;
 			int textureNumber;
-
 		};
 	}
 }

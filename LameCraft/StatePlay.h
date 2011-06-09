@@ -15,6 +15,7 @@
 #include <Aurora/Graphics/Camera.h>
 #include <Aurora/Graphics/Sprite.h>
 #include <Aurora/Graphics/Effects/SkyDome.h>
+#include <Aurora/Graphics/Effects/SkyLight.h>
 
 #include "CraftWorld2.h"
 #include "InputHelper.h"
@@ -72,6 +73,9 @@ private:
 	CraftWorld *mWorld;
 	ObjModel *cubeModel;
 	SkyDome *skyDome;
+	SkyLight *skyLight;
+	int sunTime;
+	float sunTimeTick;
 
 	Vector3 cubePos;
 	bool showCube;

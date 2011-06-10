@@ -74,7 +74,7 @@ private:
 	ObjModel *cubeModel;
 	SkyDome *skyDome;
 	SkyLight *skyLight;
-	int sunTime;
+	float sunTime;
 	float sunTimeTick;
 
 	Vector3 cubePos;

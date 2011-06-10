@@ -29,7 +29,7 @@ StatePlay::StatePlay()
 	ram1 = 0;
 	ram2 = 0;
 	dt = 0.0f;
-	sunTime = 32400;
+	sunTime = 21600.0f;//6 am
 	sunTimeTick = 0.0f;
 
 	cameraSpeed = 2.0f / 60.0f;
@@ -160,7 +160,7 @@ void StatePlay::InitParametric(int terrainType,bool makeFlat,bool makeTrees,bool
 	mWorld->initRandompMap(128,16,terrainType,makeFlat,makeTrees,makeWater,makeCaves);
 	mWorld->setTextureSize(128,16);
 	mWorld->initWorldBlocksLight();
-	mWorld->SetWolrdTime(9);
+	mWorld->SetWolrdTime(5);
 	mWorld->UpdatePlayerZoneBB(playerPosition);
 	mWorld->buildMap();
 	mWorld->buildblocksVerts();
@@ -940,16 +940,18 @@ void StatePlay::Update(StateManager* sManager)
 	//update skydome - every hour
 	skyDome->timeOfDay = mWorld->worldDayTime * 0.041666f;
 
+	//23 000 morning
+	//65 000 evening
+	//43 000 whole day
+	//16 normal hours
+	//2687,5 - hour / 50 seconds(hour in game) 
+	//53,75
+	
 	//update sky and sun light time
-	sunTimeTick += dt;
-	if(sunTimeTick > 1.0f)
-	{
-		sunTime += 72.0f;
-		sunTimeTick = 0.0f;
-	}
+	sunTime += 53.75f * dt;//72
 
-	if(sunTime >= 86400)
-		sunTime = 0;
+	if(sunTime >= 86400.0f)
+		sunTime = 0.0f;
 
 }
 
@@ -959,12 +961,21 @@ void StatePlay::Draw(StateManager* sManager)
 	bool needUpdate = fppCam->needUpdate;
 	mRender->StartFrame();
 
-	//draw skydome
-	skyDome->Render();
+	//draw sky and sun/moon
+	{
+		sceGumPushMatrix();
+		ScePspFVector3 move = {-64,-64,-64};
+		sceGumTranslate(&move);
+		
+		//draw skydome
+		skyDome->Render();
 
-	//draw sun/moon
-	skyLight->UpdateLightSource(skyLight->TimeToAngle(sunTime));
-	skyLight->Render();
+		//draw sun/moon
+		skyLight->UpdateLightSource(skyLight->TimeToAngle(sunTime));
+		skyLight->Render();
+		
+		sceGumPopMatrix();
+	}
 
 	TextureManager::Instance()->SetTextureModeulate(texture);
 
@@ -1209,6 +1220,7 @@ void StatePlay::Draw(StateManager* sManager)
 		mRender->DebugPrint(20,70,"verts: %d",mWorld->GetDrawntTrianglesCount());
 		mRender->DebugPrint(20,80,"day time: %f",mWorld->worldDayTime);
 		mRender->DebugPrint(20,90,"sky time: %f",skyDome->timeOfDay);
+		mRender->DebugPrint(20,100,"sun time: %f",sunTime);
 
 		mRender->SetFontStyle(0.5f,0xFFFFFFFF,0xFF000000,0x00000200);
 	}

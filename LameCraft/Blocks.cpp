@@ -3,8 +3,6 @@
 
 GrassBlock::GrassBlock()
 {
-	ID = 1;
-
 	textureRow = 0;
 
 	upPlane = 0;
@@ -15,11 +13,10 @@ GrassBlock::GrassBlock()
 	soundType = 0;
 }
 
+block_t GrassBlock::getID(){ return 1;}
 
 DirtBlock::DirtBlock()
 {
-	ID = 2;
-
 	textureRow = 0;
 
 	upPlane = 2;
@@ -30,11 +27,11 @@ DirtBlock::DirtBlock()
 	soundType = 1;
 }
 
+block_t DirtBlock::getID(){ return 2;}
+
 
 RockBlock::RockBlock()
 {
-	ID = 3;
-
 	textureRow = 1;
 
 	upPlane = 0;
@@ -45,12 +42,11 @@ RockBlock::RockBlock()
 	soundType = 2;
 }
 
+block_t RockBlock::getID(){ return 3;}
 
 
 WaterBlock::WaterBlock()
 {
-	ID = 4;
-
 	textureRow = 3;
 
 	upPlane = 2;
@@ -61,12 +57,10 @@ WaterBlock::WaterBlock()
 	soundType = -1;
 }
 
-
+block_t WaterBlock::getID(){ return 4;}
 
 GoldBlock::GoldBlock()
 {
-	ID = 5;
-
 	textureRow = 6;
 
 	upPlane = 2;
@@ -77,12 +71,10 @@ GoldBlock::GoldBlock()
 	soundType = 2;
 }
 
-
+block_t GoldBlock::getID(){ return 5;}
 
 LadderBlock::LadderBlock()
 {
-	ID = 6;
-
 	textureRow = 3;
 
 	upPlane = 0;
@@ -91,15 +83,12 @@ LadderBlock::LadderBlock()
 	editable = true;
 	transparent = true;
 	soundType = 3;
-	//w sumie mo¿na go zrobiæ przezroczystym...
 }
-
+block_t LadderBlock::getID(){ return 6;}
 
 
 SandBlock::SandBlock()
 {
-	ID = 7;
-
 	textureRow = 1;
 
 	upPlane = 2;
@@ -109,13 +98,11 @@ SandBlock::SandBlock()
 	transparent = false;
 	soundType = 1;
 }
-
+block_t SandBlock::getID(){ return 7;}
 
 
 WoodBlock::WoodBlock()
 {
-	ID = 8;
-
 	textureRow = 2;
 
 	upPlane = 1;
@@ -125,12 +112,10 @@ WoodBlock::WoodBlock()
 	transparent = false;
 	soundType = 3;
 }
-
+block_t WoodBlock::getID(){ return 8;}
 
 LeavesBlock::LeavesBlock()
 {
-	ID = 9;
-
 	textureRow = 2;
 
 	upPlane = 3;
@@ -140,13 +125,11 @@ LeavesBlock::LeavesBlock()
 	transparent = true;
 	soundType = 0;
 }
-
+block_t LeavesBlock::getID(){ return 9;}
 
 
 TNTBlock::TNTBlock()
 {
-	ID = 10;
-
 	textureRow = 4;
 
 	upPlane = 3;
@@ -156,13 +139,11 @@ TNTBlock::TNTBlock()
 	transparent = false;
 	soundType = 3;
 }
-
+block_t TNTBlock::getID(){ return 10;}
 
 
 BlackWoolBlock::BlackWoolBlock()
 {
-	ID = 11;
-
 	textureRow = 3;
 
 	upPlane = 6;
@@ -172,13 +153,11 @@ BlackWoolBlock::BlackWoolBlock()
 	transparent = false;
 	soundType = 3;
 }
-
+block_t BlackWoolBlock::getID(){ return 11;}
 
 
 RedWoolBlock::RedWoolBlock()
 {
-	ID = 12;
-
 	textureRow = 1;
 
 	upPlane = 4;
@@ -188,13 +167,11 @@ RedWoolBlock::RedWoolBlock()
 	transparent = false;
 	soundType = 3;
 }
-
+block_t RedWoolBlock::getID(){ return 12;}
 
 
 DarkGreyWoolBlock::DarkGreyWoolBlock()
 {
-	ID = 13;
-
 	textureRow = 4;
 
 	upPlane = 5;
@@ -204,14 +181,12 @@ DarkGreyWoolBlock::DarkGreyWoolBlock()
 	transparent = false;
 	soundType = 3;
 }
-
+block_t DarkGreyWoolBlock::getID(){ return 13;}
 
 
 
 BrownWoolBlock::BrownWoolBlock()
 {
-	ID = 14;
-
 	textureRow = 3;
 
 	upPlane = 4;
@@ -221,13 +196,11 @@ BrownWoolBlock::BrownWoolBlock()
 	transparent = false;
 	soundType = 3;
 }
-
+block_t BrownWoolBlock::getID(){ return 14;}
 
 
 LightBlackWoolBlock::LightBlackWoolBlock()
 {
-	ID = 15;
-
 	textureRow = 3;
 
 	upPlane = 7;
@@ -237,14 +210,12 @@ LightBlackWoolBlock::LightBlackWoolBlock()
 	transparent = false;
 	soundType = 3;
 }
-
+block_t LightBlackWoolBlock::getID(){ return 15;}
 
 
 
 PinkWoolBlock::PinkWoolBlock()
 {
-	ID = 16;
-
 	textureRow = 1;
 
 	upPlane = 5;
@@ -254,13 +225,11 @@ PinkWoolBlock::PinkWoolBlock()
 	transparent = false;
 	soundType = 3;
 }
-
+block_t PinkWoolBlock::getID(){ return 16;}
 
 
 LightGreenWoolBlock::LightGreenWoolBlock()
 {
-	ID = 17;
-
 	textureRow = 4;
 
 	upPlane = 6;
@@ -270,12 +239,10 @@ LightGreenWoolBlock::LightGreenWoolBlock()
 	transparent = false;
 	soundType = 3;
 }
-
+block_t LightGreenWoolBlock::getID(){ return 17;}
 
 YellowWoolBlock::YellowWoolBlock()
 {
-	ID = 18;
-
 	textureRow = 3;
 
 	upPlane = 5;
@@ -285,12 +252,10 @@ YellowWoolBlock::YellowWoolBlock()
 	transparent = false;
 	soundType = 3;
 }
-
+block_t YellowWoolBlock::getID(){ return 18;}
 
 BlueWoolBlock::BlueWoolBlock()
 {
-	ID = 19;
-
 	textureRow = 0;
 
 	upPlane = 6;
@@ -300,12 +265,10 @@ BlueWoolBlock::BlueWoolBlock()
 	transparent = false;
 	soundType = 3;
 }
-
+block_t BlueWoolBlock::getID(){ return 19;}
 
 LightBlueWoolBlock::LightBlueWoolBlock()
 {
-	ID = 20;
-
 	textureRow = 0;
 
 	upPlane = 7;
@@ -315,12 +278,10 @@ LightBlueWoolBlock::LightBlueWoolBlock()
 	transparent = false;
 	soundType = 3;
 }
-
+block_t LightBlueWoolBlock::getID(){ return 20;}
 
 FioletWoolBlock::FioletWoolBlock()
 {
-	ID = 21;
-
 	textureRow = 1;
 
 	upPlane = 6;
@@ -330,12 +291,10 @@ FioletWoolBlock::FioletWoolBlock()
 	transparent = false;
 	soundType = 3;
 }
-
+block_t FioletWoolBlock::getID(){ return 21;}
 
 PastelWoolBlock::PastelWoolBlock()
 {
-	ID = 22;
-
 	textureRow = 2;
 
 	upPlane = 6;
@@ -345,12 +304,10 @@ PastelWoolBlock::PastelWoolBlock()
 	transparent = false;
 	soundType = 3;
 }
-
+block_t PastelWoolBlock::getID(){ return 22;}
 
 LightFioletWoolBlock::LightFioletWoolBlock()
 {
-	ID = 23;
-
 	textureRow = 1;
 
 	upPlane = 7;
@@ -360,12 +317,10 @@ LightFioletWoolBlock::LightFioletWoolBlock()
 	transparent = false;
 	soundType = 3;
 }
-
+block_t LightFioletWoolBlock::getID(){ return 23;}
 
 OrangeWoolBlock::OrangeWoolBlock()
 {
-	ID = 24;
-
 	textureRow = 2;
 
 	upPlane = 7;
@@ -375,12 +330,10 @@ OrangeWoolBlock::OrangeWoolBlock()
 	transparent = false;
 	soundType = 3;
 }
-
+block_t OrangeWoolBlock::getID(){ return 24;}
 
 CactusBlock::CactusBlock()
 {
-	ID = 25;
-
 	textureRow = 5;
 
 	upPlane = 0;
@@ -390,11 +343,10 @@ CactusBlock::CactusBlock()
 	transparent = true;
 	soundType = 3;
 }
+block_t CactusBlock::getID(){ return 25;}
 
 AllSnowBlock::AllSnowBlock()
 {
-	ID = 26;
-
 	textureRow = 0;
 
 	upPlane = 4;
@@ -404,12 +356,10 @@ AllSnowBlock::AllSnowBlock()
 	transparent = false;
 	soundType = 0;
 }
-
+block_t AllSnowBlock::getID(){ return 26;}
 
 BrickBlock::BrickBlock()
 {
-	ID = 27;
-
 	textureRow = 4;
 
 	upPlane = 7;
@@ -419,12 +369,10 @@ BrickBlock::BrickBlock()
 	transparent = false;
 	soundType = 2;
 }
-
+block_t BrickBlock::getID(){ return 27;}
 
 CageBlock::CageBlock()
 {
-	ID = 28;
-
 	textureRow = 6;
 
 	upPlane = 1;
@@ -434,13 +382,11 @@ CageBlock::CageBlock()
 	transparent = true;
 	soundType = 2;
 }
-
+block_t CageBlock::getID(){ return 28;}
 
 
 SnowBlock::SnowBlock()
 {
-	ID = 29;
-
 	textureRow = 0;
 
 	upPlane = 4;
@@ -450,14 +396,12 @@ SnowBlock::SnowBlock()
 	transparent = false;
 	soundType = 0;
 }
-
+block_t SnowBlock::getID(){ return 29;}
 
 
 
 DarkWoodBlock::DarkWoodBlock()
 {
-	ID = 30;
-
 	textureRow = 2;
 
 	upPlane = 1;
@@ -467,12 +411,10 @@ DarkWoodBlock::DarkWoodBlock()
 	transparent = false;
 	soundType = 3;
 }
-
+block_t DarkWoodBlock::getID(){ return 30;}
 
 WhiteWoodBlock::WhiteWoodBlock()
 {
-	ID = 31;
-
 	textureRow = 2;
 
 	upPlane = 1;
@@ -482,12 +424,10 @@ WhiteWoodBlock::WhiteWoodBlock()
 	transparent = false;
 	soundType = 3;
 }
-
+block_t WhiteWoodBlock::getID(){ return 31;}
 
 IceBlock::IceBlock()
 {
-	ID = 32;
-
 	textureRow = 6;
 
 	upPlane = 0;
@@ -497,11 +437,10 @@ IceBlock::IceBlock()
 	transparent = false;
 	soundType = 2;
 }
+block_t IceBlock::getID(){ return 32;}
 
 CaneBlock::CaneBlock()
 {
-	ID = 33;
-
 	textureRow = 5;
 
 	upPlane = 4;
@@ -511,11 +450,10 @@ CaneBlock::CaneBlock()
 	transparent = true;
 	soundType = 2;
 }
+block_t CaneBlock::getID(){ return 33;}
 
 BoxBlock::BoxBlock()
 {
-	ID = 34;
-
 	textureRow = 4;
 
 	upPlane = 0;
@@ -525,12 +463,10 @@ BoxBlock::BoxBlock()
 	transparent = false;
 	soundType = 3;
 }
-
+block_t BoxBlock::getID(){ return 34;}
 
 ShelfBlock::ShelfBlock()
 {
-	ID = 35;
-
 	textureRow = 4;
 
 	upPlane = 0;
@@ -540,11 +476,10 @@ ShelfBlock::ShelfBlock()
 	transparent = false;
 	soundType = 3;
 }
+block_t ShelfBlock::getID(){ return 35;}
 
 WallBlock::WallBlock()
 {
-	ID = 36;
-
 	textureRow = 4;
 
 	upPlane = 2;
@@ -554,12 +489,10 @@ WallBlock::WallBlock()
 	transparent = false;
 	soundType = 2;
 }
-
+block_t WallBlock::getID(){ return 36;}
 
 DrySandBlock::DrySandBlock()
 {
-	ID = 37;
-
 	textureRow = 4;
 
 	upPlane = 4;
@@ -569,12 +502,10 @@ DrySandBlock::DrySandBlock()
 	transparent = false;
 	soundType = 1;
 }
-
+block_t DrySandBlock::getID(){ return 37;}
 
 SnowLewesBlock::SnowLewesBlock()
 {
-	ID = 38;
-
 	textureRow = 2;
 
 	upPlane = 0;
@@ -584,12 +515,10 @@ SnowLewesBlock::SnowLewesBlock()
 	transparent = true;
 	soundType = 0;
 }
-
+block_t SnowLewesBlock::getID(){ return 38;}
 
 MudBlock::MudBlock()
 {
-	ID = 39;
-
 	textureRow = 5;
 
 	upPlane = 5;
@@ -599,12 +528,10 @@ MudBlock::MudBlock()
 	transparent = false;
 	soundType = 1;
 }
-
+block_t MudBlock::getID(){ return 39;}
 
 GlassBlock::GlassBlock()
 {
-	ID = 40;
-
 	textureRow = 3;
 
 	upPlane = 1;
@@ -614,12 +541,10 @@ GlassBlock::GlassBlock()
 	transparent = true;
 	soundType = 2;
 }
-
+block_t GlassBlock::getID(){ return 40;}
 
 BrownCoailBlock::BrownCoailBlock()
 {
-	ID = 41;
-
 	textureRow = 6;
 
 	upPlane = 3;
@@ -629,11 +554,10 @@ BrownCoailBlock::BrownCoailBlock()
 	transparent = false;
 	soundType = 2;
 }
+block_t BrownCoailBlock::getID(){ return 41;}
 
 BlackCoailBlock::BlackCoailBlock()
 {
-	ID = 42;
-
 	textureRow = 6;
 
 	upPlane = 4;
@@ -643,11 +567,10 @@ BlackCoailBlock::BlackCoailBlock()
 	transparent = false;
 	soundType = 2;
 }
+block_t BlackCoailBlock::getID(){ return 42;}
 
 BlueCoailBlock::BlueCoailBlock()
 {
-	ID = 43;
-
 	textureRow = 6;
 
 	upPlane = 5;
@@ -657,12 +580,10 @@ BlueCoailBlock::BlueCoailBlock()
 	transparent = false;
 	soundType = 2;
 }
-
+block_t BlueCoailBlock::getID(){ return 43;}
 
 RedCoailBlock::RedCoailBlock()
 {
-	ID = 44;
-
 	textureRow = 6;
 
 	upPlane = 6;
@@ -672,12 +593,10 @@ RedCoailBlock::RedCoailBlock()
 	transparent = false;
 	soundType = 2;
 }
-
+block_t RedCoailBlock::getID(){ return 44;}
 
 SlamRockBlock::SlamRockBlock()
 {
-	ID = 45;
-
 	textureRow = 6;
 
 	upPlane = 7;
@@ -687,12 +606,10 @@ SlamRockBlock::SlamRockBlock()
 	transparent = false;
 	soundType = 2;
 }
-
+block_t SlamRockBlock::getID(){ return 45;}
 
 WaterRockBlock::WaterRockBlock()
 {
-	ID = 46;
-
 	textureRow = 5;
 
 	upPlane = 6;
@@ -702,11 +619,10 @@ WaterRockBlock::WaterRockBlock()
 	transparent = false;
 	soundType = 2;
 }
+block_t WaterRockBlock::getID(){ return 46;}
 
 JackOLatern::JackOLatern()
 {
-	ID = 47;
-
 	textureRow = 7;
 
 	upPlane = 0;
@@ -717,14 +633,12 @@ JackOLatern::JackOLatern()
 	soundType = 2;
 	lightSource = true;
 }
-
+block_t JackOLatern::getID(){ return 47;}
 
 //must be always last
 
 IronBlock::IronBlock()
 {
-	ID = 48;
-
 	textureRow = 1;
 
 	upPlane = 1;
@@ -734,4 +648,4 @@ IronBlock::IronBlock()
 	transparent = false;
 	soundType = 2;
 }
-
+block_t BaseBlock::getID(){ return 48;}

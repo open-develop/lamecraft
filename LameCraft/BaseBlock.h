@@ -10,9 +10,6 @@ typedef unsigned char block_t;
 class BaseBlock
 {
 public:
-
-	block_t ID;
-
 	//texture info
 	int textureRow;
 	float upPlane;
@@ -32,6 +29,8 @@ public:
 
 	BaseBlock();
 	virtual ~BaseBlock();
+
+	static block_t getBaseID();
 
 };
 

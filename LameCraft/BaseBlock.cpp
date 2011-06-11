@@ -3,8 +3,6 @@
 
 BaseBlock::BaseBlock()
 {
-	ID = 0;
-
 	textureRow = 0;
 	upPlane = 0;
 	downPlane = 0;
@@ -26,3 +24,5 @@ BaseBlock::~BaseBlock()
 		free(vertices);
 	}
 }
+
+block_t BaseBlock::getBaseID(){	return 0;}

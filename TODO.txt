@@ -3,8 +3,13 @@
 + day night colours changing
 + day/night automatic change - 20 minutes each cycle/ 1 hour = 50 seconds.
 + day/night system sky from jj
-	- change timing of sun
-	- add moon when sun is not visible
+	?+ change timing of sun
+	?+ add moon when sun is not visible
+	?experiment more with values for sun and moon
+	
+- add lamp/torch
+	- it's special element placed normally in chunks or transparent chunks
+	- 
 
 - add flat ladders like in normal minecraft:
 	- add property to block actLikeLadder - if collided with it and with normal ladder block then act like ladder

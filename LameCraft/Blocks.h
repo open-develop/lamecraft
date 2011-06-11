@@ -331,6 +331,13 @@ public:
 	WaterRockBlock();
 };
 
+class JackOLatern : public BaseBlock
+{
+public:
+
+	JackOLatern();
+};
+
 //must be always last
 class IronBlock : public BaseBlock
 {

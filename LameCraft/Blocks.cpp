@@ -703,12 +703,27 @@ WaterRockBlock::WaterRockBlock()
 	soundType = 2;
 }
 
+JackOLatern::JackOLatern()
+{
+	ID = 47;
+
+	textureRow = 7;
+
+	upPlane = 0;
+	downPlane = 1;
+	sidePlane = 2;
+	editable = true;
+	transparent = false;
+	soundType = 2;
+	lightSource = true;
+}
+
 
 //must be always last
 
 IronBlock::IronBlock()
 {
-	ID = 47;
+	ID = 48;
 
 	textureRow = 1;
 

@@ -76,6 +76,7 @@ private:
 	SkyLight *skyLight;
 	float sunTime;
 	float sunTimeTick;
+	bool sunMoonSwitch;
 
 	Vector3 cubePos;
 	bool showCube;

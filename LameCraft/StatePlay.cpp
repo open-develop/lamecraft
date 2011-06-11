@@ -31,6 +31,7 @@ StatePlay::StatePlay()
 	dt = 0.0f;
 	sunTime = 21600.0f;//6 am
 	sunTimeTick = 0.0f;
+	sunMoonSwitch = true;
 
 	cameraSpeed = 2.0f / 60.0f;
 	cameraMoveSpeed = 4.0f/ 60.0f;
@@ -74,7 +75,7 @@ void StatePlay::Init()
 	mWorld->initRandompMap(128,16);
 	mWorld->setTextureSize(128,16);
 	mWorld->initWorldBlocksLight();
-	mWorld->SetWolrdTime(9);
+	mWorld->SetWolrdTime(5);
 	mWorld->UpdatePlayerZoneBB(playerPosition);
 	mWorld->buildMap();
 	mWorld->buildblocksVerts();
@@ -130,8 +131,10 @@ void StatePlay::Init()
 	// 12 pm = 43200 seconds
 	//1 second = 72
 	//1 hour = 3600
-	skyLight = new SkyLight();
 	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/sun.png");
+	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/moon.png");
+
+	skyLight = new SkyLight();
 	skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sun.png"));
 
 	menuOptions = false;
@@ -214,8 +217,10 @@ void StatePlay::InitParametric(int terrainType,bool makeFlat,bool makeTrees,bool
 	//8 am = 28800 seconds
 	// 10 am = 36000 seconds
 	// 12 pm = 43200 seconds
-	skyLight = new SkyLight();
 	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/sun.png");
+	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/moon.png");
+
+	skyLight = new SkyLight();
 	skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sun.png"));
 
 
@@ -265,7 +270,7 @@ void StatePlay::LoadMap(std::string fileName,bool compressed)
 	else
 		mWorld->LoadWorld(saveFileName.c_str());
 
-	mWorld->SetWolrdTime(12);
+	mWorld->SetWolrdTime(5);
 
 	mWorld->setTextureSize(128,16);
 
@@ -323,8 +328,10 @@ void StatePlay::LoadMap(std::string fileName,bool compressed)
 	//8 am = 28800 seconds
 	// 10 am = 36000 seconds
 	// 12 pm = 43200 seconds
-	skyLight = new SkyLight();
 	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/sun.png");
+	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/moon.png");
+
+	skyLight = new SkyLight();
 	skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sun.png"));
 
 
@@ -940,19 +947,36 @@ void StatePlay::Update(StateManager* sManager)
 	//update skydome - every hour
 	skyDome->timeOfDay = mWorld->worldDayTime * 0.041666f;
 
-	//23 000 morning
-	//65 000 evening
-	//43 000 whole day
-	//16 normal hours
-	//2687,5 - hour / 50 seconds(hour in game) 
-	//53,75
-	
 	//update sky and sun light time
-	sunTime += 53.75f * dt;//72
-
-	if(sunTime >= 86400.0f)
-		sunTime = 0.0f;
-
+	//23 000 morning
+	//62 500 evening
+	//39500 whole day
+	//16 normal hours of day
+		//2468,75 - hour / 50 seconds(hour in game)
+		//49,375
+	//8 hours of night
+		//4937,5 - hour / 50 seconds
+		//98,75 in the night
+	
+	if(mWorld->worldDayTime >= 5.0f && mWorld->worldDayTime < 21.0f)
+	{
+		sunTime += 49.375f * dt;//72
+		if(!sunMoonSwitch)//switch to sun texture and reset position
+		{
+			skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sun.png"));
+			sunTime = 21600.0f;//6 am
+			sunMoonSwitch = true;
+		}
+	}else
+	{
+		sunTime += 98.75 * dt;//72
+		if(sunMoonSwitch)//switch to sun texture and reset position
+		{
+			skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/moon.png"));
+			sunTime = 21600.0f;//6 am
+			sunMoonSwitch = false;
+		}
+	}
 }
 
 void StatePlay::Draw(StateManager* sManager)

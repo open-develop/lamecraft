@@ -115,8 +115,6 @@ private:
 
 	//world time
 	float worldTime;
-
-
 	float worldHour;//1 game hour = 50 real seconds = 24 game hours = 20 real minutes
 
 	//information

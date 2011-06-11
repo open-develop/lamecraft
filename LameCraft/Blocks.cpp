@@ -648,4 +648,4 @@ IronBlock::IronBlock()
 	transparent = false;
 	soundType = 2;
 }
-block_t BaseBlock::getID(){ return 48;}
+block_t IronBlock::getID(){ return 48;}

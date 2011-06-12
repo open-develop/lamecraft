@@ -24,7 +24,7 @@ StatePlay::StatePlay()
 
 	selectedCube = 0;
 	selectedCubeSet = 0;
-	selectedCubeStart = 80;
+	selectedCubeStart = 0;
 
 	ram1 = 0;
 	ram2 = 0;
@@ -171,6 +171,12 @@ void StatePlay::InitParametric(int terrainType,bool makeFlat,bool makeTrees,bool
 	dt = mTimer.GetDeltaTime();
 
 	Logger::Instance()->LogMessage("created chunks: %d\n",mWorld->createdChunksCount);
+
+	//block sets info
+	allcubes = mWorld->GetBlockTypesCount();
+	//selectedCubeEnd = allcubes - 2;//because we don't want first one and last one
+	cubesSets = std::floor(allcubes / 9);//9 cubes is set
+
 
 	//texture
 	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/terrain_medium.png");
@@ -464,8 +470,15 @@ void StatePlay::HandleEvents(StateManager* sManager)
 		if(keyPressed(InputHelper::Instance()->getButtonToAction(9)))
 		{
 			selectedCube++;
-			if(selectedCube > 8)
-				selectedCube = 0;
+			if(selectedCubeSet == cubesSets * 9)
+			{
+				if(selectedCube > (allcubes - (cubesSets * 9) - 3))
+					selectedCube = 0;
+			}else
+			{
+				if(selectedCube > 8)
+					selectedCube = 0;
+			}
 
 			selectSprite->SetPosition(100 + (selectedCube * 35),253);
 		}
@@ -474,7 +487,12 @@ void StatePlay::HandleEvents(StateManager* sManager)
 		{
 			selectedCube--;
 			if(selectedCube < 0)
-				selectedCube = 8;
+			{
+				if(selectedCubeSet == cubesSets * 9)
+					selectedCube = allcubes - (cubesSets * 9) - 3;
+				else
+					selectedCube = 8;
+			}
 
 			selectSprite->SetPosition(100 + (selectedCube * 35),253);
 		}
@@ -483,13 +501,13 @@ void StatePlay::HandleEvents(StateManager* sManager)
 		{
 			selectedCubeSet-=9;
 			if(selectedCubeSet < 0)
-				selectedCubeSet = 36;
+				selectedCubeSet = cubesSets * 9;
 		}
 		//switch up
 		if(keyPressed(InputHelper::Instance()->getButtonToAction(10)))
 		{
 			selectedCubeSet+=9;
-			if(selectedCubeSet > 36)
+			if(selectedCubeSet > (cubesSets * 9))
 				selectedCubeSet = 0;
 		}
 
@@ -562,16 +580,21 @@ void StatePlay::HandleEvents(StateManager* sManager)
 
 							if(!blockBox.intersect(playerBox))
 							{
-								mWorld->GetBlock(testPos2.x,testPos2.y,testPos2.z) = selectedCubeSet + selectedCube+1;//10;//set block type
+								//check if you want put light source or normal block
+								if(mWorld->LightSourceBlock(selectedCubeSet + selectedCube+1))
+								{
+									mWorld->SetLigtSourcePosition(testPos2.x,testPos2.y,testPos2.z,selectedCubeSet + selectedCube+1);
+									mWorld->GetBlock(testPos2.x,testPos2.y,testPos2.z) = selectedCubeSet + selectedCube+1;//set block type
+								}else
+									mWorld->GetBlock(testPos2.x,testPos2.y,testPos2.z) = selectedCubeSet + selectedCube+1;//set block type
 
 								int chunkTarget = mWorld->getChunkId(testPos2);
 
 								if(chunkTarget != -1)
 								{
 									mSoundMgr->PlayPlopSound();
-									//rebuild
-									//Logger::Instance()->LogMessage("chunk: %d\n",chunkTarget);
 
+									//rebuild
 									mWorld->rebuildChunk(chunkTarget);
 									mWorld->rebuildTransparentChunk(chunkTarget);
 									mWorld->rebuildNearestChunks(chunkTarget,testPos2);
@@ -1016,9 +1039,6 @@ void StatePlay::Draw(StateManager* sManager)
 
 	sceGuDisable(GU_FOG );	// disable fog
 
-
-
-
 	if(makeScreen)
 	{
 		//end frame now to update frame buffer
@@ -1110,10 +1130,17 @@ void StatePlay::Draw(StateManager* sManager)
 	sceGuDisable(GU_BLEND);
 
 
-	//draw 3d cube on 2d panel
+	//draw 3d cubes on 2d panel
 	TextureManager::Instance()->SetTextureModeulate(texture);
 	int bloStartPos = 100;
-	for(int blo = 1 + selectedCubeSet;blo < 10 + selectedCubeSet;blo++)
+	int selectionEnd = 10;
+	if(selectedCubeSet == cubesSets * 9)
+	{
+		selectionEnd = allcubes - (cubesSets * 9) - 1;
+	}
+
+
+	for(int blo = 1 + selectedCubeSet;blo < selectionEnd + selectedCubeSet;blo++)
 	{
 		sceGumPushMatrix();
 

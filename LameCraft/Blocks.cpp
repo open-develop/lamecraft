@@ -1,7 +1,7 @@
 #include "Blocks.h"
 
 
-GrassBlock::GrassBlock()
+GrassBlock::GrassBlock():BaseBlock()
 {
 	textureRow = 0;
 
@@ -15,7 +15,7 @@ GrassBlock::GrassBlock()
 
 block_t GrassBlock::getID(){ return 1;}
 
-DirtBlock::DirtBlock()
+DirtBlock::DirtBlock():BaseBlock()
 {
 	textureRow = 0;
 
@@ -30,7 +30,7 @@ DirtBlock::DirtBlock()
 block_t DirtBlock::getID(){ return 2;}
 
 
-RockBlock::RockBlock()
+RockBlock::RockBlock():BaseBlock()
 {
 	textureRow = 1;
 
@@ -45,7 +45,7 @@ RockBlock::RockBlock()
 block_t RockBlock::getID(){ return 3;}
 
 
-WaterBlock::WaterBlock()
+WaterBlock::WaterBlock():BaseBlock()
 {
 	textureRow = 3;
 
@@ -59,7 +59,7 @@ WaterBlock::WaterBlock()
 
 block_t WaterBlock::getID(){ return 4;}
 
-GoldBlock::GoldBlock()
+GoldBlock::GoldBlock():BaseBlock()
 {
 	textureRow = 6;
 
@@ -73,7 +73,7 @@ GoldBlock::GoldBlock()
 
 block_t GoldBlock::getID(){ return 5;}
 
-LadderBlock::LadderBlock()
+LadderBlock::LadderBlock():BaseBlock()
 {
 	textureRow = 3;
 
@@ -87,7 +87,7 @@ LadderBlock::LadderBlock()
 block_t LadderBlock::getID(){ return 6;}
 
 
-SandBlock::SandBlock()
+SandBlock::SandBlock():BaseBlock()
 {
 	textureRow = 1;
 
@@ -101,7 +101,7 @@ SandBlock::SandBlock()
 block_t SandBlock::getID(){ return 7;}
 
 
-WoodBlock::WoodBlock()
+WoodBlock::WoodBlock():BaseBlock()
 {
 	textureRow = 2;
 
@@ -114,7 +114,7 @@ WoodBlock::WoodBlock()
 }
 block_t WoodBlock::getID(){ return 8;}
 
-LeavesBlock::LeavesBlock()
+LeavesBlock::LeavesBlock():BaseBlock()
 {
 	textureRow = 2;
 
@@ -128,7 +128,7 @@ LeavesBlock::LeavesBlock()
 block_t LeavesBlock::getID(){ return 9;}
 
 
-TNTBlock::TNTBlock()
+TNTBlock::TNTBlock():BaseBlock()
 {
 	textureRow = 4;
 
@@ -142,7 +142,7 @@ TNTBlock::TNTBlock()
 block_t TNTBlock::getID(){ return 10;}
 
 
-BlackWoolBlock::BlackWoolBlock()
+BlackWoolBlock::BlackWoolBlock():BaseBlock()
 {
 	textureRow = 3;
 
@@ -156,7 +156,7 @@ BlackWoolBlock::BlackWoolBlock()
 block_t BlackWoolBlock::getID(){ return 11;}
 
 
-RedWoolBlock::RedWoolBlock()
+RedWoolBlock::RedWoolBlock():BaseBlock()
 {
 	textureRow = 1;
 
@@ -170,7 +170,7 @@ RedWoolBlock::RedWoolBlock()
 block_t RedWoolBlock::getID(){ return 12;}
 
 
-DarkGreyWoolBlock::DarkGreyWoolBlock()
+DarkGreyWoolBlock::DarkGreyWoolBlock():BaseBlock()
 {
 	textureRow = 4;
 
@@ -185,7 +185,7 @@ block_t DarkGreyWoolBlock::getID(){ return 13;}
 
 
 
-BrownWoolBlock::BrownWoolBlock()
+BrownWoolBlock::BrownWoolBlock():BaseBlock()
 {
 	textureRow = 3;
 
@@ -199,7 +199,7 @@ BrownWoolBlock::BrownWoolBlock()
 block_t BrownWoolBlock::getID(){ return 14;}
 
 
-LightBlackWoolBlock::LightBlackWoolBlock()
+LightBlackWoolBlock::LightBlackWoolBlock():BaseBlock()
 {
 	textureRow = 3;
 
@@ -214,7 +214,7 @@ block_t LightBlackWoolBlock::getID(){ return 15;}
 
 
 
-PinkWoolBlock::PinkWoolBlock()
+PinkWoolBlock::PinkWoolBlock():BaseBlock()
 {
 	textureRow = 1;
 
@@ -228,7 +228,7 @@ PinkWoolBlock::PinkWoolBlock()
 block_t PinkWoolBlock::getID(){ return 16;}
 
 
-LightGreenWoolBlock::LightGreenWoolBlock()
+LightGreenWoolBlock::LightGreenWoolBlock():BaseBlock()
 {
 	textureRow = 4;
 
@@ -241,7 +241,7 @@ LightGreenWoolBlock::LightGreenWoolBlock()
 }
 block_t LightGreenWoolBlock::getID(){ return 17;}
 
-YellowWoolBlock::YellowWoolBlock()
+YellowWoolBlock::YellowWoolBlock():BaseBlock()
 {
 	textureRow = 3;
 
@@ -254,7 +254,7 @@ YellowWoolBlock::YellowWoolBlock()
 }
 block_t YellowWoolBlock::getID(){ return 18;}
 
-BlueWoolBlock::BlueWoolBlock()
+BlueWoolBlock::BlueWoolBlock():BaseBlock()
 {
 	textureRow = 0;
 
@@ -267,7 +267,7 @@ BlueWoolBlock::BlueWoolBlock()
 }
 block_t BlueWoolBlock::getID(){ return 19;}
 
-LightBlueWoolBlock::LightBlueWoolBlock()
+LightBlueWoolBlock::LightBlueWoolBlock():BaseBlock()
 {
 	textureRow = 0;
 
@@ -280,7 +280,7 @@ LightBlueWoolBlock::LightBlueWoolBlock()
 }
 block_t LightBlueWoolBlock::getID(){ return 20;}
 
-FioletWoolBlock::FioletWoolBlock()
+FioletWoolBlock::FioletWoolBlock():BaseBlock()
 {
 	textureRow = 1;
 
@@ -293,7 +293,7 @@ FioletWoolBlock::FioletWoolBlock()
 }
 block_t FioletWoolBlock::getID(){ return 21;}
 
-PastelWoolBlock::PastelWoolBlock()
+PastelWoolBlock::PastelWoolBlock():BaseBlock()
 {
 	textureRow = 2;
 
@@ -306,7 +306,7 @@ PastelWoolBlock::PastelWoolBlock()
 }
 block_t PastelWoolBlock::getID(){ return 22;}
 
-LightFioletWoolBlock::LightFioletWoolBlock()
+LightFioletWoolBlock::LightFioletWoolBlock():BaseBlock()
 {
 	textureRow = 1;
 
@@ -319,7 +319,7 @@ LightFioletWoolBlock::LightFioletWoolBlock()
 }
 block_t LightFioletWoolBlock::getID(){ return 23;}
 
-OrangeWoolBlock::OrangeWoolBlock()
+OrangeWoolBlock::OrangeWoolBlock():BaseBlock()
 {
 	textureRow = 2;
 
@@ -332,7 +332,7 @@ OrangeWoolBlock::OrangeWoolBlock()
 }
 block_t OrangeWoolBlock::getID(){ return 24;}
 
-CactusBlock::CactusBlock()
+CactusBlock::CactusBlock():BaseBlock()
 {
 	textureRow = 5;
 
@@ -345,7 +345,7 @@ CactusBlock::CactusBlock()
 }
 block_t CactusBlock::getID(){ return 25;}
 
-AllSnowBlock::AllSnowBlock()
+AllSnowBlock::AllSnowBlock():BaseBlock()
 {
 	textureRow = 0;
 
@@ -358,7 +358,7 @@ AllSnowBlock::AllSnowBlock()
 }
 block_t AllSnowBlock::getID(){ return 26;}
 
-BrickBlock::BrickBlock()
+BrickBlock::BrickBlock():BaseBlock()
 {
 	textureRow = 4;
 
@@ -371,7 +371,7 @@ BrickBlock::BrickBlock()
 }
 block_t BrickBlock::getID(){ return 27;}
 
-CageBlock::CageBlock()
+CageBlock::CageBlock():BaseBlock()
 {
 	textureRow = 6;
 
@@ -385,7 +385,7 @@ CageBlock::CageBlock()
 block_t CageBlock::getID(){ return 28;}
 
 
-SnowBlock::SnowBlock()
+SnowBlock::SnowBlock():BaseBlock()
 {
 	textureRow = 0;
 
@@ -400,7 +400,7 @@ block_t SnowBlock::getID(){ return 29;}
 
 
 
-DarkWoodBlock::DarkWoodBlock()
+DarkWoodBlock::DarkWoodBlock():BaseBlock()
 {
 	textureRow = 2;
 
@@ -413,7 +413,7 @@ DarkWoodBlock::DarkWoodBlock()
 }
 block_t DarkWoodBlock::getID(){ return 30;}
 
-WhiteWoodBlock::WhiteWoodBlock()
+WhiteWoodBlock::WhiteWoodBlock():BaseBlock()
 {
 	textureRow = 2;
 
@@ -426,7 +426,7 @@ WhiteWoodBlock::WhiteWoodBlock()
 }
 block_t WhiteWoodBlock::getID(){ return 31;}
 
-IceBlock::IceBlock()
+IceBlock::IceBlock():BaseBlock()
 {
 	textureRow = 6;
 
@@ -439,7 +439,7 @@ IceBlock::IceBlock()
 }
 block_t IceBlock::getID(){ return 32;}
 
-CaneBlock::CaneBlock()
+CaneBlock::CaneBlock():BaseBlock()
 {
 	textureRow = 5;
 
@@ -452,7 +452,7 @@ CaneBlock::CaneBlock()
 }
 block_t CaneBlock::getID(){ return 33;}
 
-BoxBlock::BoxBlock()
+BoxBlock::BoxBlock():BaseBlock()
 {
 	textureRow = 4;
 
@@ -465,7 +465,7 @@ BoxBlock::BoxBlock()
 }
 block_t BoxBlock::getID(){ return 34;}
 
-ShelfBlock::ShelfBlock()
+ShelfBlock::ShelfBlock():BaseBlock()
 {
 	textureRow = 4;
 
@@ -478,7 +478,7 @@ ShelfBlock::ShelfBlock()
 }
 block_t ShelfBlock::getID(){ return 35;}
 
-WallBlock::WallBlock()
+WallBlock::WallBlock():BaseBlock()
 {
 	textureRow = 4;
 
@@ -491,7 +491,7 @@ WallBlock::WallBlock()
 }
 block_t WallBlock::getID(){ return 36;}
 
-DrySandBlock::DrySandBlock()
+DrySandBlock::DrySandBlock():BaseBlock()
 {
 	textureRow = 4;
 
@@ -504,7 +504,7 @@ DrySandBlock::DrySandBlock()
 }
 block_t DrySandBlock::getID(){ return 37;}
 
-SnowLewesBlock::SnowLewesBlock()
+SnowLewesBlock::SnowLewesBlock():BaseBlock()
 {
 	textureRow = 2;
 
@@ -517,7 +517,7 @@ SnowLewesBlock::SnowLewesBlock()
 }
 block_t SnowLewesBlock::getID(){ return 38;}
 
-MudBlock::MudBlock()
+MudBlock::MudBlock():BaseBlock()
 {
 	textureRow = 5;
 
@@ -530,7 +530,7 @@ MudBlock::MudBlock()
 }
 block_t MudBlock::getID(){ return 39;}
 
-GlassBlock::GlassBlock()
+GlassBlock::GlassBlock():BaseBlock()
 {
 	textureRow = 3;
 
@@ -543,7 +543,7 @@ GlassBlock::GlassBlock()
 }
 block_t GlassBlock::getID(){ return 40;}
 
-BrownCoailBlock::BrownCoailBlock()
+BrownCoailBlock::BrownCoailBlock():BaseBlock()
 {
 	textureRow = 6;
 
@@ -556,7 +556,7 @@ BrownCoailBlock::BrownCoailBlock()
 }
 block_t BrownCoailBlock::getID(){ return 41;}
 
-BlackCoailBlock::BlackCoailBlock()
+BlackCoailBlock::BlackCoailBlock():BaseBlock()
 {
 	textureRow = 6;
 
@@ -569,7 +569,7 @@ BlackCoailBlock::BlackCoailBlock()
 }
 block_t BlackCoailBlock::getID(){ return 42;}
 
-BlueCoailBlock::BlueCoailBlock()
+BlueCoailBlock::BlueCoailBlock():BaseBlock()
 {
 	textureRow = 6;
 
@@ -582,7 +582,7 @@ BlueCoailBlock::BlueCoailBlock()
 }
 block_t BlueCoailBlock::getID(){ return 43;}
 
-RedCoailBlock::RedCoailBlock()
+RedCoailBlock::RedCoailBlock():BaseBlock()
 {
 	textureRow = 6;
 
@@ -595,7 +595,7 @@ RedCoailBlock::RedCoailBlock()
 }
 block_t RedCoailBlock::getID(){ return 44;}
 
-SlamRockBlock::SlamRockBlock()
+SlamRockBlock::SlamRockBlock():BaseBlock()
 {
 	textureRow = 6;
 
@@ -608,7 +608,7 @@ SlamRockBlock::SlamRockBlock()
 }
 block_t SlamRockBlock::getID(){ return 45;}
 
-WaterRockBlock::WaterRockBlock()
+WaterRockBlock::WaterRockBlock():BaseBlock()
 {
 	textureRow = 5;
 
@@ -621,7 +621,7 @@ WaterRockBlock::WaterRockBlock()
 }
 block_t WaterRockBlock::getID(){ return 46;}
 
-JackOLatern::JackOLatern()
+JackOLantern::JackOLantern():BaseBlock()
 {
 	textureRow = 7;
 
@@ -633,11 +633,11 @@ JackOLatern::JackOLatern()
 	soundType = 2;
 	lightSource = true;
 }
-block_t JackOLatern::getID(){ return 47;}
+block_t JackOLantern::getID(){ return 47;}
 
 //must be always last
 
-IronBlock::IronBlock()
+IronBlock::IronBlock():BaseBlock()
 {
 	textureRow = 1;
 

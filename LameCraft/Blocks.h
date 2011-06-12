@@ -373,11 +373,11 @@ public:
 	static block_t getID();
 };
 
-class JackOLatern : public BaseBlock
+class JackOLantern : public BaseBlock
 {
 public:
 
-	JackOLatern();
+	JackOLantern();
 	static block_t getID();
 };
 

@@ -18,11 +18,24 @@ class CraftWorld
 {
 public:
 
+	enum BlockSettings
+	{
+		 OpLighSource    = 0x01,
+		 OpSideRender    = 0x02,
+		 OpActAsLadder   = 0x04,
+		 Op4 = 0x8,
+		 Op5 = 0x10,
+		 Op6 = 0x20,
+		 Op7 = 0x40,
+		 Op8 = 0x80
+	};
+
 	CraftWorld();
 	~CraftWorld();
 
 	block_t& GetBlock (const int x, const int y, const int z) ;
 	block_t& GetBlockLight (const int x, const int y, const int z);
+	block_t& GetBlockSettings (const int x, const int y, const int z);
 	block_t BlockAtPoint(Vector3 pos);
 
 	//map creation
@@ -70,13 +83,15 @@ public:
 	bool PlayerInWater(Vector3 pos);
 	bool BlockTransparent(const int x, const int y, const int z);
 	bool BlockEditable(const int x, const int y, const int z);
-
+	bool LightSourceBlock(int id);
+	void SetLigtSourcePosition(const int x, const int y, const int z,int blockID);
 
 	int GetDrawntTrianglesCount() { return drawnTriangles; }
 
 	Vector3 GetPlayerPos();
 	void UpdatePlayerZoneBB(Vector3 playerPosition);
 	void UpdateWorldTime(float dt);
+	int GetBlockTypesCount();
 
 
 
@@ -99,6 +114,8 @@ private:
 
 	block_t* m_Blocks;
 	block_t* m_BlockLight;
+
+	block_t* m_BlockSettings;
 
 	std::vector<BaseBlock> blockTypes;
 

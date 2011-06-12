@@ -96,9 +96,12 @@ private:
 	bool headInWater;
 	bool footInWater;
 
+	int allcubes;
+	int cubesSets;
 	int selectedCube;
 	int selectedCubeSet;
 	int selectedCubeStart;
+	int selectedCubeEnd;
 
 	int ram1;
 	int ram2;

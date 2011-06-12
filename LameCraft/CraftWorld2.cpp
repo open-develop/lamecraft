@@ -75,7 +75,8 @@ CraftWorld::CraftWorld()
 	blockTypes.push_back(RedCoailBlock());
 
 	blockTypes.push_back(SlamRockBlock());
-	//blockTypes.push_back(WaterRockBlock());
+	blockTypes.push_back(WaterRockBlock());
+	blockTypes.push_back(JackOLantern());
 
 	//can't destroy this one
 	blockTypes.push_back(IronBlock());
@@ -503,7 +504,7 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize)
 	{
 		for (int x = 0; x < WORLD_SIZE; ++x)
 		{
-			GetBlock(x, 0, z) = 46;//last one in set
+			GetBlock(x, 0, z) = IronBlock::getID();
 		}
 	}
 
@@ -524,6 +525,9 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize,int terrainType,bool
 
 	m_BlockLight = new block_t[WORLD_SIZE * WORLD_SIZE * WORLD_SIZE];
 	memset(m_BlockLight, 255, sizeof(block_t) * WORLD_SIZE * WORLD_SIZE * WORLD_SIZE);
+
+	m_BlockSettings = new block_t[WORLD_SIZE * WORLD_SIZE * WORLD_SIZE];
+	memset(m_BlockSettings, 0, sizeof(block_t) * WORLD_SIZE * WORLD_SIZE * WORLD_SIZE);
 
 	//srand(time(NULL));
 	int seed = rand() % 10000;
@@ -742,7 +746,7 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize,int terrainType,bool
 	{
 		for (int x = 0; x < WORLD_SIZE; ++x)
 		{
-			GetBlock(x, 0, z) = 46;//last one in set
+			GetBlock(x, 0, z) = IronBlock::getID();//last one in set
 		}
 	}
 
@@ -870,8 +874,8 @@ void CraftWorld::initWorldBlocksLight()
 				{
 					if (Light >= DeltaLight)
 						Light -= DeltaLight;
-					if (Light < 85)
-						Light = 85;
+					//if (Light < 85)
+					//	Light = 85;
 				}
 
 			}
@@ -1028,6 +1032,49 @@ block_t& CraftWorld::GetBlockLight (const int x, const int y, const int z)
 	return m_BlockLight[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE];
 }
 
+block_t& CraftWorld::GetBlockSettings(const int x, const int y, const int z)
+{
+	return m_BlockSettings[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE];
+}
+
+void CraftWorld::SetLigtSourcePosition(const int x, const int y, const int z,int blockID)
+{
+	//put correct light based on lightsource type
+	if(blockID == JackOLantern::getID())
+	{
+		//central light is 255
+		for(int zz = z-5;zz < z+5;zz++)
+		{
+			//int xx = x;
+			//int yy = y;
+
+			for(int xx = x-5;xx < x+5;xx++)
+			{
+				for(int yy = y-5;yy < y+5;yy++)
+				{
+					//in map range
+					if (xx >= 0 || yy >= 0 || zz >= 0  || xx < WORLD_SIZE || yy < WORLD_SIZE || zz < WORLD_SIZE)
+					{
+						int distance = Vector3::distance(Vector3(x,y,z),Vector3(xx,yy,zz)) + 1;
+
+						//if(GetBlockLight(xx,yy,zz) < (255 - (50 * distance)))
+						//{
+							//update light value
+							int new_light = 255 - (42 * distance);
+							if(new_light < 16)
+								new_light = 16;
+							GetBlockLight(xx,yy,zz) = new_light;
+							//update settings value for OpLighSource
+							if(!(GetBlockSettings(xx,yy,zz) & OpLighSource))
+								GetBlockSettings(xx,yy,zz) = GetBlockSettings(xx,yy,zz) ^ OpLighSource;
+						//}
+					}
+				}
+			}
+		}
+	}
+}
+
 bool CraftWorld::BlockTransparent(const int x, const int y, const int z)
 {
 	return blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]].transparent;
@@ -1038,6 +1085,11 @@ bool CraftWorld::BlockEditable(const int x, const int y, const int z)
 	if (x < 0 || y < 0 || z < 0  || x >= WORLD_SIZE || y >= WORLD_SIZE || z >= WORLD_SIZE) return false;
 
 	return blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]].editable;
+}
+
+bool CraftWorld::LightSourceBlock(int id)
+{
+	return blockTypes[id].lightSource;
 }
 
 void CraftWorld::buildblocksVerts()
@@ -1864,27 +1916,38 @@ void CraftWorld::rebuildChunk(int id)
 				float left = percent * blockType->upPlane;
 				float right = left + percent;
 
-				//light
-				BaseLight  = GetBlockLight(x, y, z) / 255.0f;  //For the two x faces
-				//float BlockLight1 = BlockLight * 0.9f;		//For the two z faces
-				//float BlockLight2 = BlockLight * 0.8f;		//For the two y faces
+				//lightened
+				if(GetBlockSettings(x,y,z) & OpLighSource)
+				{
+					BaseLight  = GetBlockLight(x, y, z) / 255.0f;  //For the two x faces
 
-				BlockColory1 = lightColor * (factor1 * BaseLight) + ambientColor;
-				BlockColory1.saturate();
-				BlockColory2 = lightColor * (factor1 / 2.0f * BaseLight) + ambientColor;
-				BlockColory2.saturate();
-				BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
-				BlockColorz.saturate();
-				BlockColorz *= 0.80f;
+					BlockColorx1 = BlockColorx2 = Vector3(BaseLight,BaseLight,BaseLight);
+					BlockColorz  = Vector3(BaseLight,BaseLight,BaseLight) * 0.9f;
+					BlockColory1 = BlockColory2 = Vector3(BaseLight,BaseLight,BaseLight) * 0.8f;
+				}else//normal light
+				{
+					//light
+					BaseLight  = GetBlockLight(x, y, z) / 255.0f;  //For the two x faces
+					//float BlockLight1 = BlockLight * 0.9f;		//For the two z faces
+					//float BlockLight2 = BlockLight * 0.8f;		//For the two y faces
+
+					BlockColory1 = lightColor * (factor1 * BaseLight) + ambientColor;
+					BlockColory1.saturate();
+					BlockColory2 = lightColor * (factor1 / 2.0f * BaseLight) + ambientColor;
+					BlockColory2.saturate();
+					BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
+					BlockColorz.saturate();
+					BlockColorz *= 0.80f;
 
 
-				BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
-				BlockColorx1.saturate();
-				BlockColorx1 *= 0.95f;
+					BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
+					BlockColorx1.saturate();
+					BlockColorx1 *= 0.95f;
 
-				BlockColorx2 = lightColor * (factor3 * 0.80f * BaseLight) + ambientColor;
-				BlockColorx2.saturate();
-				BlockColorx2 *= 0.95f;
+					BlockColorx2 = lightColor * (factor3 * 0.80f * BaseLight) + ambientColor;
+					BlockColorx2.saturate();
+					BlockColorx2 *= 0.95f;
+				}
 
 				//faces
 				//x-1
@@ -2686,6 +2749,11 @@ void CraftWorld::UpdateWorldTime(float dt)
 		SetWolrdTime(worldDayTime);
 		SetAllChunksToUpdate();
 	}
+}
+
+int CraftWorld::GetBlockTypesCount()
+{
+	return blockTypes.size();
 }
 
 int CraftWorld::groundHeight(const int x, const int z)

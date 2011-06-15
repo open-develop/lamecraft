@@ -20,14 +20,10 @@ public:
 
 	enum BlockSettings
 	{
-		 OpLighSource    = 0x01,
-		 OpSideRender    = 0x02,
-		 OpActAsLadder   = 0x04,
-		 Op4 = 0x8,
-		 Op5 = 0x10,
-		 Op6 = 0x20,
-		 Op7 = 0x40,
-		 Op8 = 0x80
+		 OpLighSource = 0x10,
+		 OpSideRender = 0x20,
+		 OpActAsLadder = 0x40,
+		 Op4 = 0x80
 	};
 
 	CraftWorld();

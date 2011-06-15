@@ -104,7 +104,8 @@ void SimpleMeshChunk::end()
 
 void SimpleMeshChunk::drawChunk()
 {
-	sceGumDrawArray(GU_TRIANGLES, GU_TEXTURE_32BITF |GU_COLOR_8888| GU_VERTEX_32BITF | GU_TRANSFORM_3D, trienglesCount, 0, meshVertices);
+	if(trienglesCount > 0)
+		sceGumDrawArray(GU_TRIANGLES, GU_TEXTURE_32BITF |GU_COLOR_8888| GU_VERTEX_32BITF | GU_TRANSFORM_3D, trienglesCount, 0, meshVertices);
 }
 
 void SimpleMeshChunk::reset()

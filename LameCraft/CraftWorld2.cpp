@@ -231,6 +231,9 @@ void CraftWorld::LoadWorld(const char *filename)
 	m_BlockLight = new block_t[WORLD_SIZE * WORLD_SIZE * WORLD_SIZE];
 	fread(m_BlockLight,sizeof(unsigned char),(WORLD_SIZE * WORLD_SIZE * WORLD_SIZE),pFile);
 
+	m_BlockSettings = new block_t[WORLD_SIZE * WORLD_SIZE * WORLD_SIZE];
+	memset(m_BlockSettings, 0, sizeof(block_t) * WORLD_SIZE * WORLD_SIZE * WORLD_SIZE);
+
 	//close file
 	fclose(pFile);
 }
@@ -282,6 +285,9 @@ void CraftWorld::LoadCompressedWorld(std::string  filename)
 	m_BlockLight = new block_t[WORLD_SIZE * WORLD_SIZE * WORLD_SIZE];
 	gzread(saveFile, m_BlockLight,sizeof(unsigned char)*(WORLD_SIZE * WORLD_SIZE * WORLD_SIZE));
 
+	m_BlockSettings = new block_t[WORLD_SIZE * WORLD_SIZE * WORLD_SIZE];
+	memset(m_BlockSettings, 0, sizeof(block_t) * WORLD_SIZE * WORLD_SIZE * WORLD_SIZE);
+
 	//close file
 	gzclose(saveFile);
 	saveFile=0;
@@ -298,6 +304,9 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize)
 
 	m_BlockLight = new block_t[WORLD_SIZE * WORLD_SIZE * WORLD_SIZE];
 	memset(m_BlockLight, 255, sizeof(block_t) * WORLD_SIZE * WORLD_SIZE * WORLD_SIZE);
+
+	m_BlockSettings = new block_t[WORLD_SIZE * WORLD_SIZE * WORLD_SIZE];
+	memset(m_BlockSettings, 0, sizeof(block_t) * WORLD_SIZE * WORLD_SIZE * WORLD_SIZE);
 
 	//srand(time(NULL));
 	int seed = rand() % 10000;
@@ -1039,15 +1048,16 @@ block_t& CraftWorld::GetBlockSettings(const int x, const int y, const int z)
 
 void CraftWorld::SetLigtSourcePosition(const int x, const int y, const int z,int blockID)
 {
+	int current  = 0;
+	int distance = 0;
+	int new_light = 255;
+
 	//put correct light based on lightsource type
 	if(blockID == JackOLantern::getID())
 	{
 		//central light is 255
 		for(int zz = z-5;zz < z+5;zz++)
 		{
-			//int xx = x;
-			//int yy = y;
-
 			for(int xx = x-5;xx < x+5;xx++)
 			{
 				for(int yy = y-5;yy < y+5;yy++)
@@ -1055,19 +1065,27 @@ void CraftWorld::SetLigtSourcePosition(const int x, const int y, const int z,int
 					//in map range
 					if (xx >= 0 || yy >= 0 || zz >= 0  || xx < WORLD_SIZE || yy < WORLD_SIZE || zz < WORLD_SIZE)
 					{
-						int distance = Vector3::distance(Vector3(x,y,z),Vector3(xx,yy,zz)) + 1;
+						distance = Vector3::distance(Vector3(x,y,z),Vector3(xx,yy,zz));
 
-						//if(GetBlockLight(xx,yy,zz) < (255 - (50 * distance)))
-						//{
-							//update light value
-							int new_light = 255 - (42 * distance);
-							if(new_light < 16)
-								new_light = 16;
-							GetBlockLight(xx,yy,zz) = new_light;
-							//update settings value for OpLighSource
-							if(!(GetBlockSettings(xx,yy,zz) & OpLighSource))
-								GetBlockSettings(xx,yy,zz) = GetBlockSettings(xx,yy,zz) ^ OpLighSource;
-						//}
+						if(distance > 7)
+							distance = 7;
+
+						new_light = 255 - (32 * distance);
+						new_light /= 16;//because we can store 0-15 in 4 bits
+
+						//get current value
+						current = GetBlockSettings(xx,yy,zz) & 0xF;
+						//set new only if it's brighter
+						if(current < new_light)
+						{
+							//clear this value
+							GetBlockSettings(xx,yy,zz) ^= current & 0xF;
+							//set new value
+							GetBlockSettings(xx,yy,zz) ^= new_light & 0xF;
+						}
+						//mark as lightened
+						if((GetBlockSettings(xx,yy,zz) & OpLighSource) == 0)
+							GetBlockSettings(xx,yy,zz) ^= OpLighSource;
 					}
 				}
 			}
@@ -1077,6 +1095,8 @@ void CraftWorld::SetLigtSourcePosition(const int x, const int y, const int z,int
 
 bool CraftWorld::BlockTransparent(const int x, const int y, const int z)
 {
+	if (x < 0 || y < 0 || z < 0  || x >= WORLD_SIZE || y >= WORLD_SIZE || z >= WORLD_SIZE) return true;
+
 	return blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]].transparent;
 }
 
@@ -1917,19 +1937,54 @@ void CraftWorld::rebuildChunk(int id)
 				float right = left + percent;
 
 				//lightened
-				if(GetBlockSettings(x,y,z) & OpLighSource)
+				//if time is between 21-4 use settings table for lightening
+				//if time is between 5-20 use normal light table but compare it with settings table
+				//	if setting is brighter then use it
+				if(worldDayTime >= 21 || worldDayTime <= 4)//night
 				{
-					BaseLight  = GetBlockLight(x, y, z) / 255.0f;  //For the two x faces
+					if((GetBlockSettings(x,y,z) & OpLighSource) != 0)//block is lightened
+					{
+						BaseLight  = (float)(GetBlockSettings(x, y, z) & 0xF)/16.0f; // 255.0f;  //For the two x faces
 
-					BlockColorx1 = BlockColorx2 = Vector3(BaseLight,BaseLight,BaseLight);
-					BlockColorz  = Vector3(BaseLight,BaseLight,BaseLight) * 0.9f;
-					BlockColory1 = BlockColory2 = Vector3(BaseLight,BaseLight,BaseLight) * 0.8f;
-				}else//normal light
+						BlockColorx1 = BlockColorx2 = Vector3(BaseLight,BaseLight,BaseLight);
+						BlockColorz  = Vector3(BaseLight,BaseLight,BaseLight) * 0.9f;
+						BlockColory1 = BlockColory2 = Vector3(BaseLight,BaseLight,BaseLight) * 0.8f;
+					}else//normal light
+					{
+						//light
+						BaseLight  = GetBlockLight(x, y, z) / 255.0f;  //For the two x faces
+						//float BlockLight1 = BlockLight * 0.9f;		//For the two z faces
+						//float BlockLight2 = BlockLight * 0.8f;		//For the two y faces
+
+						BlockColory1 = lightColor * (factor1 * BaseLight) + ambientColor;
+						BlockColory1.saturate();
+						BlockColory2 = lightColor * (factor1 / 2.0f * BaseLight) + ambientColor;
+						BlockColory2.saturate();
+						BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
+						BlockColorz.saturate();
+						BlockColorz *= 0.80f;
+
+						BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
+						BlockColorx1.saturate();
+						BlockColorx1 *= 0.95f;
+
+						BlockColorx2 = lightColor * (factor3 * 0.80f * BaseLight) + ambientColor;
+						BlockColorx2.saturate();
+						BlockColorx2 *= 0.95f;
+					}
+				}else//day
 				{
-					//light
-					BaseLight  = GetBlockLight(x, y, z) / 255.0f;  //For the two x faces
-					//float BlockLight1 = BlockLight * 0.9f;		//For the two z faces
-					//float BlockLight2 = BlockLight * 0.8f;		//For the two y faces
+					if((GetBlockSettings(x,y,z) & OpLighSource) != 0)//block is lightened
+					{
+						int normal = GetBlockLight(x, y, z);
+						int lightened = (GetBlockSettings(x, y, z) & 0xF) * 16;
+
+						if(lightened > normal)
+							BaseLight = lightened / 255.0f;
+					}else
+					{
+						BaseLight  = GetBlockLight(x, y, z) / 255.0f;
+					}
 
 					BlockColory1 = lightColor * (factor1 * BaseLight) + ambientColor;
 					BlockColory1.saturate();
@@ -1938,7 +1993,6 @@ void CraftWorld::rebuildChunk(int id)
 					BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
 					BlockColorz.saturate();
 					BlockColorz *= 0.80f;
-
 
 					BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
 					BlockColorx1.saturate();

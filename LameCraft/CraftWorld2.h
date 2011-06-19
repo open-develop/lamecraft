@@ -51,6 +51,9 @@ public:
 	void createWorldChunkss();
 	void SetAllChunksToUpdate();
 
+	void GetSpecialBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk* MeshChunk,block_t Block);
+	void GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk* MeshChunk,block_t Block);
+
 	//load/save options
 	void SaveWorld(const char *filename);
 	void SaveCompressedWorld(std::string filename);
@@ -77,7 +80,10 @@ public:
 	bool SolidAtPointForPlayer(Vector3 pos);
 	bool SolidAtPoint(Vector3 pos);
 	bool PlayerInWater(Vector3 pos);
+
+	bool BlockTransparentOrSpecial(const int x, const int y, const int z);
 	bool BlockTransparent(const int x, const int y, const int z);
+	bool BlockSpecial(const int x, const int y, const int z);
 	bool BlockEditable(const int x, const int y, const int z);
 
 	bool LightSourceBlock(int id);

@@ -167,7 +167,7 @@ void StatePlay::InitParametric(int terrainType,bool makeFlat,bool makeTrees,bool
 	mWorld->initRandompMap(128,16,terrainType,makeFlat,makeTrees,makeWater,makeCaves);
 	mWorld->setTextureSize(128,16);
 	mWorld->initWorldBlocksLight();
-	mWorld->SetWolrdTime(9);
+	mWorld->SetWolrdTime(5);
 	mWorld->UpdatePlayerZoneBB(playerPosition);
 	mWorld->buildMap();
 	mWorld->buildblocksVerts();

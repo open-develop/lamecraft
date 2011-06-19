@@ -384,7 +384,6 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize)
 				else
 					GetBlock(x, y, z) = dirt;
 			}
-
 		}
 	}
 
@@ -1049,7 +1048,7 @@ block_t& CraftWorld::GetBlockSettings(const int x, const int y, const int z)
 
 void CraftWorld::RemoveLigtSourceAtPosition(const int x, const int y, const int z,int blockID)
 {
-	if(blockID == JackOLantern::getID())
+	if(blockID == JackOLantern::getID() || blockID == Torch::getID())
 	{
 		int current = 0;
 
@@ -1141,11 +1140,28 @@ void CraftWorld::SetLigtSourcePosition(const int x, const int y, const int z,int
 	}
 }
 
+bool CraftWorld::BlockTransparentOrSpecial(const int x, const int y, const int z)
+{
+	if (x < 0 || y < 0 || z < 0  || x >= WORLD_SIZE || y >= WORLD_SIZE || z >= WORLD_SIZE) return true;
+
+	if(blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]].transparent || blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]].blockSpecial)
+		return true;
+
+	return false;
+}
+
 bool CraftWorld::BlockTransparent(const int x, const int y, const int z)
 {
 	if (x < 0 || y < 0 || z < 0  || x >= WORLD_SIZE || y >= WORLD_SIZE || z >= WORLD_SIZE) return true;
 
 	return blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]].transparent;
+}
+
+bool CraftWorld::BlockSpecial(const int x, const int y, const int z)
+{
+	if (x < 0 || y < 0 || z < 0  || x >= WORLD_SIZE || y >= WORLD_SIZE || z >= WORLD_SIZE) return true;
+
+	return blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]].blockSpecial;
 }
 
 bool CraftWorld::BlockEditable(const int x, const int y, const int z)
@@ -1940,20 +1956,131 @@ void CraftWorld::createTransparentChunks(const int StartX, const int StartY, con
 	mTransparentChunks.push_back(MeshChunk);
 }
 
-void CraftWorld::rebuildChunk(int id)
+void CraftWorld::GetSpecialBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk* MeshChunk,block_t Block)
 {
-	SimpleMeshChunk* MeshChunk = mChunks[id];
+	if(Block == Torch::getID())
+	{
+		//texture stuff
+		BaseBlock *blockType = &blockTypes[Block];
+		float down = 1.0f - percent * (blockType->textureRow + 1);
+		float up = down + percent - ((percent / (float)textureChunk) * 6);
 
-	int iVertex = 0;
-	block_t Block;
-	bool transparentBlock;
+		float left = percent * blockType->upPlane;
+		float right = left + percent;
 
+		//x-1
+		{
+			left = percent * blockType->sidePlane + ((percent / (float)textureChunk) * 7);
+			right = left + ((percent / (float)textureChunk) * 2);
+
+			MeshChunk->position(x + 0.45f,y			,z + 0.45f + 0.1f);		MeshChunk->textureCoord(right, down); 	MeshChunk->colour(1,1,1);
+			MeshChunk->position(x + 0.45f,y + 0.6f	,z + 0.45f + 0.1f);		MeshChunk->textureCoord(right, up); 	MeshChunk->colour(1,1,1);
+			MeshChunk->position(x + 0.45f,y + 0.6f	,z + 0.45f);			MeshChunk->textureCoord(left, up); 		MeshChunk->colour(1,1,1);
+			MeshChunk->position(x + 0.45f,y			,z + 0.45f);			MeshChunk->textureCoord(left, down); 	MeshChunk->colour(1,1,1);
+
+			MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
+			MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
+
+			iVertex += 4;
+		}
+
+
+		//x+1
+		{
+			left = percent * blockType->sidePlane + ((percent / (float)textureChunk) * 7);
+			right = left + ((percent / (float)textureChunk) * 2);
+
+			MeshChunk->position(x + 0.45f + 0.1f,y		,z + 0.45f);			MeshChunk->textureCoord(right, down);	MeshChunk->colour(1,1,1);
+			MeshChunk->position(x + 0.45f + 0.1f,y+ 0.6f,z + 0.45f);			MeshChunk->textureCoord(right, up);		MeshChunk->colour(1,1,1);
+			MeshChunk->position(x + 0.45f + 0.1f,y+ 0.6f,z + 0.45f + 0.1f);		MeshChunk->textureCoord(left, up);		MeshChunk->colour(1,1,1);
+			MeshChunk->position(x + 0.45f + 0.1f,y		,z + 0.45f + 0.1f);		MeshChunk->textureCoord(left, down);	MeshChunk->colour(1,1,1);
+
+			MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
+			MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
+
+			iVertex += 4;
+		}
+
+		//y-1
+		{
+			down = 1.0f - percent * (blockType->textureRow + 1);
+			up = down + ((percent / (float)textureChunk) * 2);
+
+			left = percent * blockType->sidePlane + ((percent / (float)textureChunk) * 7);
+			right = left + ((percent / (float)textureChunk) * 2);
+
+			MeshChunk->position(x + 0.45f		,y, z + 0.45f);			MeshChunk->textureCoord(left, up); 		MeshChunk->colour(1,1,1);
+			MeshChunk->position(x + 0.45f + 0.1f,y, z + 0.45f);			MeshChunk->textureCoord(right, up);	 	MeshChunk->colour(1,1,1);
+			MeshChunk->position(x + 0.45f + 0.1f,y, z + 0.45f + 0.1f);	MeshChunk->textureCoord(right, down); 	MeshChunk->colour(1,1,1);
+			MeshChunk->position(x + 0.45f		,y, z + 0.45f + 0.1f);	MeshChunk->textureCoord(left, down); 	MeshChunk->colour(1,1,1);
+
+			MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
+			MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
+
+			iVertex += 4;
+		}
+
+		//y+1
+		{
+			down = 1.0f - percent * (blockType->textureRow + 1) + ((percent / (float)textureChunk) * 8);
+			up = down + ((percent / (float)textureChunk) * 2);
+
+			left = percent * blockType->sidePlane + ((percent / (float)textureChunk) * 7);
+			right = left + ((percent / (float)textureChunk) * 2);
+
+			MeshChunk->position(x + 0.45f		,y + 0.6f,z + 0.45f + 0.1f);	MeshChunk->textureCoord(left, up); 		MeshChunk->colour(1,1,1);
+			MeshChunk->position(x + 0.45f + 0.1f,y + 0.6f,z + 0.45f + 0.1f);	MeshChunk->textureCoord(right, up); 	MeshChunk->colour(1,1,1);
+			MeshChunk->position(x + 0.45f + 0.1f,y + 0.6f,z + 0.45f);			MeshChunk->textureCoord(right, down); 	MeshChunk->colour(1,1,1);
+			MeshChunk->position(x + 0.45f		,y + 0.6f,z + 0.45f);			MeshChunk->textureCoord(left, down); 	MeshChunk->colour(1,1,1);
+
+			MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
+			MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
+
+			iVertex += 4;
+		}
+
+		down = 1.0f - percent * (blockType->textureRow + 1);
+		up = down + percent - ((percent / (float)textureChunk) * 6);
+
+		//z-1
+		{
+			left = percent * blockType->sidePlane + ((percent / (float)textureChunk) * 7);
+			right = left + ((percent / (float)textureChunk) * 2);
+
+			MeshChunk->position(x + 0.45f		, y + 0.6f	, z + 0.45f);	MeshChunk->textureCoord(right, up); 	MeshChunk->colour(1,1,1);
+			MeshChunk->position(x + 0.45f + 0.1f, y + 0.6f	, z + 0.45f);	MeshChunk->textureCoord(left, up); 		MeshChunk->colour(1,1,1);
+			MeshChunk->position(x + 0.45f + 0.1f, y			, z + 0.45f);	MeshChunk->textureCoord(left, down); 	MeshChunk->colour(1,1,1);
+			MeshChunk->position(x + 0.45f		, y			, z + 0.45f);	MeshChunk->textureCoord(right, down); 	MeshChunk->colour(1,1,1);
+
+			MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
+			MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
+
+			iVertex += 4;
+		}
+
+		//z+1
+		{
+			left = percent * blockType->sidePlane + ((percent / (float)textureChunk) * 7);
+			right = left + ((percent / (float)textureChunk) * 2);
+
+			MeshChunk->position(x + 0.45f		, y			, z + 0.45f + 0.1f);		MeshChunk->textureCoord(left, down); 	MeshChunk->colour(1,1,1);
+			MeshChunk->position(x + 0.45f + 0.1f, y			, z + 0.45f + 0.1f);		MeshChunk->textureCoord(right, down); 	MeshChunk->colour(1,1,1);
+			MeshChunk->position(x + 0.45f + 0.1f, y + 0.6f	, z + 0.45f + 0.1f);		MeshChunk->textureCoord(right, up); 	MeshChunk->colour(1,1,1);
+			MeshChunk->position(x + 0.45f		, y + 0.6f	, z + 0.45f + 0.1f);		MeshChunk->textureCoord(left, up); 		MeshChunk->colour(1,1,1);
+
+			MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
+			MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
+
+			iVertex += 4;
+		}
+	}
+}
+
+void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk* MeshChunk,block_t Block)
+{
 	/* Only create visible faces of each chunk */
 	bool DefaultBlock = false;
-	int SX = 0;
-	int SY = 0;
-	int SZ = 0;
-	int MaxSize = WORLD_SIZE;
+	bool transparentBlock;
 
 	Vector3 light1,light2,light3,light4;
 	float BaseLight = 1.0f;
@@ -1963,6 +2090,393 @@ void CraftWorld::rebuildChunk(int id)
 	Vector3 BlockColorx1;    //Sunset face
 	Vector3 BlockColorx2;    //Sunrise face
 	Vector3 BlockColorz;     //Front/back faces
+
+	//texture stuff
+	BaseBlock *blockType = &blockTypes[Block];
+
+	float down = 1.0f - percent * (blockType->textureRow + 1);
+	float up = down + percent;
+
+	float left = percent * blockType->upPlane;
+	float right = left + percent;
+
+	//lightened
+	//if time is between 21-4 use settings table for lightening
+	//if time is between 5-20 use normal light table but compare it with settings table
+	//	if setting is brighter then use it
+	if(worldDayTime >= 21 || worldDayTime <= 4)//night
+	{
+		if((GetBlockSettings(x,y,z) & OpLighSource) != 0)//block is lightened
+		{
+			BaseLight  = (float)(GetBlockSettings(x, y, z) & 0xF)/16.0f; // 255.0f;  //For the two x faces
+
+			BlockColorx1 = BlockColorx2 = Vector3(BaseLight,BaseLight,BaseLight);
+			BlockColorz  = Vector3(BaseLight,BaseLight,BaseLight) * 0.9f;
+			BlockColory1 = BlockColory2 = Vector3(BaseLight,BaseLight,BaseLight) * 0.8f;
+		}else//normal light
+		{
+			//light
+			BaseLight  = GetBlockLight(x, y, z) / 255.0f;  //For the two x faces
+			//float BlockLight1 = BlockLight * 0.9f;		//For the two z faces
+			//float BlockLight2 = BlockLight * 0.8f;		//For the two y faces
+
+			BlockColory1 = lightColor * (factor1 * BaseLight) + ambientColor;
+			BlockColory1.saturate();
+			BlockColory2 = lightColor * (factor1 / 2.0f * BaseLight) + ambientColor;
+			BlockColory2.saturate();
+			BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
+			BlockColorz.saturate();
+			BlockColorz *= 0.80f;
+
+			BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
+			BlockColorx1.saturate();
+			BlockColorx1 *= 0.95f;
+
+			BlockColorx2 = lightColor * (factor3 * 0.80f * BaseLight) + ambientColor;
+			BlockColorx2.saturate();
+			BlockColorx2 *= 0.95f;
+		}
+	}else//day
+	{
+		if((GetBlockSettings(x,y,z) & OpLighSource) != 0)//block is lightened
+		{
+			int normal = GetBlockLight(x, y, z);
+			int lightened = (GetBlockSettings(x, y, z) & 0xF) * 16;
+
+			if(lightened > normal)
+			{
+				BaseLight = lightened / 255.0f;
+				BlockColorx1 = BlockColorx2 = Vector3(BaseLight,BaseLight,BaseLight);
+				BlockColorz  = Vector3(BaseLight,BaseLight,BaseLight) * 0.9f;
+				BlockColory1 = BlockColory2 = Vector3(BaseLight,BaseLight,BaseLight) * 0.8f;
+			}else
+			{
+				BaseLight  = GetBlockLight(x, y, z) / 255.0f;
+
+				BlockColory1 = lightColor * (factor1 * BaseLight) + ambientColor;
+				BlockColory1.saturate();
+				BlockColory2 = lightColor * (factor1 / 2.0f * BaseLight) + ambientColor;
+				BlockColory2.saturate();
+				BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
+				BlockColorz.saturate();
+				BlockColorz *= 0.80f;
+
+				BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
+				BlockColorx1.saturate();
+				BlockColorx1 *= 0.95f;
+
+				BlockColorx2 = lightColor * (factor3 * 0.80f * BaseLight) + ambientColor;
+				BlockColorx2.saturate();
+				BlockColorx2 *= 0.95f;
+			}
+
+		}else
+		{
+			BaseLight  = GetBlockLight(x, y, z) / 255.0f;
+
+			BlockColory1 = lightColor * (factor1 * BaseLight) + ambientColor;
+			BlockColory1.saturate();
+			BlockColory2 = lightColor * (factor1 / 2.0f * BaseLight) + ambientColor;
+			BlockColory2.saturate();
+			BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
+			BlockColorz.saturate();
+			BlockColorz *= 0.80f;
+
+			BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
+			BlockColorx1.saturate();
+			BlockColorx1 *= 0.95f;
+
+			BlockColorx2 = lightColor * (factor3 * 0.80f * BaseLight) + ambientColor;
+			BlockColorx2.saturate();
+			BlockColorx2 *= 0.95f;
+		}
+	}
+
+	//faces
+	//x-1
+	transparentBlock = DefaultBlock;
+	if (x > 0)transparentBlock = BlockTransparentOrSpecial(x-1,y,z);
+
+	if (transparentBlock == true)
+	{
+		left = percent * blockType->sidePlane;
+		right = left + percent;
+
+		light1 = light2 = light3 = light4 = BlockColorx1;
+		lightFactor = BlockColorx1 * lightShadowFactor;
+
+		//simple shadows
+		//up
+		if(!BlockTransparent(x-1,y+1,z) || !BlockTransparent(x-1,y,z+1) || !BlockTransparent(x-1,y+1,z+1))
+		{
+			light2-=lightFactor;
+		}
+
+		if(!BlockTransparent(x-1,y+1,z) || !BlockTransparent(x-1,y,z-1) || !BlockTransparent(x-1,y+1,z-1))
+		{
+			light4-=lightFactor;
+		}
+
+		//down
+		if(!BlockTransparent(x-1,y-1,z) || !BlockTransparent(x-1,y,z+1) || !BlockTransparent(x-1,y-1,z+1))
+		{
+			light1-=lightFactor;
+		}
+
+		if(!BlockTransparent(x-1,y-1,z) || !BlockTransparent(x-1,y,z-1) || !BlockTransparent(x-1,y-1,z-1))
+		{
+			light3-=lightFactor;
+		}
+
+		MeshChunk->position(x, y,   z+1);	MeshChunk->textureCoord(right, down); MeshChunk->colour(light1.x,light1.y,light1.z);
+		MeshChunk->position(x, y+1, z+1);	MeshChunk->textureCoord(right, up); MeshChunk->colour(light2.x,light2.y,light2.z);
+		MeshChunk->position(x, y+1, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(light4.x,light4.y,light4.z);
+		MeshChunk->position(x, y,   z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(light3.x,light3.y,light3.z);
+
+		MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
+		MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
+
+		iVertex += 4;
+	}
+
+
+	//x+1
+	transparentBlock = DefaultBlock;
+	if (x < WORLD_SIZE - 1)transparentBlock = BlockTransparentOrSpecial(x+1,y,z);
+
+	if (transparentBlock == true)
+	{
+		left = percent * blockType->sidePlane;
+		right = left + percent;
+
+		light1 = light2 = light3 = light4 = BlockColorx2;
+		lightFactor = BlockColorx2 * lightShadowFactor;
+
+		//simple shadows
+		//up
+		if(!BlockTransparent(x+1,y+1,z) || !BlockTransparent(x+1,y,z+1) || !BlockTransparent(x+1,y+1,z+1))
+		{
+			light2-=lightFactor;
+		}
+
+		if(!BlockTransparent(x+1,y+1,z) || !BlockTransparent(x+1,y,z-1) || !BlockTransparent(x+1,y+1,z-1))
+		{
+			light4-=lightFactor;
+		}
+
+		//down
+		if(!BlockTransparent(x+1,y-1,z) || !BlockTransparent(x+1,y,z+1) || !BlockTransparent(x+1,y-1,z+1))
+		{
+			light1-=lightFactor;
+		}
+
+		if(!BlockTransparent(x+1,y-1,z) || !BlockTransparent(x+1,y,z-1) || !BlockTransparent(x+1,y-1,z-1))
+		{
+			light3-=lightFactor;
+		}
+
+		MeshChunk->position(x+1, y,   z);	MeshChunk->textureCoord(right, down);MeshChunk->colour(light3.x,light3.y,light3.z);
+		MeshChunk->position(x+1, y+1, z);	MeshChunk->textureCoord(right, up);MeshChunk->colour(light4.x,light4.y,light4.z);
+		MeshChunk->position(x+1, y+1, z+1);	MeshChunk->textureCoord(left, up);MeshChunk->colour(light2.x,light2.y,light2.z);
+		MeshChunk->position(x+1, y,   z+1);	MeshChunk->textureCoord(left, down);MeshChunk->colour(light1.x,light1.y,light1.z);
+
+		MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
+		MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
+
+		iVertex += 4;
+	}
+
+	//y-1
+	transparentBlock = DefaultBlock;
+	if (y > 0) transparentBlock = BlockTransparentOrSpecial(x,y-1,z);
+
+	if (transparentBlock == true)
+	{
+		//up
+		left = percent * blockType->downPlane;
+		right = left + percent;
+
+		light1 = light2 = light3 = light4 = BlockColory2;
+		lightFactor = BlockColory1 * lightShadowFactor;
+
+		//simple shadows
+		if(!BlockTransparent(x-1,y-1,z) || !BlockTransparent(x-1,y-1,z-1) || !BlockTransparent(x,y-1,z-1))
+		{
+			light1-=lightFactor;
+		}
+
+		if(!BlockTransparent(x,y-1,z-1) || !BlockTransparent(x+1,y-1,z-1) || !BlockTransparent(x+1,y-1,z))
+		{
+			light2-=lightFactor;
+		}
+
+		if(!BlockTransparent(x+1,y-1,z) || !BlockTransparent(x+1,y-1,z+1) || !BlockTransparent(x,y-1,z+1))
+		{
+			light3-=lightFactor;
+		}
+
+		if(!BlockTransparent(x,y-1,z+1) || !BlockTransparent(x-1,y-1,z+1) || !BlockTransparent(x-1,y-1,z))
+		{
+			light4-=lightFactor;
+		}
+
+		MeshChunk->position(x,   y, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(light1.x,light1.y,light1.z);
+		MeshChunk->position(x+1, y, z);		MeshChunk->textureCoord(right, up); MeshChunk->colour(light2.x,light2.y,light2.z);
+		MeshChunk->position(x+1, y, z+1);	MeshChunk->textureCoord(right, down); MeshChunk->colour(light3.x,light3.y,light3.z);
+		MeshChunk->position(x,   y, z+1);	MeshChunk->textureCoord(left, down); MeshChunk->colour(light4.x,light4.y,light4.z);
+
+		MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
+		MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
+
+		iVertex += 4;
+	}
+
+
+	//top face
+	//y+1
+	transparentBlock = DefaultBlock;
+	if (y < WORLD_SIZE - 1)transparentBlock = BlockTransparentOrSpecial(x,y+1,z);
+
+	if (transparentBlock == true)
+	{
+		light1 = light2 = light3 = light4 = BlockColory1;
+		lightFactor = BlockColory2 * lightShadowFactor;
+
+		//simple shadows
+		if(!BlockTransparent(x,y+1,z+1) || !BlockTransparent(x-1,y+1,z+1) || !BlockTransparent(x-1,y+1,z))
+		{
+			light1-=lightFactor;
+		}
+
+		if(!BlockTransparent(x,y+1,z+1) || !BlockTransparent(x+1,y+1,z+1) || !BlockTransparent(x+1,y+1,z))
+		{
+			light2-=lightFactor;
+		}
+
+		if(!BlockTransparent(x+1,y+1,z) || !BlockTransparent(x+1,y+1,z-1) || !BlockTransparent(x,y+1,z-1))
+		{
+			light3-=lightFactor;
+		}
+
+		if(!BlockTransparent(x,y+1,z-1) || !BlockTransparent(x-1,y+1,z-1) || !BlockTransparent(x-1,y+1,z))
+		{
+			light4-=lightFactor;
+		}
+
+		//down
+		left = percent * blockType->upPlane;
+		right = left + percent;
+
+		MeshChunk->position(x,   y+1, z+1);		MeshChunk->textureCoord(left, up); MeshChunk->colour(light1.x,light1.y,light1.z);
+		MeshChunk->position(x+1, y+1, z+1);		MeshChunk->textureCoord(right, up); MeshChunk->colour(light2.x,light2.y,light2.z);
+		MeshChunk->position(x+1, y+1, z);		MeshChunk->textureCoord(right, down); MeshChunk->colour(light3.x,light3.y,light3.z);
+		MeshChunk->position(x,   y+1, z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(light4.x,light4.y,light4.z);
+
+		MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
+		MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
+
+		iVertex += 4;
+	}
+
+	//z-1
+	transparentBlock = DefaultBlock;
+	if (z > 0) transparentBlock = BlockTransparentOrSpecial(x,y,z-1);
+
+	if (transparentBlock == true)
+	{
+		left = percent * blockType->sidePlane;
+		right = left + percent;
+
+		light1 = light2 = light3 = light4 = BlockColorz;
+		lightFactor = BlockColorz * lightShadowFactor;
+
+		//simple shadows
+		//up
+		if(!BlockTransparent(x,y+1,z-1) || !BlockTransparent(x-1,y,z-1) || !BlockTransparent(x-1,y+1,z-1))
+		{
+			light2-=lightFactor;
+		}
+
+		if(!BlockTransparent(x,y+1,z-1) || !BlockTransparent(x+1,y,z-1) || !BlockTransparent(x+1,y+1,z-1))
+		{
+			light4-=lightFactor;
+		}
+
+		//down
+		if(!BlockTransparent(x,y-1,z-1) || !BlockTransparent(x-1,y,z-1) || !BlockTransparent(x-1,y-1,z-1))
+		{
+			light1-=lightFactor;
+		}
+
+		if(!BlockTransparent(x,y-1,z-1) || !BlockTransparent(x+1,y,z-1) || !BlockTransparent(x+1,y-1,z-1))
+		{
+			light3-=lightFactor;
+		}
+
+		MeshChunk->position(x,   y+1, z);		MeshChunk->textureCoord(right, up); MeshChunk->colour(light2.x,light2.y,light2.z);
+		MeshChunk->position(x+1, y+1, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(light4.x,light4.y,light4.z);
+		MeshChunk->position(x+1, y,   z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(light3.x,light3.y,light3.z);
+		MeshChunk->position(x,   y,   z);		MeshChunk->textureCoord(right, down); MeshChunk->colour(light1.x,light1.y,light1.z);
+
+		MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
+		MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
+
+		iVertex += 4;
+	}
+
+
+	//z+1
+	transparentBlock = DefaultBlock;
+	if (z < WORLD_SIZE - 1)transparentBlock = BlockTransparentOrSpecial(x,y,z+1);
+
+	if (transparentBlock == true)
+	{
+		left = percent * blockType->sidePlane;
+		right = left + percent;
+
+		light1 = light2 = light3 = light4 = BlockColorz;
+		lightFactor = BlockColorz * lightShadowFactor;
+
+		//simple shadows
+		//up
+		if(!BlockTransparent(x,y+1,z+1) || !BlockTransparent(x-1,y,z+1) || !BlockTransparent(x-1,y+1,z+1))
+		{
+			light2-=lightFactor;
+		}
+		if(!BlockTransparent(x,y+1,z+1) || !BlockTransparent(x+1,y,z+1) || !BlockTransparent(x+1,y+1,z+1))
+		{
+			light4-=lightFactor;
+		}
+
+		//down
+		if(!BlockTransparent(x,y-1,z+1) || !BlockTransparent(x-1,y,z+1) || !BlockTransparent(x-1,y-1,z+1))
+		{
+			light1-=lightFactor;
+		}
+
+		if(!BlockTransparent(x,y-1,z+1) || !BlockTransparent(x+1,y,z+1) || !BlockTransparent(x+1,y-1,z+1))
+		{
+			light3-=lightFactor;
+		}
+
+		MeshChunk->position(x,   y,   z+1);		MeshChunk->textureCoord(left, down); MeshChunk->colour(light1.x,light1.y,light1.z);
+		MeshChunk->position(x+1, y,   z+1);		MeshChunk->textureCoord(right, down); MeshChunk->colour(light3.x,light3.y,light3.z);
+		MeshChunk->position(x+1, y+1, z+1);		MeshChunk->textureCoord(right, up); MeshChunk->colour(light4.x,light4.y,light4.z);
+		MeshChunk->position(x,   y+1, z+1);		MeshChunk->textureCoord(left, up); MeshChunk->colour(light2.x,light2.y,light2.z);
+
+		MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
+		MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
+
+		iVertex += 4;
+	}
+}
+
+void CraftWorld::rebuildChunk(int id)
+{
+	SimpleMeshChunk* MeshChunk = mChunks[id];
+
+	int iVertex = 0;
+	block_t Block;
 
 	int StartZ = MeshChunk->chunkStartZ;
 	int StartY = MeshChunk->chunkStartY;
@@ -1979,384 +2493,10 @@ void CraftWorld::rebuildChunk(int id)
 				Block = GetBlock(x,y,z);
 				if(BlockTransparent(x,y,z) == true)continue;//if block is transparent don't continue
 
-				//texture stuff
-				BaseBlock *blockType = &blockTypes[Block];
-
-				float down = 1.0f - percent * (blockType->textureRow + 1);
-				float up = down + percent;
-
-				float left = percent * blockType->upPlane;
-				float right = left + percent;
-
-				//lightened
-				//if time is between 21-4 use settings table for lightening
-				//if time is between 5-20 use normal light table but compare it with settings table
-				//	if setting is brighter then use it
-				if(worldDayTime >= 21 || worldDayTime <= 4)//night
-				{
-					if((GetBlockSettings(x,y,z) & OpLighSource) != 0)//block is lightened
-					{
-						BaseLight  = (float)(GetBlockSettings(x, y, z) & 0xF)/16.0f; // 255.0f;  //For the two x faces
-
-						BlockColorx1 = BlockColorx2 = Vector3(BaseLight,BaseLight,BaseLight);
-						BlockColorz  = Vector3(BaseLight,BaseLight,BaseLight) * 0.9f;
-						BlockColory1 = BlockColory2 = Vector3(BaseLight,BaseLight,BaseLight) * 0.8f;
-					}else//normal light
-					{
-						//light
-						BaseLight  = GetBlockLight(x, y, z) / 255.0f;  //For the two x faces
-						//float BlockLight1 = BlockLight * 0.9f;		//For the two z faces
-						//float BlockLight2 = BlockLight * 0.8f;		//For the two y faces
-
-						BlockColory1 = lightColor * (factor1 * BaseLight) + ambientColor;
-						BlockColory1.saturate();
-						BlockColory2 = lightColor * (factor1 / 2.0f * BaseLight) + ambientColor;
-						BlockColory2.saturate();
-						BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
-						BlockColorz.saturate();
-						BlockColorz *= 0.80f;
-
-						BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
-						BlockColorx1.saturate();
-						BlockColorx1 *= 0.95f;
-
-						BlockColorx2 = lightColor * (factor3 * 0.80f * BaseLight) + ambientColor;
-						BlockColorx2.saturate();
-						BlockColorx2 *= 0.95f;
-					}
-				}else//day
-				{
-					if((GetBlockSettings(x,y,z) & OpLighSource) != 0)//block is lightened
-					{
-						int normal = GetBlockLight(x, y, z);
-						int lightened = (GetBlockSettings(x, y, z) & 0xF) * 16;
-
-						if(lightened > normal)
-						{
-							BaseLight = lightened / 255.0f;
-							BlockColorx1 = BlockColorx2 = Vector3(BaseLight,BaseLight,BaseLight);
-							BlockColorz  = Vector3(BaseLight,BaseLight,BaseLight) * 0.9f;
-							BlockColory1 = BlockColory2 = Vector3(BaseLight,BaseLight,BaseLight) * 0.8f;
-						}else
-						{
-							BaseLight  = GetBlockLight(x, y, z) / 255.0f;
-
-							BlockColory1 = lightColor * (factor1 * BaseLight) + ambientColor;
-							BlockColory1.saturate();
-							BlockColory2 = lightColor * (factor1 / 2.0f * BaseLight) + ambientColor;
-							BlockColory2.saturate();
-							BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
-							BlockColorz.saturate();
-							BlockColorz *= 0.80f;
-
-							BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
-							BlockColorx1.saturate();
-							BlockColorx1 *= 0.95f;
-
-							BlockColorx2 = lightColor * (factor3 * 0.80f * BaseLight) + ambientColor;
-							BlockColorx2.saturate();
-							BlockColorx2 *= 0.95f;
-						}
-
-					}else
-					{
-						BaseLight  = GetBlockLight(x, y, z) / 255.0f;
-
-						BlockColory1 = lightColor * (factor1 * BaseLight) + ambientColor;
-						BlockColory1.saturate();
-						BlockColory2 = lightColor * (factor1 / 2.0f * BaseLight) + ambientColor;
-						BlockColory2.saturate();
-						BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
-						BlockColorz.saturate();
-						BlockColorz *= 0.80f;
-
-						BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
-						BlockColorx1.saturate();
-						BlockColorx1 *= 0.95f;
-
-						BlockColorx2 = lightColor * (factor3 * 0.80f * BaseLight) + ambientColor;
-						BlockColorx2.saturate();
-						BlockColorx2 *= 0.95f;
-					}
-				}
-
-				//faces
-				//x-1
-				transparentBlock = DefaultBlock;
-				if (x > SX)transparentBlock = BlockTransparent(x-1,y,z);
-
-				if (transparentBlock == true)
-				{
-					left = percent * blockType->sidePlane;
-					right = left + percent;
-
-					light1 = light2 = light3 = light4 = BlockColorx1;
-					lightFactor = BlockColorx1 * lightShadowFactor;
-
-					//simple shadows
-					//up
-					if(!BlockTransparent(x-1,y+1,z) || !BlockTransparent(x-1,y,z+1) || !BlockTransparent(x-1,y+1,z+1))
-					{
-						light2-=lightFactor;
-					}
-
-					if(!BlockTransparent(x-1,y+1,z) || !BlockTransparent(x-1,y,z-1) || !BlockTransparent(x-1,y+1,z-1))
-					{
-						light4-=lightFactor;
-					}
-
-					//down
-					if(!BlockTransparent(x-1,y-1,z) || !BlockTransparent(x-1,y,z+1) || !BlockTransparent(x-1,y-1,z+1))
-					{
-						light1-=lightFactor;
-					}
-
-					if(!BlockTransparent(x-1,y-1,z) || !BlockTransparent(x-1,y,z-1) || !BlockTransparent(x-1,y-1,z-1))
-					{
-						light3-=lightFactor;
-					}
-
-					MeshChunk->position(x, y,   z+1);	MeshChunk->textureCoord(right, down); MeshChunk->colour(light1.x,light1.y,light1.z);
-					MeshChunk->position(x, y+1, z+1);	MeshChunk->textureCoord(right, up); MeshChunk->colour(light2.x,light2.y,light2.z);
-					MeshChunk->position(x, y+1, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(light4.x,light4.y,light4.z);
-					MeshChunk->position(x, y,   z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(light3.x,light3.y,light3.z);
-
-					MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
-					MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
-
-					iVertex += 4;
-				}
-
-
-				//x+1
-				transparentBlock = DefaultBlock;
-				if (x < SX + MaxSize - 1)transparentBlock = BlockTransparent(x+1,y,z);
-
-				if (transparentBlock == true)
-				{
-					left = percent * blockType->sidePlane;
-					right = left + percent;
-
-					light1 = light2 = light3 = light4 = BlockColorx2;
-					lightFactor = BlockColorx2 * lightShadowFactor;
-
-					//simple shadows
-					//up
-					if(!BlockTransparent(x+1,y+1,z) || !BlockTransparent(x+1,y,z+1) || !BlockTransparent(x+1,y+1,z+1))
-					{
-						light2-=lightFactor;
-					}
-
-					if(!BlockTransparent(x+1,y+1,z) || !BlockTransparent(x+1,y,z-1) || !BlockTransparent(x+1,y+1,z-1))
-					{
-						light4-=lightFactor;
-					}
-
-					//down
-					if(!BlockTransparent(x+1,y-1,z) || !BlockTransparent(x+1,y,z+1) || !BlockTransparent(x+1,y-1,z+1))
-					{
-						light1-=lightFactor;
-					}
-
-					if(!BlockTransparent(x+1,y-1,z) || !BlockTransparent(x+1,y,z-1) || !BlockTransparent(x+1,y-1,z-1))
-					{
-						light3-=lightFactor;
-					}
-
-					MeshChunk->position(x+1, y,   z);	MeshChunk->textureCoord(right, down);MeshChunk->colour(light3.x,light3.y,light3.z);
-					MeshChunk->position(x+1, y+1, z);	MeshChunk->textureCoord(right, up);MeshChunk->colour(light4.x,light4.y,light4.z);
-					MeshChunk->position(x+1, y+1, z+1);	MeshChunk->textureCoord(left, up);MeshChunk->colour(light2.x,light2.y,light2.z);
-					MeshChunk->position(x+1, y,   z+1);	MeshChunk->textureCoord(left, down);MeshChunk->colour(light1.x,light1.y,light1.z);
-
-					MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
-					MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
-
-					iVertex += 4;
-				}
-
-				//y-1
-				transparentBlock = DefaultBlock;
-				if (y > SY) transparentBlock = BlockTransparent(x,y-1,z);
-
-				if (transparentBlock == true)
-				{
-					//up
-					left = percent * blockType->downPlane;
-					right = left + percent;
-
-					light1 = light2 = light3 = light4 = BlockColory2;
-					lightFactor = BlockColory1 * lightShadowFactor;
-
-					//simple shadows
-					if(!BlockTransparent(x-1,y-1,z) || !BlockTransparent(x-1,y-1,z-1) || !BlockTransparent(x,y-1,z-1))
-					{
-						light1-=lightFactor;
-					}
-
-					if(!BlockTransparent(x,y-1,z-1) || !BlockTransparent(x+1,y-1,z-1) || !BlockTransparent(x+1,y-1,z))
-					{
-						light2-=lightFactor;
-					}
-
-					if(!BlockTransparent(x+1,y-1,z) || !BlockTransparent(x+1,y-1,z+1) || !BlockTransparent(x,y-1,z+1))
-					{
-						light3-=lightFactor;
-					}
-
-					if(!BlockTransparent(x,y-1,z+1) || !BlockTransparent(x-1,y-1,z+1) || !BlockTransparent(x-1,y-1,z))
-					{
-						light4-=lightFactor;
-					}
-
-					MeshChunk->position(x,   y, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(light1.x,light1.y,light1.z);
-					MeshChunk->position(x+1, y, z);		MeshChunk->textureCoord(right, up); MeshChunk->colour(light2.x,light2.y,light2.z);
-					MeshChunk->position(x+1, y, z+1);	MeshChunk->textureCoord(right, down); MeshChunk->colour(light3.x,light3.y,light3.z);
-					MeshChunk->position(x,   y, z+1);	MeshChunk->textureCoord(left, down); MeshChunk->colour(light4.x,light4.y,light4.z);
-
-					MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
-					MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
-
-					iVertex += 4;
-				}
-
-
-				//top face
-				//y+1
-				transparentBlock = DefaultBlock;
-				if (y < SY + MaxSize - 1)transparentBlock = BlockTransparent(x,y+1,z);
-
-				if (transparentBlock == true)
-				{
-					light1 = light2 = light3 = light4 = BlockColory1;
-					lightFactor = BlockColory2 * lightShadowFactor;
-
-					//simple shadows
-					if(!BlockTransparent(x,y+1,z+1) || !BlockTransparent(x-1,y+1,z+1) || !BlockTransparent(x-1,y+1,z))
-					{
-						light1-=lightFactor;
-					}
-
-					if(!BlockTransparent(x,y+1,z+1) || !BlockTransparent(x+1,y+1,z+1) || !BlockTransparent(x+1,y+1,z))
-					{
-						light2-=lightFactor;
-					}
-
-					if(!BlockTransparent(x+1,y+1,z) || !BlockTransparent(x+1,y+1,z-1) || !BlockTransparent(x,y+1,z-1))
-					{
-						light3-=lightFactor;
-					}
-
-					if(!BlockTransparent(x,y+1,z-1) || !BlockTransparent(x-1,y+1,z-1) || !BlockTransparent(x-1,y+1,z))
-					{
-						light4-=lightFactor;
-					}
-
-					//down
-					left = percent * blockType->upPlane;
-					right = left + percent;
-
-					MeshChunk->position(x,   y+1, z+1);		MeshChunk->textureCoord(left, up); MeshChunk->colour(light1.x,light1.y,light1.z);
-					MeshChunk->position(x+1, y+1, z+1);		MeshChunk->textureCoord(right, up); MeshChunk->colour(light2.x,light2.y,light2.z);
-					MeshChunk->position(x+1, y+1, z);		MeshChunk->textureCoord(right, down); MeshChunk->colour(light3.x,light3.y,light3.z);
-					MeshChunk->position(x,   y+1, z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(light4.x,light4.y,light4.z);
-
-					MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
-					MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
-
-					iVertex += 4;
-				}
-
-				//z-1
-				transparentBlock = DefaultBlock;
-				if (z > SZ) transparentBlock = BlockTransparent(x,y,z-1);
-
-				if (transparentBlock == true)
-				{
-					left = percent * blockType->sidePlane;
-					right = left + percent;
-
-					light1 = light2 = light3 = light4 = BlockColorz;
-					lightFactor = BlockColorz * lightShadowFactor;
-
-					//simple shadows
-					//up
-					if(!BlockTransparent(x,y+1,z-1) || !BlockTransparent(x-1,y,z-1) || !BlockTransparent(x-1,y+1,z-1))
-					{
-						light2-=lightFactor;
-					}
-
-					if(!BlockTransparent(x,y+1,z-1) || !BlockTransparent(x+1,y,z-1) || !BlockTransparent(x+1,y+1,z-1))
-					{
-						light4-=lightFactor;
-					}
-
-					//down
-					if(!BlockTransparent(x,y-1,z-1) || !BlockTransparent(x-1,y,z-1) || !BlockTransparent(x-1,y-1,z-1))
-					{
-						light1-=lightFactor;
-					}
-
-					if(!BlockTransparent(x,y-1,z-1) || !BlockTransparent(x+1,y,z-1) || !BlockTransparent(x+1,y-1,z-1))
-					{
-						light3-=lightFactor;
-					}
-
-					MeshChunk->position(x,   y+1, z);		MeshChunk->textureCoord(right, up); MeshChunk->colour(light2.x,light2.y,light2.z);
-					MeshChunk->position(x+1, y+1, z);		MeshChunk->textureCoord(left, up); MeshChunk->colour(light4.x,light4.y,light4.z);
-					MeshChunk->position(x+1, y,   z);		MeshChunk->textureCoord(left, down); MeshChunk->colour(light3.x,light3.y,light3.z);
-					MeshChunk->position(x,   y,   z);		MeshChunk->textureCoord(right, down); MeshChunk->colour(light1.x,light1.y,light1.z);
-
-					MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
-					MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
-
-					iVertex += 4;
-				}
-
-
-				//z+1
-				transparentBlock = DefaultBlock;
-				if (z < SZ + MaxSize - 1)transparentBlock = BlockTransparent(x,y,z+1);
-
-				if (transparentBlock == true)
-				{
-					left = percent * blockType->sidePlane;
-					right = left + percent;
-
-					light1 = light2 = light3 = light4 = BlockColorz;
-					lightFactor = BlockColorz * lightShadowFactor;
-
-					//simple shadows
-					//up
-					if(!BlockTransparent(x,y+1,z+1) || !BlockTransparent(x-1,y,z+1) || !BlockTransparent(x-1,y+1,z+1))
-					{
-						light2-=lightFactor;
-					}
-					if(!BlockTransparent(x,y+1,z+1) || !BlockTransparent(x+1,y,z+1) || !BlockTransparent(x+1,y+1,z+1))
-					{
-						light4-=lightFactor;
-					}
-
-					//down
-					if(!BlockTransparent(x,y-1,z+1) || !BlockTransparent(x-1,y,z+1) || !BlockTransparent(x-1,y-1,z+1))
-					{
-						light1-=lightFactor;
-					}
-
-					if(!BlockTransparent(x,y-1,z+1) || !BlockTransparent(x+1,y,z+1) || !BlockTransparent(x+1,y-1,z+1))
-					{
-						light3-=lightFactor;
-					}
-
-					MeshChunk->position(x,   y,   z+1);		MeshChunk->textureCoord(left, down); MeshChunk->colour(light1.x,light1.y,light1.z);
-					MeshChunk->position(x+1, y,   z+1);		MeshChunk->textureCoord(right, down); MeshChunk->colour(light3.x,light3.y,light3.z);
-					MeshChunk->position(x+1, y+1, z+1);		MeshChunk->textureCoord(right, up); MeshChunk->colour(light4.x,light4.y,light4.z);
-					MeshChunk->position(x,   y+1, z+1);		MeshChunk->textureCoord(left, up); MeshChunk->colour(light2.x,light2.y,light2.z);
-
-					MeshChunk->triangle(iVertex, iVertex+1, iVertex+2);
-					MeshChunk->triangle(iVertex+2, iVertex+3, iVertex);
-
-					iVertex += 4;
-				}
+				if(!BlockSpecial(x,y,z))
+					GetNormalBlock(x,y,z,iVertex,MeshChunk,Block);
+				else
+					GetSpecialBlock(x,y,z,iVertex,MeshChunk,Block);
 			}
 		}
 	}

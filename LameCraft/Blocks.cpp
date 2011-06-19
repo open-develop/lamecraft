@@ -643,7 +643,7 @@ Torch::Torch():BaseBlock()
 	downPlane = 3;
 	sidePlane = 3;
 	editable = true;
-	transparent = true;
+	transparent = false;
 	soundType = 2;
 	lightSource = true;
 	blockSpecial = true;

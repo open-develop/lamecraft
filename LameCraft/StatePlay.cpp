@@ -84,6 +84,12 @@ void StatePlay::Init()
 
 	Logger::Instance()->LogMessage("created chunks: %d\n",mWorld->createdChunksCount);
 
+	//block sets info
+	allcubes = mWorld->GetBlockTypesCount();
+	//selectedCubeEnd = allcubes - 2;//because we don't want first one and last one
+	cubesSets = std::floor(allcubes / 9);//9 cubes is set
+
+
 	//texture
 	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/terrain_medium.png");
 	texture = TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/terrain_medium.png");
@@ -129,8 +135,6 @@ void StatePlay::Init()
 	//8 am = 28800 seconds
 	// 10 am = 36000 seconds
 	// 12 pm = 43200 seconds
-	//1 second = 72
-	//1 hour = 3600
 	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/sun.png");
 	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/moon.png");
 
@@ -163,7 +167,7 @@ void StatePlay::InitParametric(int terrainType,bool makeFlat,bool makeTrees,bool
 	mWorld->initRandompMap(128,16,terrainType,makeFlat,makeTrees,makeWater,makeCaves);
 	mWorld->setTextureSize(128,16);
 	mWorld->initWorldBlocksLight();
-	mWorld->SetWolrdTime(20);
+	mWorld->SetWolrdTime(9);
 	mWorld->UpdatePlayerZoneBB(playerPosition);
 	mWorld->buildMap();
 	mWorld->buildblocksVerts();
@@ -229,8 +233,6 @@ void StatePlay::InitParametric(int terrainType,bool makeFlat,bool makeTrees,bool
 	skyLight = new SkyLight();
 	skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sun.png"));
 
-
-
 	menuOptions = false;
 	optionsMenuPos = 0;
 
@@ -289,6 +291,12 @@ void StatePlay::LoadMap(std::string fileName,bool compressed)
 	Logger::Instance()->LogMessage("created chunks: %d\n",mWorld->createdChunksCount);
 
 
+	//block sets info
+	allcubes = mWorld->GetBlockTypesCount();
+	//selectedCubeEnd = allcubes - 2;//because we don't want first one and last one
+	cubesSets = std::floor(allcubes / 9);//9 cubes is set
+
+
 	//texture
 	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/terrain_medium.png");
 	texture = TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/terrain_medium.png");
@@ -339,7 +347,6 @@ void StatePlay::LoadMap(std::string fileName,bool compressed)
 
 	skyLight = new SkyLight();
 	skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sun.png"));
-
 
 	menuOptions = false;
 	optionsMenuPos = 0;
@@ -599,6 +606,9 @@ void StatePlay::HandleEvents(StateManager* sManager)
 									mWorld->rebuildTransparentChunk(chunkTarget);
 									mWorld->rebuildNearestChunks(chunkTarget,testPos2);
 
+									if(mWorld->LightSourceBlock(selectedCubeSet + selectedCube+1))
+										mWorld->RebuildChunksLight(testPos2,chunkTarget,(selectedCubeSet + selectedCube+1));
+
 								}
 
 								fppCam->needUpdate = true;
@@ -615,6 +625,8 @@ void StatePlay::HandleEvents(StateManager* sManager)
 		//remove cube
 		if(keyPressed(InputHelper::Instance()->getButtonToAction(13)))
 		{
+			bool wasLight = false;
+			block_t oldBlock = 0;
 			//remove cube
 			Vector3 rayDir = fppCam->m_vView - fppCam->m_vPosition;
 			rayDir.normalize();
@@ -627,14 +639,24 @@ void StatePlay::HandleEvents(StateManager* sManager)
 			{
 				testPos = fppCam->m_vPosition + (rayDir * i);
 
-				//sprawdzamy czy tykamy coœ
+				//check if we touch something
 				if(mWorld->BlockEditable(testPos.x,testPos.y,testPos.z))
 				{
+					if(mWorld->LightSourceBlock(mWorld->GetBlock(testPos.x,testPos.y,testPos.z)))//if it's light block
+					{
+						oldBlock = mWorld->GetBlock(testPos.x,testPos.y,testPos.z);
+						wasLight = true;
+					}
 
 					mSoundMgr->PlayWalkSound(mWorld->BlockSoundAtPos(testPos));
 					mWorld->GetBlock(testPos.x,testPos.y,testPos.z) = 0;
-
 					int	chunkTarget = mWorld->getChunkId(testPos);
+
+					//before rebuilding update light info
+					if(wasLight)
+					{
+						mWorld->RemoveLigtSourceAtPosition(testPos.x,testPos.y,testPos.z,oldBlock);
+					}
 
 					if(chunkTarget != -1)
 					{
@@ -642,6 +664,9 @@ void StatePlay::HandleEvents(StateManager* sManager)
 						mWorld->rebuildChunk(chunkTarget);
 						mWorld->rebuildTransparentChunk(chunkTarget);
 						mWorld->rebuildNearestChunks(chunkTarget,testPos);
+
+						if(wasLight)
+							mWorld->RebuildChunksLight(testPos,chunkTarget,oldBlock);
 					}
 
 					fppCam->needUpdate = true;

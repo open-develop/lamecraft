@@ -149,7 +149,17 @@ namespace Aurora
 		inline float Vector3::distance(const Vector3 &pt1, const Vector3 &pt2)
 		{
 			// Calculates the distance between 2 points.
-			return sqrtf(distanceSq(pt1, pt2));
+			float f = distanceSq(pt1, pt2);
+			float result;
+			__asm__ volatile (
+				".set			push\n"					// save assembler option
+				".set			noreorder\n"			// suppress reordering
+				"mtv     %1, S000\n"
+				"vsqrt.s S000, S000\n"
+				"mfv     %0, S000\n"
+				".set			pop\n"					// restore assembler option
+			: "=r"(result) : "r"(f));
+			return result;
 		}
 
 		inline float Vector3::distanceSq(const Vector3 &pt1, const Vector3 &pt2)

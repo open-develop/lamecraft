@@ -79,8 +79,12 @@ public:
 	bool PlayerInWater(Vector3 pos);
 	bool BlockTransparent(const int x, const int y, const int z);
 	bool BlockEditable(const int x, const int y, const int z);
+
 	bool LightSourceBlock(int id);
 	void SetLigtSourcePosition(const int x, const int y, const int z,int blockID);
+	void RemoveLigtSourceAtPosition(const int x, const int y, const int z,int blockID);
+	void RebuildChunksLight(Vector3 pos,int currentChunk,int blockID);
+	void UpdateWorldLightForChunk(int chunkID);
 
 	int GetDrawntTrianglesCount() { return drawnTriangles; }
 

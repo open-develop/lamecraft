@@ -883,10 +883,7 @@ void CraftWorld::initWorldBlocksLight()
 				{
 					if (Light >= DeltaLight)
 						Light -= DeltaLight;
-					//if (Light < 85)
-					//	Light = 85;
 				}
-
 			}
 		}
 	}
@@ -976,7 +973,9 @@ void CraftWorld::SetWolrdTime(float time)
 		lightColor = Vector3(1, 1, 1);
 	}
 
-	ambientColor = lightColor / 3.0f;
+	//ambientColor = lightColor / 3.0f;
+	ambientColor = Vector3(0.05f,0.05f,0.05f);
+
 	fogColor = lightColor * 0.80f;
 
 	//light face factors
@@ -1046,6 +1045,43 @@ block_t& CraftWorld::GetBlockSettings(const int x, const int y, const int z)
 	return m_BlockSettings[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE];
 }
 
+void CraftWorld::RemoveLigtSourceAtPosition(const int x, const int y, const int z,int blockID)
+{
+	if(blockID == JackOLantern::getID())
+	{
+		int current = 0;
+
+		for(int zz = z-7;zz < z+7;zz++)
+		{
+			for(int xx = x-7;xx < x+7;xx++)
+			{
+				for(int yy = y-7;yy < y+7;yy++)
+				{
+					if (xx >= 0 || yy >= 0 || zz >= 0  || xx < WORLD_SIZE || yy < WORLD_SIZE || zz < WORLD_SIZE)
+					{
+						if((GetBlockSettings(xx,yy,zz) & OpLighSource) != 0)
+						{
+							current = GetBlockSettings(xx,yy,zz) & 0xF;
+							GetBlockSettings(xx,yy,zz) ^= current & 0xF;
+							GetBlockSettings(xx,yy,zz) ^= 0 & 0xF;
+							//turn off light here
+							GetBlockSettings(xx,yy,zz) ^= OpLighSource;
+						}
+					}
+				}
+			}
+		}
+
+		BoundingBox lBox = BoundingBox(Vector3(x - 7,y - 7,z - 7),Vector3(x + 7,y + 7,z + 7));
+		for(unsigned int i = 0; i < mChunks.size();i++)
+		{
+			if(lBox.intersect(mChunks[i]->bBox))
+				UpdateWorldLightForChunk(i);
+		}
+
+	}
+}
+
 void CraftWorld::SetLigtSourcePosition(const int x, const int y, const int z,int blockID)
 {
 	int current  = 0;
@@ -1056,11 +1092,11 @@ void CraftWorld::SetLigtSourcePosition(const int x, const int y, const int z,int
 	if(blockID == JackOLantern::getID())
 	{
 		//central light is 255
-		for(int zz = z-5;zz < z+5;zz++)
+		for(int zz = z-7;zz < z+7;zz++)
 		{
-			for(int xx = x-5;xx < x+5;xx++)
+			for(int xx = x-7;xx < x+7;xx++)
 			{
-				for(int yy = y-5;yy < y+5;yy++)
+				for(int yy = y-7;yy < y+7;yy++)
 				{
 					//in map range
 					if (xx >= 0 || yy >= 0 || zz >= 0  || xx < WORLD_SIZE || yy < WORLD_SIZE || zz < WORLD_SIZE)
@@ -1073,19 +1109,29 @@ void CraftWorld::SetLigtSourcePosition(const int x, const int y, const int z,int
 						new_light = 255 - (32 * distance);
 						new_light /= 16;//because we can store 0-15 in 4 bits
 
-						//get current value
-						current = GetBlockSettings(xx,yy,zz) & 0xF;
-						//set new only if it's brighter
-						if(current < new_light)
+						//check if it's lightened
+						if((GetBlockSettings(xx,yy,zz) & OpLighSource) != 0)//lightened
 						{
+							//get current value
+							current = GetBlockSettings(xx,yy,zz) & 0xF;
+							//set new only if it's brighter
+							if(current < new_light)
+							{
+								//clear this value
+								GetBlockSettings(xx,yy,zz) ^= current & 0xF;
+								//set new value
+								GetBlockSettings(xx,yy,zz) ^= new_light & 0xF;
+							}
+						}else //not lightened
+						{
+							current = GetBlockSettings(xx,yy,zz) & 0xF;
 							//clear this value
 							GetBlockSettings(xx,yy,zz) ^= current & 0xF;
 							//set new value
 							GetBlockSettings(xx,yy,zz) ^= new_light & 0xF;
-						}
-						//mark as lightened
-						if((GetBlockSettings(xx,yy,zz) & OpLighSource) == 0)
+							//mark as lightened
 							GetBlockSettings(xx,yy,zz) ^= OpLighSource;
+						}
 					}
 				}
 			}
@@ -1980,27 +2026,52 @@ void CraftWorld::rebuildChunk(int id)
 						int lightened = (GetBlockSettings(x, y, z) & 0xF) * 16;
 
 						if(lightened > normal)
+						{
 							BaseLight = lightened / 255.0f;
+							BlockColorx1 = BlockColorx2 = Vector3(BaseLight,BaseLight,BaseLight);
+							BlockColorz  = Vector3(BaseLight,BaseLight,BaseLight) * 0.9f;
+							BlockColory1 = BlockColory2 = Vector3(BaseLight,BaseLight,BaseLight) * 0.8f;
+						}else
+						{
+							BaseLight  = GetBlockLight(x, y, z) / 255.0f;
+
+							BlockColory1 = lightColor * (factor1 * BaseLight) + ambientColor;
+							BlockColory1.saturate();
+							BlockColory2 = lightColor * (factor1 / 2.0f * BaseLight) + ambientColor;
+							BlockColory2.saturate();
+							BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
+							BlockColorz.saturate();
+							BlockColorz *= 0.80f;
+
+							BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
+							BlockColorx1.saturate();
+							BlockColorx1 *= 0.95f;
+
+							BlockColorx2 = lightColor * (factor3 * 0.80f * BaseLight) + ambientColor;
+							BlockColorx2.saturate();
+							BlockColorx2 *= 0.95f;
+						}
+
 					}else
 					{
 						BaseLight  = GetBlockLight(x, y, z) / 255.0f;
+
+						BlockColory1 = lightColor * (factor1 * BaseLight) + ambientColor;
+						BlockColory1.saturate();
+						BlockColory2 = lightColor * (factor1 / 2.0f * BaseLight) + ambientColor;
+						BlockColory2.saturate();
+						BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
+						BlockColorz.saturate();
+						BlockColorz *= 0.80f;
+
+						BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
+						BlockColorx1.saturate();
+						BlockColorx1 *= 0.95f;
+
+						BlockColorx2 = lightColor * (factor3 * 0.80f * BaseLight) + ambientColor;
+						BlockColorx2.saturate();
+						BlockColorx2 *= 0.95f;
 					}
-
-					BlockColory1 = lightColor * (factor1 * BaseLight) + ambientColor;
-					BlockColory1.saturate();
-					BlockColory2 = lightColor * (factor1 / 2.0f * BaseLight) + ambientColor;
-					BlockColory2.saturate();
-					BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
-					BlockColorz.saturate();
-					BlockColorz *= 0.80f;
-
-					BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
-					BlockColorx1.saturate();
-					BlockColorx1 *= 0.95f;
-
-					BlockColorx2 = lightColor * (factor3 * 0.80f * BaseLight) + ambientColor;
-					BlockColorx2.saturate();
-					BlockColorx2 *= 0.95f;
 				}
 
 				//faces
@@ -2514,6 +2585,42 @@ void CraftWorld::rebuildTransparentChunk(int id)
 
 
 	MeshChunk->end();
+}
+
+void CraftWorld::UpdateWorldLightForChunk(int chunkID)
+{
+	int StartZ = mChunks[chunkID]->chunkStartZ;
+	int StartY = mChunks[chunkID]->chunkStartY;
+	int StartX = mChunks[chunkID]->chunkStartX;
+
+	for (int z = StartZ; z < CHUNK_SIZE + StartZ; ++z)
+	{
+		for (int y = StartY; y < CHUNK_SIZE + StartY; ++y)
+		{
+			for (int x = StartX; x < CHUNK_SIZE + StartX; ++x)
+			{
+				block_t Block = GetBlock(x,y,z);
+				if(BlockTransparent(x,y,z) == true)continue;//if block is transparent don't continue
+
+				//light source?
+				if(LightSourceBlock(Block))
+					SetLigtSourcePosition(x,y,z,Block);
+			}
+		}
+	}
+}
+
+void CraftWorld::RebuildChunksLight(Vector3 pos,int currentChunk,int blockID)
+{
+	if(blockID == JackOLantern::getID())
+	{
+		BoundingBox lBox = BoundingBox(Vector3(pos.x - 7,pos.y - 7,pos.z - 7),Vector3(pos.x + 7,pos.y + 7,pos.z + 7));
+		for(unsigned int i = 0; i < mChunks.size();i++)
+		{
+			if(lBox.intersect(mChunks[i]->bBox) && currentChunk != i)
+				rebuildChunk(i);
+		}
+	}
 }
 
 void CraftWorld::rebuildNearestChunks(int id,Vector3 pos)

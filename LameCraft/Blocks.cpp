@@ -635,6 +635,21 @@ JackOLantern::JackOLantern():BaseBlock()
 }
 block_t JackOLantern::getID(){ return 47;}
 
+Torch::Torch():BaseBlock()
+{
+	textureRow = 7;
+
+	upPlane = 3;
+	downPlane = 3;
+	sidePlane = 3;
+	editable = true;
+	transparent = true;
+	soundType = 2;
+	lightSource = true;
+	blockSpecial = true;
+}
+block_t Torch::getID(){ return 48;}
+
 //must be always last
 
 IronBlock::IronBlock():BaseBlock()
@@ -648,4 +663,4 @@ IronBlock::IronBlock():BaseBlock()
 	transparent = false;
 	soundType = 2;
 }
-block_t IronBlock::getID(){ return 48;}
+block_t IronBlock::getID(){ return 49;}

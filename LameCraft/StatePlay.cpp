@@ -602,13 +602,16 @@ void StatePlay::HandleEvents(StateManager* sManager)
 									mSoundMgr->PlayPlopSound();
 
 									//rebuild
-									mWorld->rebuildChunk(chunkTarget);
-									mWorld->rebuildTransparentChunk(chunkTarget);
-									mWorld->rebuildNearestChunks(chunkTarget,testPos2);
-
 									if(mWorld->LightSourceBlock(selectedCubeSet + selectedCube+1))
+									{
 										mWorld->RebuildChunksLight(testPos2,chunkTarget,(selectedCubeSet + selectedCube+1));
-
+									}
+									else
+									{
+										mWorld->rebuildChunk(chunkTarget);
+										mWorld->rebuildTransparentChunk(chunkTarget);
+										mWorld->rebuildNearestChunks(chunkTarget,testPos2);
+									}
 								}
 
 								fppCam->needUpdate = true;
@@ -661,12 +664,15 @@ void StatePlay::HandleEvents(StateManager* sManager)
 					if(chunkTarget != -1)
 					{
 						//rebuild
-						mWorld->rebuildChunk(chunkTarget);
-						mWorld->rebuildTransparentChunk(chunkTarget);
-						mWorld->rebuildNearestChunks(chunkTarget,testPos);
-
 						if(wasLight)
+						{
 							mWorld->RebuildChunksLight(testPos,chunkTarget,oldBlock);
+						}else
+						{
+							mWorld->rebuildChunk(chunkTarget);
+							mWorld->rebuildTransparentChunk(chunkTarget);
+							mWorld->rebuildNearestChunks(chunkTarget,testPos);
+						}
 					}
 
 					fppCam->needUpdate = true;

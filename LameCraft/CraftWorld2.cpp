@@ -77,6 +77,8 @@ CraftWorld::CraftWorld()
 	blockTypes.push_back(SlamRockBlock());
 	blockTypes.push_back(WaterRockBlock());
 	blockTypes.push_back(JackOLantern());
+	blockTypes.push_back(Torch());
+
 
 	//can't destroy this one
 	blockTypes.push_back(IronBlock());
@@ -1089,7 +1091,7 @@ void CraftWorld::SetLigtSourcePosition(const int x, const int y, const int z,int
 	int new_light = 255;
 
 	//put correct light based on lightsource type
-	if(blockID == JackOLantern::getID())
+	if(blockID == JackOLantern::getID() || blockID == Torch::getID())
 	{
 		//central light is 255
 		for(int zz = z-7;zz < z+7;zz++)
@@ -1368,6 +1370,10 @@ void CraftWorld::createChunks(const int StartX, const int StartY, const int Star
 				{
 					Block = GetBlock(x,y,z);
 					if(BlockTransparent(x,y,z) == true)continue;//if block is transparent don't continue
+
+					//add light
+					//if(LightSourceBlock(Block))
+					//	SetLigtSourcePosition(x,y,z,Block);
 
 					//texture stuff
 					BaseBlock *blockType = &blockTypes[Block];
@@ -2406,25 +2412,97 @@ void CraftWorld::rebuildTransparentChunk(int id)
 				float left = percent * blockType->upPlane;
 				float right = left + percent;
 
-				//light
-				BaseLight  = GetBlockLight(x, y, z) / 255.0f;  //For the two x faces
+				//lightened
+				//if time is between 21-4 use settings table for lightening
+				//if time is between 5-20 use normal light table but compare it with settings table
+				//	if setting is brighter then use it
+				if(worldDayTime >= 21 || worldDayTime <= 4)//night
+				{
+					if((GetBlockSettings(x,y,z) & OpLighSource) != 0)//block is lightened
+					{
+						BaseLight  = (float)(GetBlockSettings(x, y, z) & 0xF)/16.0f; // 255.0f;  //For the two x faces
 
-				BlockColory1 = lightColor * (factor1 * BaseLight) + ambientColor;
-				BlockColory1.saturate();
-				BlockColory2 = lightColor * (factor1 / 2.0f * BaseLight) + ambientColor;
-				BlockColory2.saturate();
-				BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
-				BlockColorz.saturate();
-				BlockColorz *= 0.80f;
+						BlockColorx1 = BlockColorx2 = Vector3(BaseLight,BaseLight,BaseLight);
+						BlockColorz  = Vector3(BaseLight,BaseLight,BaseLight) * 0.9f;
+						BlockColory1 = BlockColory2 = Vector3(BaseLight,BaseLight,BaseLight) * 0.8f;
+					}else//normal light
+					{
+						//light
+						BaseLight  = GetBlockLight(x, y, z) / 255.0f;  //For the two x faces
+						//float BlockLight1 = BlockLight * 0.9f;		//For the two z faces
+						//float BlockLight2 = BlockLight * 0.8f;		//For the two y faces
 
+						BlockColory1 = lightColor * (factor1 * BaseLight) + ambientColor;
+						BlockColory1.saturate();
+						BlockColory2 = lightColor * (factor1 / 2.0f * BaseLight) + ambientColor;
+						BlockColory2.saturate();
+						BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
+						BlockColorz.saturate();
+						BlockColorz *= 0.80f;
 
-				BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
-				BlockColorx1.saturate();
-				BlockColorx1 *= 0.95f;
+						BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
+						BlockColorx1.saturate();
+						BlockColorx1 *= 0.95f;
 
-				BlockColorx2 = lightColor * (factor3 * 0.80f * BaseLight) + ambientColor;
-				BlockColorx2.saturate();
-				BlockColorx2 *= 0.95f;
+						BlockColorx2 = lightColor * (factor3 * 0.80f * BaseLight) + ambientColor;
+						BlockColorx2.saturate();
+						BlockColorx2 *= 0.95f;
+					}
+				}else//day
+				{
+					if((GetBlockSettings(x,y,z) & OpLighSource) != 0)//block is lightened
+					{
+						int normal = GetBlockLight(x, y, z);
+						int lightened = (GetBlockSettings(x, y, z) & 0xF) * 16;
+
+						if(lightened > normal)
+						{
+							BaseLight = lightened / 255.0f;
+							BlockColorx1 = BlockColorx2 = Vector3(BaseLight,BaseLight,BaseLight);
+							BlockColorz  = Vector3(BaseLight,BaseLight,BaseLight) * 0.9f;
+							BlockColory1 = BlockColory2 = Vector3(BaseLight,BaseLight,BaseLight) * 0.8f;
+						}else
+						{
+							BaseLight  = GetBlockLight(x, y, z) / 255.0f;
+
+							BlockColory1 = lightColor * (factor1 * BaseLight) + ambientColor;
+							BlockColory1.saturate();
+							BlockColory2 = lightColor * (factor1 / 2.0f * BaseLight) + ambientColor;
+							BlockColory2.saturate();
+							BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
+							BlockColorz.saturate();
+							BlockColorz *= 0.80f;
+
+							BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
+							BlockColorx1.saturate();
+							BlockColorx1 *= 0.95f;
+
+							BlockColorx2 = lightColor * (factor3 * 0.80f * BaseLight) + ambientColor;
+							BlockColorx2.saturate();
+							BlockColorx2 *= 0.95f;
+						}
+
+					}else
+					{
+						BaseLight  = GetBlockLight(x, y, z) / 255.0f;
+
+						BlockColory1 = lightColor * (factor1 * BaseLight) + ambientColor;
+						BlockColory1.saturate();
+						BlockColory2 = lightColor * (factor1 / 2.0f * BaseLight) + ambientColor;
+						BlockColory2.saturate();
+						BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
+						BlockColorz.saturate();
+						BlockColorz *= 0.80f;
+
+						BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
+						BlockColorx1.saturate();
+						BlockColorx1 *= 0.95f;
+
+						BlockColorx2 = lightColor * (factor3 * 0.80f * BaseLight) + ambientColor;
+						BlockColorx2.saturate();
+						BlockColorx2 *= 0.95f;
+					}
+				}
 
 				//x-1
 				transparentBlock = DefaultBlock;
@@ -2617,8 +2695,23 @@ void CraftWorld::RebuildChunksLight(Vector3 pos,int currentChunk,int blockID)
 		BoundingBox lBox = BoundingBox(Vector3(pos.x - 7,pos.y - 7,pos.z - 7),Vector3(pos.x + 7,pos.y + 7,pos.z + 7));
 		for(unsigned int i = 0; i < mChunks.size();i++)
 		{
-			if(lBox.intersect(mChunks[i]->bBox) && currentChunk != i)
+			if(lBox.intersect(mChunks[i]->bBox))
+			{
 				rebuildChunk(i);
+				rebuildTransparentChunk(i);
+			}
+		}
+	}
+	if(blockID == Torch::getID())
+	{
+		BoundingBox lBox = BoundingBox(Vector3(pos.x - 7,pos.y - 7,pos.z - 7),Vector3(pos.x + 7,pos.y + 7,pos.z + 7));
+		for(unsigned int i = 0; i < mChunks.size();i++)
+		{
+			if(lBox.intersect(mChunks[i]->bBox))
+			{
+				rebuildChunk(i);
+				rebuildTransparentChunk(i);
+			}
 		}
 	}
 }

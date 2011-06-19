@@ -381,6 +381,14 @@ public:
 	static block_t getID();
 };
 
+class Torch : public BaseBlock
+{
+public:
+
+	Torch();
+	static block_t getID();
+};
+
 //must be always last
 class IronBlock : public BaseBlock
 {

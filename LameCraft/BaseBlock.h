@@ -26,6 +26,7 @@ public:
 	bool editable;
 	bool transparent;
 	bool lightSource;
+	bool blockSpecial;
 
 	BaseBlock();
 	virtual ~BaseBlock();

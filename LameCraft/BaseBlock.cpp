@@ -15,6 +15,7 @@ BaseBlock::BaseBlock()
 	editable = false;
 	transparent = true;
 	lightSource = false;
+	blockSpecial = false;
 }
 
 BaseBlock::~BaseBlock()

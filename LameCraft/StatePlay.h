@@ -58,6 +58,8 @@ private:
 	void advancedBlit(int sx, int sy, int sw, int sh, int dx, int dy, int slice);
 	bool TryToMove(Vector3 moveVector,float dt);
 
+	void SetDayTimeAfterLoad();
+
 private:
 
 	RenderManager *mRender;

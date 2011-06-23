@@ -16,6 +16,13 @@ SimpleMeshChunk::~SimpleMeshChunk()
 	}
 }
 
+void SimpleMeshChunk::info(float x,float y,float z,float u,float v,float r,float g,float b)
+{
+	mPosition.push_back(new Vector3(x,y,z));
+	mtextures.push_back(new Vector2(u,v));
+	mColour.push_back(new Vector3(r,g,b));
+}
+
 void SimpleMeshChunk::position(float x,float y,float z)
 {
 	mPosition.push_back(new Vector3(x,y,z));

@@ -274,11 +274,15 @@ void StatePlay::LoadMap(std::string fileName,bool compressed)
 		playerPosition = mWorld->GetPlayerPos();
 		newPlayerPos  = mWorld->GetPlayerPos();
 		oldPlayerPos = mWorld->GetPlayerPos();
+		mWorld->SetWolrdTime(mWorld->worldDayTime);
 	}
 	else
+	{
 		mWorld->LoadWorld(saveFileName.c_str());
+		mWorld->SetWolrdTime(5);
+	}
 
-	mWorld->SetWolrdTime(5);
+
 
 	mWorld->setTextureSize(128,16);
 
@@ -355,6 +359,27 @@ void StatePlay::LoadMap(std::string fileName,bool compressed)
 
 	walkSoundAccu = 0.0f;
 	isWalking = false;
+
+	SetDayTimeAfterLoad();
+}
+
+void StatePlay::SetDayTimeAfterLoad()
+{
+	if(mWorld->worldVersion >=3)
+	{
+		if(mWorld->worldDayTime >= 5.0f && mWorld->worldDayTime < 21.0f)
+		{
+			skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sun.png"));
+			sunMoonSwitch = true;
+		}else
+		{
+			skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/moon.png"));
+			sunMoonSwitch = false;
+		}
+
+		sunTime = mWorld->sunTime;
+		skyDome->timeOfDay = mWorld->worldDayTime * 0.041666f;
+	}
 }
 
 void StatePlay::Enter()
@@ -588,29 +613,32 @@ void StatePlay::HandleEvents(StateManager* sManager)
 							if(!blockBox.intersect(playerBox))
 							{
 								//check if you want put light source or normal block
-								if(mWorld->LightSourceBlock(selectedCubeSet + selectedCube+1))
+								if(mWorld->CanPutBlockHere(testPos2.x,testPos2.y,testPos2.z,selectedCubeSet + selectedCube+1))
 								{
-									mWorld->SetLigtSourcePosition(testPos2.x,testPos2.y,testPos2.z,selectedCubeSet + selectedCube+1);
-								}
-
-								mWorld->GetBlock(testPos2.x,testPos2.y,testPos2.z) = selectedCubeSet + selectedCube+1;//set block type
-
-								int chunkTarget = mWorld->getChunkId(testPos2);
-
-								if(chunkTarget != -1)
-								{
-									mSoundMgr->PlayPlopSound();
-
-									//rebuild
 									if(mWorld->LightSourceBlock(selectedCubeSet + selectedCube+1))
 									{
-										mWorld->RebuildChunksLight(testPos2,chunkTarget,(selectedCubeSet + selectedCube+1));
+										mWorld->SetLigtSourcePosition(testPos2.x,testPos2.y,testPos2.z,selectedCubeSet + selectedCube+1);
 									}
-									else
+
+									mWorld->GetBlock(testPos2.x,testPos2.y,testPos2.z) = selectedCubeSet + selectedCube+1;//set block type
+
+									int chunkTarget = mWorld->getChunkId(testPos2);
+
+									if(chunkTarget != -1)
 									{
-										mWorld->rebuildChunk(chunkTarget);
-										mWorld->rebuildTransparentChunk(chunkTarget);
-										mWorld->rebuildNearestChunks(chunkTarget,testPos2);
+										mSoundMgr->PlayPlopSound();
+
+										//rebuild
+										if(mWorld->LightSourceBlock(selectedCubeSet + selectedCube+1))
+										{
+											mWorld->RebuildChunksLight(testPos2,chunkTarget,(selectedCubeSet + selectedCube+1));
+										}
+										else
+										{
+											mWorld->rebuildChunk(chunkTarget);
+											mWorld->rebuildTransparentChunk(chunkTarget);
+											mWorld->rebuildNearestChunks(chunkTarget,testPos2);
+										}
 									}
 								}
 
@@ -709,7 +737,7 @@ void StatePlay::HandleEvents(StateManager* sManager)
 			{
 				optionsMenuPos--;
 				if(optionsMenuPos < 0)
-					optionsMenuPos = 5;
+					optionsMenuPos = 6;
 
 				mSoundMgr->PlayMenuSound();
 			}
@@ -717,7 +745,7 @@ void StatePlay::HandleEvents(StateManager* sManager)
 			if(mSystemMgr->KeyPressed(PSP_CTRL_DOWN))
 			{
 				optionsMenuPos++;
-				if(optionsMenuPos > 5)
+				if(optionsMenuPos > 6)
 					optionsMenuPos = 0;
 
 				mSoundMgr->PlayMenuSound();
@@ -767,8 +795,11 @@ void StatePlay::HandleEvents(StateManager* sManager)
 				if(optionsMenuPos == 4)
 					mSoundMgr->playerSounds = !mSoundMgr->playerSounds;
 
-				//back to ingame menu
 				if(optionsMenuPos == 5)
+					mWorld->freezeDayTime = !mWorld->freezeDayTime;
+
+				//back to ingame menu
+				if(optionsMenuPos == 6)
 				{
 					selectPos = 0;
 					menuOptions = false;
@@ -816,14 +847,14 @@ void StatePlay::HandleEvents(StateManager* sManager)
 				}
 				if(selectPos == 2)//save
 				{
-					//mWorld->SaveWorld(saveFileName.c_str());
+					mWorld->sunTime = sunTime;
 					mWorld->SaveCompressedWorld(saveFileName.c_str());
 					menuState = 0;
 				}
 				if(selectPos == 3)//save end exit
 				{
 					//save
-					//mWorld->SaveWorld(saveFileName.c_str());
+					mWorld->sunTime = sunTime;
 					mWorld->SaveCompressedWorld(saveFileName.c_str());
 					//exit
 					sManager->PopState();
@@ -998,37 +1029,40 @@ void StatePlay::Update(StateManager* sManager)
 
 	mWorld->UpdateWorldTime(dt);
 
-	//update skydome - every hour
-	skyDome->timeOfDay = mWorld->worldDayTime * 0.041666f;
-
-	//update sky and sun light time
-	//23 000 morning
-	//62 500 evening
-	//39500 whole day
-	//16 normal hours of day
-		//2468,75 - hour / 50 seconds(hour in game)
-		//49,375
-	//8 hours of night
-		//4937,5 - hour / 50 seconds
-		//98,75 in the night
+	if(!mWorld->freezeDayTime)
+	{
+		//update skydome - every hour
+		skyDome->timeOfDay = mWorld->worldDayTime * 0.041666f;
 	
-	if(mWorld->worldDayTime >= 5.0f && mWorld->worldDayTime < 21.0f)
-	{
-		sunTime += 49.375f * dt;//72
-		if(!sunMoonSwitch)//switch to sun texture and reset position
+		//update sky and sun light time
+		//23 000 morning
+		//62 500 evening
+		//39500 whole day
+		//16 normal hours of day
+			//2468,75 - hour / 50 seconds(hour in game)
+			//49,375
+		//8 hours of night
+			//4937,5 - hour / 50 seconds
+			//98,75 in the night
+
+		if(mWorld->worldDayTime >= 5.0f && mWorld->worldDayTime < 21.0f)
 		{
-			skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sun.png"));
-			sunTime = 21600.0f;//6 am
-			sunMoonSwitch = true;
-		}
-	}else
-	{
-		sunTime += 98.75 * dt;//72
-		if(sunMoonSwitch)//switch to sun texture and reset position
+			sunTime += 49.375f * dt;//72
+			if(!sunMoonSwitch)//switch to sun texture and reset position
+			{
+				skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sun.png"));
+				sunTime = 21600.0f;//6 am
+				sunMoonSwitch = true;
+			}
+		}else
 		{
-			skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/moon.png"));
-			sunTime = 21600.0f;//6 am
-			sunMoonSwitch = false;
+			sunTime += 98.75 * dt;//72
+			if(sunMoonSwitch)//switch to sun texture and reset position
+			{
+				skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/moon.png"));
+				sunTime = 21600.0f;//6 am
+				sunMoonSwitch = false;
+			}
 		}
 	}
 }
@@ -1208,6 +1242,9 @@ void StatePlay::Draw(StateManager* sManager)
 			sceGuEnable(GU_BLEND);
 			sceGuColor(GU_COLOR(1,1,1,1.0f));
 
+			buttonSprite->SetPosition(240,40);
+			buttonSprite->Draw();
+
 			//fly
 			buttonSprite->SetPosition(240,70);
 			buttonSprite->Draw();
@@ -1233,18 +1270,19 @@ void StatePlay::Draw(StateManager* sManager)
 			buttonSprite->Draw();
 
 			//selected button
-			sbuttonSprite->SetPosition(240,(optionsMenuPos * 30) + 70);
+			sbuttonSprite->SetPosition(240,(optionsMenuPos * 30) + 40);
 			sbuttonSprite->Draw();
 
 			sceGuDisable(GU_BLEND);
 			sceGuEnable(GU_DEPTH_TEST);
 
 			//draw subtitles on buttons
-			canFly == true ? mRender->DebugPrint(240,75,"Fly : ON"): mRender->DebugPrint(240,75,"Fly : OFF");
-			devMode == true ? mRender->DebugPrint(240,105,"DevMode : ON"): mRender->DebugPrint(240,105,"DevMode : OFF");
-			mRender->DebugPrint(240,135,"Take Screenshot");
-			mRender->DebugPrint(240,165,"Change map name");
-			mSoundMgr->playerSounds == true ? mRender->DebugPrint(240,195,"Player sounds: ON"):mRender->DebugPrint(240,195,"Player sounds: OFF");
+			canFly == true ? mRender->DebugPrint(240,45,"Fly : ON"): mRender->DebugPrint(240,45,"Fly : OFF");
+			devMode == true ? mRender->DebugPrint(240,75,"DevMode : ON"): mRender->DebugPrint(240,75,"DevMode : OFF");
+			mRender->DebugPrint(240,105,"Take Screenshot");
+			mRender->DebugPrint(240,135,"Change map name");
+			mSoundMgr->playerSounds == true ? mRender->DebugPrint(240,165,"Player sounds: ON"):mRender->DebugPrint(240,165,"Player sounds: OFF");
+			mWorld->freezeDayTime == true ? mRender->DebugPrint(240,195,"Day time freeze: ON"):mRender->DebugPrint(240,195,"Day time freeze: OFF");
 			mRender->DebugPrint(240,225,"Back");
 		}else
 		{

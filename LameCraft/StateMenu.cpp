@@ -65,7 +65,7 @@ void StateMenu::Init()
 	saveSubmenu = false;
 	saveSubMenuSelect = 2;
 
-	currentVersion = 10;
+	currentVersion = 30;
 
 	//input helper
 	InputHelper::Instance()->Init();
@@ -798,8 +798,11 @@ void StateMenu::Draw(StateManager* sManager)
 			buttonSprite->SetPosition(240,235);
 			buttonSprite->Draw();
 
+			buttonSprite->SetPosition(240,260);
+			buttonSprite->Draw();
+
 			//back
-			sbuttonSprite->SetPosition(240,260);
+			sbuttonSprite->SetPosition(240,(aboutPos * 25) + 235);
 			sbuttonSprite->Draw();
 
 			sceGuDisable(GU_BLEND);
@@ -811,7 +814,7 @@ void StateMenu::Draw(StateManager* sManager)
 			mRender->DebugPrint(40,120,"graphics:    Marcin Ploska(Drakon)");
 			mRender->DebugPrint(40,140,"inspiration: Minecraft by Notch");
 			mRender->DebugPrint(40,160,"www:        drakon.com.pl");
-			mRender->DebugPrint(40,180,"rev:         op-10");
+			mRender->DebugPrint(40,180,"rev:         op-30");
 
 			//button text
 			mRender->SetFontStyle(0.5f,0xFFFFFFFF,0xFF000000,0x00000200);
@@ -1021,7 +1024,7 @@ void StateMenu::ScanSaveFiles(const char* dirName)
 			//name
 			fread(saveFilesList[i].worldName,sizeof(char),50,pFile);
 
-			if(saveFilesList[i].saveVersion == 2)
+			if(saveFilesList[i].saveVersion >= 2)
 				saveFilesList[i].compression = true;
 			else
 				saveFilesList[i].compression = false;

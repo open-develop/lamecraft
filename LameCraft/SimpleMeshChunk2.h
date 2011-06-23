@@ -35,6 +35,8 @@ public:
 	void triangle(int x,int y,int z);
 	void colour(float x,float y,float z);
 
+	void info(float x,float y,float z,float u,float v,float r,float g,float b);
+
 	void start();
 	void end();
 

@@ -51,11 +51,10 @@ public:
 	void createWorldChunkss();
 	void SetAllChunksToUpdate();
 
-	void GetSpecialBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk* MeshChunk,block_t Block);
-	void GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk* MeshChunk,block_t Block);
+	void GetSpecialBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk* MeshChunk,block_t Block,bool transparent);
+	void GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk* MeshChunk,block_t Block,bool transparent);
 
 	//load/save options
-	void SaveWorld(const char *filename);
 	void SaveCompressedWorld(std::string filename);
 	void LoadWorld(const char *filename);
 	void LoadCompressedWorld(std::string filename);
@@ -87,6 +86,7 @@ public:
 	bool BlockEditable(const int x, const int y, const int z);
 
 	bool LightSourceBlock(int id);
+	bool CanPutBlockHere(const int x, const int y, const int z,int blockID);
 	void SetLigtSourcePosition(const int x, const int y, const int z,int blockID);
 	void RemoveLigtSourceAtPosition(const int x, const int y, const int z,int blockID);
 	void RebuildChunksLight(Vector3 pos,int currentChunk,int blockID);
@@ -105,6 +105,11 @@ public:
 	int createdChunksCount;
 	Vector3	fogColor;
 	float worldDayTime;
+	float worldTime;
+
+	bool freezeDayTime;
+	float sunTime;
+	int worldVersion;
 
 private:
 
@@ -137,7 +142,7 @@ private:
 	bool updateChunksSwitch;
 
 	//world time
-	float worldTime;
+
 	float worldHour;//1 game hour = 50 real seconds = 24 game hours = 20 real minutes
 
 	//information

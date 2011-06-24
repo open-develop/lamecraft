@@ -1174,6 +1174,13 @@ bool CraftWorld::BlockTransparentOrSpecial(const int x, const int y, const int z
 	return false;
 }
 
+bool CraftWorld::BlockTransparentOrLightSource(const int x, const int y, const int z)
+{
+	if (x < 0 || y < 0 || z < 0  || x >= WORLD_SIZE || y >= WORLD_SIZE || z >= WORLD_SIZE) return true;
+
+	return (blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]].transparent || blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]].lightSource);
+}
+
 bool CraftWorld::BlockTransparent(const int x, const int y, const int z)
 {
 	if (x < 0 || y < 0 || z < 0  || x >= WORLD_SIZE || y >= WORLD_SIZE || z >= WORLD_SIZE) return true;
@@ -1883,23 +1890,23 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 
 		//simple shadows
 		//up
-		if(!BlockTransparent(x-1,y+1,z) || !BlockTransparent(x-1,y,z+1) || !BlockTransparent(x-1,y+1,z+1))
+		if(!BlockTransparentOrLightSource(x-1,y+1,z) || !BlockTransparentOrLightSource(x-1,y,z+1) || !BlockTransparentOrLightSource(x-1,y+1,z+1))
 		{
 			light2-=lightFactor;
 		}
 
-		if(!BlockTransparent(x-1,y+1,z) || !BlockTransparent(x-1,y,z-1) || !BlockTransparent(x-1,y+1,z-1))
+		if(!BlockTransparentOrLightSource(x-1,y+1,z) || !BlockTransparentOrLightSource(x-1,y,z-1) || !BlockTransparentOrLightSource(x-1,y+1,z-1))
 		{
 			light4-=lightFactor;
 		}
 
 		//down
-		if(!BlockTransparent(x-1,y-1,z) || !BlockTransparent(x-1,y,z+1) || !BlockTransparent(x-1,y-1,z+1))
+		if(!BlockTransparentOrLightSource(x-1,y-1,z) || !BlockTransparentOrLightSource(x-1,y,z+1) || !BlockTransparentOrLightSource(x-1,y-1,z+1))
 		{
 			light1-=lightFactor;
 		}
 
-		if(!BlockTransparent(x-1,y-1,z) || !BlockTransparent(x-1,y,z-1) || !BlockTransparent(x-1,y-1,z-1))
+		if(!BlockTransparentOrLightSource(x-1,y-1,z) || !BlockTransparentOrLightSource(x-1,y,z-1) || !BlockTransparentOrLightSource(x-1,y-1,z-1))
 		{
 			light3-=lightFactor;
 		}
@@ -1947,23 +1954,23 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 
 		//simple shadows
 		//up
-		if(!BlockTransparent(x+1,y+1,z) || !BlockTransparent(x+1,y,z+1) || !BlockTransparent(x+1,y+1,z+1))
+		if(!BlockTransparentOrLightSource(x+1,y+1,z) || !BlockTransparentOrLightSource(x+1,y,z+1) || !BlockTransparentOrLightSource(x+1,y+1,z+1))
 		{
 			light2-=lightFactor;
 		}
 
-		if(!BlockTransparent(x+1,y+1,z) || !BlockTransparent(x+1,y,z-1) || !BlockTransparent(x+1,y+1,z-1))
+		if(!BlockTransparentOrLightSource(x+1,y+1,z) || !BlockTransparentOrLightSource(x+1,y,z-1) || !BlockTransparentOrLightSource(x+1,y+1,z-1))
 		{
 			light4-=lightFactor;
 		}
 
 		//down
-		if(!BlockTransparent(x+1,y-1,z) || !BlockTransparent(x+1,y,z+1) || !BlockTransparent(x+1,y-1,z+1))
+		if(!BlockTransparentOrLightSource(x+1,y-1,z) || !BlockTransparentOrLightSource(x+1,y,z+1) || !BlockTransparentOrLightSource(x+1,y-1,z+1))
 		{
 			light1-=lightFactor;
 		}
 
-		if(!BlockTransparent(x+1,y-1,z) || !BlockTransparent(x+1,y,z-1) || !BlockTransparent(x+1,y-1,z-1))
+		if(!BlockTransparentOrLightSource(x+1,y-1,z) || !BlockTransparentOrLightSource(x+1,y,z-1) || !BlockTransparentOrLightSource(x+1,y-1,z-1))
 		{
 			light3-=lightFactor;
 		}
@@ -2010,22 +2017,22 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 		lightFactor = BlockColory1 * lightShadowFactor;
 
 		//simple shadows
-		if(!BlockTransparent(x-1,y-1,z) || !BlockTransparent(x-1,y-1,z-1) || !BlockTransparent(x,y-1,z-1))
+		if(!BlockTransparentOrLightSource(x-1,y-1,z) || !BlockTransparentOrLightSource(x-1,y-1,z-1) || !BlockTransparentOrLightSource(x,y-1,z-1))
 		{
 			light1-=lightFactor;
 		}
 
-		if(!BlockTransparent(x,y-1,z-1) || !BlockTransparent(x+1,y-1,z-1) || !BlockTransparent(x+1,y-1,z))
+		if(!BlockTransparentOrLightSource(x,y-1,z-1) || !BlockTransparentOrLightSource(x+1,y-1,z-1) || !BlockTransparentOrLightSource(x+1,y-1,z))
 		{
 			light2-=lightFactor;
 		}
 
-		if(!BlockTransparent(x+1,y-1,z) || !BlockTransparent(x+1,y-1,z+1) || !BlockTransparent(x,y-1,z+1))
+		if(!BlockTransparentOrLightSource(x+1,y-1,z) || !BlockTransparentOrLightSource(x+1,y-1,z+1) || !BlockTransparentOrLightSource(x,y-1,z+1))
 		{
 			light3-=lightFactor;
 		}
 
-		if(!BlockTransparent(x,y-1,z+1) || !BlockTransparent(x-1,y-1,z+1) || !BlockTransparent(x-1,y-1,z))
+		if(!BlockTransparentOrLightSource(x,y-1,z+1) || !BlockTransparentOrLightSource(x-1,y-1,z+1) || !BlockTransparentOrLightSource(x-1,y-1,z))
 		{
 			light4-=lightFactor;
 		}
@@ -2070,22 +2077,22 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 		lightFactor = BlockColory2 * lightShadowFactor;
 
 		//simple shadows
-		if(!BlockTransparent(x,y+1,z+1) || !BlockTransparent(x-1,y+1,z+1) || !BlockTransparent(x-1,y+1,z))
+		if(!BlockTransparentOrLightSource(x,y+1,z+1) || !BlockTransparentOrLightSource(x-1,y+1,z+1) || !BlockTransparentOrLightSource(x-1,y+1,z))
 		{
 			light1-=lightFactor;
 		}
 
-		if(!BlockTransparent(x,y+1,z+1) || !BlockTransparent(x+1,y+1,z+1) || !BlockTransparent(x+1,y+1,z))
+		if(!BlockTransparentOrLightSource(x,y+1,z+1) || !BlockTransparentOrLightSource(x+1,y+1,z+1) || !BlockTransparentOrLightSource(x+1,y+1,z))
 		{
 			light2-=lightFactor;
 		}
 
-		if(!BlockTransparent(x+1,y+1,z) || !BlockTransparent(x+1,y+1,z-1) || !BlockTransparent(x,y+1,z-1))
+		if(!BlockTransparentOrLightSource(x+1,y+1,z) || !BlockTransparentOrLightSource(x+1,y+1,z-1) || !BlockTransparentOrLightSource(x,y+1,z-1))
 		{
 			light3-=lightFactor;
 		}
 
-		if(!BlockTransparent(x,y+1,z-1) || !BlockTransparent(x-1,y+1,z-1) || !BlockTransparent(x-1,y+1,z))
+		if(!BlockTransparentOrLightSource(x,y+1,z-1) || !BlockTransparentOrLightSource(x-1,y+1,z-1) || !BlockTransparentOrLightSource(x-1,y+1,z))
 		{
 			light4-=lightFactor;
 		}
@@ -2136,23 +2143,23 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 
 		//simple shadows
 		//up
-		if(!BlockTransparent(x,y+1,z-1) || !BlockTransparent(x-1,y,z-1) || !BlockTransparent(x-1,y+1,z-1))
+		if(!BlockTransparentOrLightSource(x,y+1,z-1) || !BlockTransparentOrLightSource(x-1,y,z-1) || !BlockTransparentOrLightSource(x-1,y+1,z-1))
 		{
 			light2-=lightFactor;
 		}
 
-		if(!BlockTransparent(x,y+1,z-1) || !BlockTransparent(x+1,y,z-1) || !BlockTransparent(x+1,y+1,z-1))
+		if(!BlockTransparentOrLightSource(x,y+1,z-1) || !BlockTransparentOrLightSource(x+1,y,z-1) || !BlockTransparentOrLightSource(x+1,y+1,z-1))
 		{
 			light4-=lightFactor;
 		}
 
 		//down
-		if(!BlockTransparent(x,y-1,z-1) || !BlockTransparent(x-1,y,z-1) || !BlockTransparent(x-1,y-1,z-1))
+		if(!BlockTransparentOrLightSource(x,y-1,z-1) || !BlockTransparentOrLightSource(x-1,y,z-1) || !BlockTransparentOrLightSource(x-1,y-1,z-1))
 		{
 			light1-=lightFactor;
 		}
 
-		if(!BlockTransparent(x,y-1,z-1) || !BlockTransparent(x+1,y,z-1) || !BlockTransparent(x+1,y-1,z-1))
+		if(!BlockTransparentOrLightSource(x,y-1,z-1) || !BlockTransparentOrLightSource(x+1,y,z-1) || !BlockTransparentOrLightSource(x+1,y-1,z-1))
 		{
 			light3-=lightFactor;
 		}
@@ -2200,22 +2207,22 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 
 		//simple shadows
 		//up
-		if(!BlockTransparent(x,y+1,z+1) || !BlockTransparent(x-1,y,z+1) || !BlockTransparent(x-1,y+1,z+1))
+		if(!BlockTransparentOrLightSource(x,y+1,z+1) || !BlockTransparentOrLightSource(x-1,y,z+1) || !BlockTransparentOrLightSource(x-1,y+1,z+1))
 		{
 			light2-=lightFactor;
 		}
-		if(!BlockTransparent(x,y+1,z+1) || !BlockTransparent(x+1,y,z+1) || !BlockTransparent(x+1,y+1,z+1))
+		if(!BlockTransparentOrLightSource(x,y+1,z+1) || !BlockTransparentOrLightSource(x+1,y,z+1) || !BlockTransparentOrLightSource(x+1,y+1,z+1))
 		{
 			light4-=lightFactor;
 		}
 
 		//down
-		if(!BlockTransparent(x,y-1,z+1) || !BlockTransparent(x-1,y,z+1) || !BlockTransparent(x-1,y-1,z+1))
+		if(!BlockTransparentOrLightSource(x,y-1,z+1) || !BlockTransparentOrLightSource(x-1,y,z+1) || !BlockTransparentOrLightSource(x-1,y-1,z+1))
 		{
 			light1-=lightFactor;
 		}
 
-		if(!BlockTransparent(x,y-1,z+1) || !BlockTransparent(x+1,y,z+1) || !BlockTransparent(x+1,y-1,z+1))
+		if(!BlockTransparentOrLightSource(x,y-1,z+1) || !BlockTransparentOrLightSource(x+1,y,z+1) || !BlockTransparentOrLightSource(x+1,y-1,z+1))
 		{
 			light3-=lightFactor;
 		}

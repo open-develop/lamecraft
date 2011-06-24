@@ -81,6 +81,7 @@ public:
 	bool PlayerInWater(Vector3 pos);
 
 	bool BlockTransparentOrSpecial(const int x, const int y, const int z);
+	bool BlockTransparentOrLightSource(const int x, const int y, const int z);
 	bool BlockTransparent(const int x, const int y, const int z);
 	bool BlockSpecial(const int x, const int y, const int z);
 	bool BlockEditable(const int x, const int y, const int z);

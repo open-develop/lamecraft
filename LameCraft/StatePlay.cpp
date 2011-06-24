@@ -533,12 +533,32 @@ void StatePlay::HandleEvents(StateManager* sManager)
 		{
 			selectedCubeSet-=9;
 			if(selectedCubeSet < 0)
+			{
 				selectedCubeSet = cubesSets * 9;
+
+				//don't allow to select empty block
+				if(selectedCube > (allcubes - (cubesSets * 9) - 3))
+				{
+					selectedCube = allcubes - (cubesSets * 9) - 3;
+					selectSprite->SetPosition(100 + (selectedCube * 35),253);
+				}
+			}
 		}
 		//switch up
 		if(keyPressed(InputHelper::Instance()->getButtonToAction(10)))
 		{
 			selectedCubeSet+=9;
+
+			if(selectedCubeSet == cubesSets * 9)
+			{
+				//don't allow to select empty block
+				if(selectedCube > (allcubes - (cubesSets * 9) - 3))
+				{
+					selectedCube = allcubes - (cubesSets * 9) - 3;
+					selectSprite->SetPosition(100 + (selectedCube * 35),253);
+				}
+			}
+
 			if(selectedCubeSet > (cubesSets * 9))
 				selectedCubeSet = 0;
 		}

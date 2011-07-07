@@ -23,7 +23,7 @@ public:
 		 OpLighSource = 0x10,
 		 OpSideRender = 0x20,
 		 OpActAsLadder = 0x40,
-		 Op4 = 0x80
+		 OpLightTraveled = 0x80
 	};
 
 	CraftWorld();
@@ -62,6 +62,7 @@ public:
 	//lightening
 	void InitLightValues();
 	void SetWolrdTime(float time);
+	void LightTravel(int x,int y,int z,int steps,int lightLevel);
 
 	//
 	void buildMap();

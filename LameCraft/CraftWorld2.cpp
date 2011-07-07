@@ -1107,6 +1107,63 @@ bool CraftWorld::CanPutBlockHere(const int x, const int y, const int z,int block
 	return true;
 }
 
+void CraftWorld::LightTravel(int x,int y,int z,int steps,int lightLevel)
+{
+	if (x >= 0 && y >= 0 && z >= 0  && x < WORLD_SIZE && y < WORLD_SIZE && z < WORLD_SIZE && steps > 0 && lightLevel >= 0)
+	{
+		//if((GetBlockSettings(x,y,z) & OpLightTraveled) == 0)//not traveled
+		//{
+			//mark traveled
+			//GetBlockSettings(x,y,z) ^= OpLightTraveled;
+
+			//if it's transparent block or light source...
+			if(BlockTransparent(x,y,z) == true || GetBlock(x,y,z) == Torch::getID())
+			{
+				bool canGofuther = false;
+				//check if it's lightened
+				if((GetBlockSettings(x,y,z) & OpLighSource) != 0)//lightened
+				{
+					//get current value
+					int current = GetBlockSettings(x,y,z) & 0xF;
+					//set new only if it's brighter
+					if(current < lightLevel)
+					{
+						//clear this value
+						GetBlockSettings(x,y,z) ^= current & 0xF;
+						//set new value
+						GetBlockSettings(x,y,z) ^= lightLevel & 0xF;
+
+						canGofuther = true;
+					}
+				}else
+				{
+					int current = GetBlockSettings(x,y,z) & 0xF;
+					//clear this value
+					GetBlockSettings(x,y,z) ^= current & 0xF;
+					//set new value
+					GetBlockSettings(x,y,z) ^= lightLevel & 0xF;
+					//mark as lightened
+					GetBlockSettings(x,y,z) ^= OpLighSource;
+
+					canGofuther = true;
+				}
+
+
+				//go futher
+				if(canGofuther)
+				{
+					LightTravel(x+1,y,z,steps-1,lightLevel-2);
+					LightTravel(x-1,y,z,steps-1,lightLevel-2);
+					LightTravel(x,y+1,z,steps-1,lightLevel-2);
+					LightTravel(x,y-1,z,steps-1,lightLevel-2);
+					LightTravel(x,y,z+1,steps-1,lightLevel-2);
+					LightTravel(x,y,z-1,steps-1,lightLevel-2);
+				}
+			}
+		//}
+	}
+}
+
 void CraftWorld::SetLigtSourcePosition(const int x, const int y, const int z,int blockID)
 {
 	int current  = 0;
@@ -1116,8 +1173,9 @@ void CraftWorld::SetLigtSourcePosition(const int x, const int y, const int z,int
 	//put correct light based on lightsource type
 	if(blockID == JackOLantern::getID() || blockID == Torch::getID())
 	{
+		LightTravel(x,y,z,7,15);
 		//central light is 255
-		for(int zz = z-7;zz < z+7;zz++)
+		/*for(int zz = z-7;zz < z+7;zz++)
 		{
 			for(int xx = x-7;xx < x+7;xx++)
 			{
@@ -1160,7 +1218,7 @@ void CraftWorld::SetLigtSourcePosition(const int x, const int y, const int z,int
 					}
 				}
 			}
-		}
+		}*/
 	}
 }
 
@@ -1750,7 +1808,8 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 	Vector3 BlockColory2;    //Bottom face
 	Vector3 BlockColorx1;    //Sunset face
 	Vector3 BlockColorx2;    //Sunrise face
-	Vector3 BlockColorz;     //Front/back faces
+	Vector3 BlockColorz1;     //Front/back faces
+	Vector3 BlockColorz2;     //Front/back faces
 
 	//texture stuff
 	BaseBlock *blockType = &blockTypes[Block];
@@ -1774,7 +1833,7 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 			BaseLight  = (float)(GetBlockSettings(x, y, z) & 0xF)/16.0f; // 255.0f;  //For the two x faces
 
 			BlockColorx1 = BlockColorx2 = Vector3(BaseLight,BaseLight,BaseLight);
-			BlockColorz  = Vector3(BaseLight,BaseLight,BaseLight) * 0.9f;
+			BlockColorz1  = BlockColorz2 = Vector3(BaseLight,BaseLight,BaseLight) * 0.9f;
 			BlockColory1 = BlockColory2 = Vector3(BaseLight,BaseLight,BaseLight) * 0.8f;
 		}else//normal light
 		{
@@ -1787,9 +1846,10 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 			BlockColory1.saturate();
 			BlockColory2 = lightColor * (factor1 / 2.0f * BaseLight) + ambientColor;
 			BlockColory2.saturate();
-			BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
-			BlockColorz.saturate();
-			BlockColorz *= 0.80f;
+			BlockColorz1  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
+			BlockColorz1.saturate();
+			BlockColorz1 *= 0.80f;
+			BlockColorz2 = BlockColorz1;
 
 			BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
 			BlockColorx1.saturate();
@@ -1813,7 +1873,7 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 			{
 				BaseLight = lightened; // 255.0f;
 				BlockColorx1 = BlockColorx2 = Vector3(BaseLight,BaseLight,BaseLight);
-				BlockColorz  = Vector3(BaseLight,BaseLight,BaseLight) * 0.9f;
+				BlockColorz2 = BlockColorz1  = Vector3(BaseLight,BaseLight,BaseLight) * 0.9f;
 				BlockColory1 = BlockColory2 = Vector3(BaseLight,BaseLight,BaseLight) * 0.8f;
 			}else
 			{
@@ -1823,9 +1883,10 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 				BlockColory1.saturate();
 				BlockColory2 = lightColor * (factor1 / 2.0f * BaseLight) + ambientColor;
 				BlockColory2.saturate();
-				BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
-				BlockColorz.saturate();
-				BlockColorz *= 0.80f;
+				BlockColorz1  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
+				BlockColorz1.saturate();
+				BlockColorz1 *= 0.80f;
+				BlockColorz2 = BlockColorz1;
 
 				BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
 				BlockColorx1.saturate();
@@ -1844,9 +1905,10 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 			BlockColory1.saturate();
 			BlockColory2 = lightColor * (factor1 / 2.0f * BaseLight) + ambientColor;
 			BlockColory2.saturate();
-			BlockColorz  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
-			BlockColorz.saturate();
-			BlockColorz *= 0.80f;
+			BlockColorz1  = lightColor * (factor1 * 0.70f * BaseLight) + ambientColor;
+			BlockColorz1.saturate();
+			BlockColorz1 *= 0.80f;
+			BlockColorz2 = BlockColorz1;
 
 			BlockColorx1 = lightColor * (factor2 * 0.80f * BaseLight) + ambientColor;
 			BlockColorx1.saturate();
@@ -1884,6 +1946,12 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 	{
 		left = percent * blockType->sidePlane;
 		right = left + percent;
+
+		if((GetBlockSettings(x-1,y,z) & OpLighSource) != 0)//block is lightened
+		{
+			float lightened = (GetBlockSettings(x-1, y, z) & 0xF) / 15.0f;
+			BlockColorx1.x = BlockColorx1.y = BlockColorx1.z = lightened;
+		}
 
 		light1 = light2 = light3 = light4 = BlockColorx1;
 		lightFactor = BlockColorx1 * lightShadowFactor;
@@ -1949,6 +2017,12 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 		left = percent * blockType->sidePlane;
 		right = left + percent;
 
+		if((GetBlockSettings(x+1,y,z) & OpLighSource) != 0)//block is lightened
+		{
+			float lightened = (GetBlockSettings(x+1, y, z) & 0xF) / 15.0f;
+			BlockColorx2.x = BlockColorx2.y = BlockColorx2.z = lightened;
+		}
+
 		light1 = light2 = light3 = light4 = BlockColorx2;
 		lightFactor = BlockColorx2 * lightShadowFactor;
 
@@ -2013,6 +2087,12 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 		left = percent * blockType->downPlane;
 		right = left + percent;
 
+		if((GetBlockSettings(x,y-1,z) & OpLighSource) != 0)//block is lightened
+		{
+			float lightened = (GetBlockSettings(x, y-1, z) & 0xF) / 15.0f;
+			BlockColory2.x = BlockColory2.y = BlockColory2.z = lightened;
+		}
+
 		light1 = light2 = light3 = light4 = BlockColory2;
 		lightFactor = BlockColory1 * lightShadowFactor;
 
@@ -2073,6 +2153,12 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 
 	if (canCreate)
 	{
+		if((GetBlockSettings(x,y+1,z) & OpLighSource) != 0)//block is lightened
+		{
+			float lightened = (GetBlockSettings(x, y+1, z) & 0xF) / 15.0f;
+			BlockColory1.x = BlockColory1.y = BlockColory1.z = lightened;
+		}
+
 		light1 = light2 = light3 = light4 = BlockColory1;
 		lightFactor = BlockColory2 * lightShadowFactor;
 
@@ -2138,8 +2224,14 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 		left = percent * blockType->sidePlane;
 		right = left + percent;
 
-		light1 = light2 = light3 = light4 = BlockColorz;
-		lightFactor = BlockColorz * lightShadowFactor;
+		if((GetBlockSettings(x,y,z-1) & OpLighSource) != 0)//block is lightened
+		{
+			float lightened = (GetBlockSettings(x, y, z-1) & 0xF) / 15.0f;
+			BlockColorz1.x = BlockColorz1.y = BlockColorz1.z = lightened;
+		}
+
+		light1 = light2 = light3 = light4 = BlockColorz1;
+		lightFactor = BlockColorz1 * lightShadowFactor;
 
 		//simple shadows
 		//up
@@ -2202,8 +2294,14 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 		left = percent * blockType->sidePlane;
 		right = left + percent;
 
-		light1 = light2 = light3 = light4 = BlockColorz;
-		lightFactor = BlockColorz * lightShadowFactor;
+		if((GetBlockSettings(x,y,z+1) & OpLighSource) != 0)//block is lightened
+		{
+			float lightened = (GetBlockSettings(x, y, z+1) & 0xF) / 15.0f;
+			BlockColorz2.x = BlockColorz2.y = BlockColorz2.z = lightened;
+		}
+
+		light1 = light2 = light3 = light4 = BlockColorz2;
+		lightFactor = BlockColorz2 * lightShadowFactor;
 
 		//simple shadows
 		//up

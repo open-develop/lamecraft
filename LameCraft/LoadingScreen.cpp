@@ -60,17 +60,6 @@ int LoadingScreen::RunLoadingScreen(SceSize args, void *argp)
 
 		RenderManager::InstancePtr()->DebugPrint(240,136,"GENERATING WORLD");
 
-		// the loading graphics :)
-		/*animation_++;
-		if(animation_ > 19)
-			animation_ = 0;
-
-		// switch images now and then
-		if (animation_ < 10)
-			gfx->Render2DImageOn3D(117, 100, load1);
-		else if (animation_ < 20)
-			gfx->Render2DImageOn3D(117, 100, load2);*/
-
 		RenderManager::InstancePtr()->EndFrame();
 	}
 	return 0;

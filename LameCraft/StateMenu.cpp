@@ -396,10 +396,19 @@ void StateMenu::HandleEvents(StateManager* sManager)
 									{
 										SystemManager::Instance()->ShowMessage("There is new version!!!");
 
-										//make new directory
-										//mkdir("../Updater1",777);
-										//download updater there
-										//NetworkManager::Instance()->GetFile("http://drakon.ixan.net/psp/updater/EBOOT.PBP","../Updater1/EBOOT.PBP");
+										//ask question if user want to download updater
+										if(SystemManager::Instance()->ShowMessageYesNo("Do you want to dowload LameCraft updater?") == 1)
+										{
+											//make new directory
+											mkdir("ms0:/PSP/GAME/LameUpdater",777);
+											//download updater there
+											NetworkManager::Instance()->GetFile("http://drakon.ixan.net/psp/updater/EBOOT.PBP","ms0:/PSP/GAME/LameUpdater/EBOOT.PBP");
+											//
+											SystemManager::Instance()->ShowMessage("LameUpdater was installed.");
+										}
+									}else
+									{
+										SystemManager::Instance()->ShowMessage("You have latest version of the game.");
 									}
 								}else
 								{

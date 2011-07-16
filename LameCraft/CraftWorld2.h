@@ -40,6 +40,10 @@ public:
 	void initWorldBlocksLight();
 	void initTrees(int treeChoose);
 	void setTextureSize(int texture,int chunk);
+
+
+	void GetSpecialBlockVerts(int i,BaseBlock *blockType);
+	void GetNormalBlockVerts(int i,BaseBlock *blockType);
 	void buildblocksVerts();
 
 	//chunks handling

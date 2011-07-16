@@ -1265,7 +1265,7 @@ bool CraftWorld::LightSourceBlock(int id)
 	return blockTypes[id].lightSource;
 }
 
-void CraftWorld::buildblocksVerts()
+void CraftWorld::GetSpecialBlockVerts(int i,BaseBlock* blockType)
 {
 	std::vector<Vector3*> mPosition;
 	std::vector<Vector3*> mColour;
@@ -1278,108 +1278,76 @@ void CraftWorld::buildblocksVerts()
 	float y = -0.5f;
 	float z = -0.5f;
 
-	//create vertices for each block type
-	for(unsigned int i = 1;i < blockTypes.size();i++)
+	if(i == Torch::getID())
 	{
-		BaseBlock *blockType = &blockTypes[i];
-
 		float down = 1.0f - percent * (blockType->textureRow + 1);
-		float up = down + percent;
+		float up = down + percent - ((percent / (float)textureChunk) * 6);
 
-		float left = percent * blockType->upPlane;
-		float right = left + percent;
+		float left = percent * blockType->sidePlane + ((percent / (float)textureChunk) * 7);
+		float right = left + ((percent / (float)textureChunk) * 2);
 
-		iVertex = 0;
-
-		//light
-		float BlockLight  = 1.0f;  //For the two x faces
-		float BlockLight1 = BlockLight * 0.9f;		//For the two z faces
-		float BlockLight2 = BlockLight * 0.8f;		//For the two y faces
-
-
-		//x
-		left = percent * blockType->sidePlane;
-		right = left + percent;
-
-		mPosition.push_back(new Vector3(x, y, z+1));	mtextures.push_back(new Vector2(right, down)); mColour.push_back(new Vector3(BlockLight,BlockLight,BlockLight));
-		mPosition.push_back(new Vector3(x, y+1, z+1));	mtextures.push_back(new Vector2(right, up)); mColour.push_back(new Vector3(BlockLight,BlockLight,BlockLight));
-		mPosition.push_back(new Vector3(x, y+1, z));		mtextures.push_back(new Vector2(left, up)); mColour.push_back(new Vector3(BlockLight,BlockLight,BlockLight));
-		mPosition.push_back(new Vector3(x, y,   z));		mtextures.push_back(new Vector2(left, down)); mColour.push_back(new Vector3(BlockLight,BlockLight,BlockLight));
+		//x-1
+		mPosition.push_back(new Vector3(x + 0.45f,y			,z + 0.45f + 0.1f	));mtextures.push_back(new Vector2(right	, down));	mColour.push_back(new Vector3(1,1,1));
+		mPosition.push_back(new Vector3(x + 0.45f,y + 0.6f	,z + 0.45f + 0.1f	));mtextures.push_back(new Vector2(right	, up));	mColour.push_back(new Vector3(1,1,1));
+		mPosition.push_back(new Vector3(x + 0.45f,y + 0.6f	,z + 0.45f			));mtextures.push_back(new Vector2(left	, up));	mColour.push_back(new Vector3(1,1,1));
+		mPosition.push_back(new Vector3(x + 0.45f,y			,z + 0.45f			));mtextures.push_back(new Vector2(left	, down));	mColour.push_back(new Vector3(1,1,1));
 
 		mTriangle.push_back(new Vector3(iVertex, iVertex+1, iVertex+2));
 		mTriangle.push_back(new Vector3(iVertex+2, iVertex+3, iVertex));
 
 		iVertex += 4;
 
-		//x
-
-		left = percent * blockType->sidePlane;
-		right = left + percent;
-
-		mPosition.push_back(new Vector3(x+1, y,   z));	mtextures.push_back(new Vector2(right, down));mColour.push_back(new Vector3(BlockLight,BlockLight,BlockLight));
-		mPosition.push_back(new Vector3(x+1, y+1, z));	mtextures.push_back(new Vector2(right, up));mColour.push_back(new Vector3(BlockLight,BlockLight,BlockLight));
-		mPosition.push_back(new Vector3(x+1, y+1, z+1));	mtextures.push_back(new Vector2(left, up));mColour.push_back(new Vector3(BlockLight,BlockLight,BlockLight));
-		mPosition.push_back(new Vector3(x+1, y,   z+1));	mtextures.push_back(new Vector2(left, down));mColour.push_back(new Vector3(BlockLight,BlockLight,BlockLight));
+		//x+1
+		mPosition.push_back(new Vector3(x + 0.45f + 0.1f,y		,z + 0.45f));mtextures.push_back(new Vector2(right, down));mColour.push_back(new Vector3(1,1,1));
+		mPosition.push_back(new Vector3(x + 0.45f + 0.1f,y+ 0.6f,z + 0.45f));mtextures.push_back(new Vector2(right, up));mColour.push_back(new Vector3(1,1,1));
+		mPosition.push_back(new Vector3(x + 0.45f + 0.1f,y+ 0.6f,z + 0.45f + 0.1f));mtextures.push_back(new Vector2(left, up));mColour.push_back(new Vector3(1,1,1));
+		mPosition.push_back(new Vector3(x + 0.45f + 0.1f,y		,z + 0.45f + 0.1f));mtextures.push_back(new Vector2(left, down));mColour.push_back(new Vector3(1,1,1));
 
 		mTriangle.push_back(new Vector3(iVertex, iVertex+1, iVertex+2));
 		mTriangle.push_back(new Vector3(iVertex+2, iVertex+3, iVertex));
 
 		iVertex += 4;
 
-		//up
-		left = percent * blockType->downPlane;
-		right = left + percent;
-
-		mPosition.push_back(new Vector3(x,   y, z));		mtextures.push_back(new Vector2(left, up)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
-		mPosition.push_back(new Vector3(x+1, y, z));		mtextures.push_back(new Vector2(right, up)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
-		mPosition.push_back(new Vector3(x+1, y, z+1));	mtextures.push_back(new Vector2(right, down)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
-		mPosition.push_back(new Vector3(x,   y, z+1));	mtextures.push_back(new Vector2(left, down)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
+		//z-1
+		mPosition.push_back(new Vector3(x + 0.45f		, y + 0.6f	, z + 0.45f));mtextures.push_back(new Vector2(right, up));mColour.push_back(new Vector3(1,1,1));
+		mPosition.push_back(new Vector3(x + 0.45f + 0.1f, y + 0.6f	, z + 0.45f));mtextures.push_back(new Vector2(left, up));mColour.push_back(new Vector3(1,1,1));
+		mPosition.push_back(new Vector3(x + 0.45f + 0.1f, y			, z + 0.45f));mtextures.push_back(new Vector2(left, down));mColour.push_back(new Vector3(1,1,1));
+		mPosition.push_back(new Vector3(x + 0.45f		, y			, z + 0.45f));mtextures.push_back(new Vector2(right, down));mColour.push_back(new Vector3(1,1,1));
 
 		mTriangle.push_back(new Vector3(iVertex, iVertex+1, iVertex+2));
 		mTriangle.push_back(new Vector3(iVertex+2, iVertex+3, iVertex));
 
 		iVertex += 4;
 
-		//down
-		left = percent * blockType->upPlane;
-		right = left + percent;
-
-		mPosition.push_back(new Vector3(x,   y+1, z+1));		mtextures.push_back(new Vector2(left, up)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
-		mPosition.push_back(new Vector3(x+1, y+1, z+1));		mtextures.push_back(new Vector2(right, up)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
-		mPosition.push_back(new Vector3(x+1, y+1, z));		mtextures.push_back(new Vector2(right, down)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
-		mPosition.push_back(new Vector3(x,   y+1, z));		mtextures.push_back(new Vector2(left, down)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
+		//z+1
+		mPosition.push_back(new Vector3(x + 0.45f		, y			, z + 0.45f + 0.1f));mtextures.push_back(new Vector2(left, down));mColour.push_back(new Vector3(1,1,1));
+		mPosition.push_back(new Vector3(x + 0.45f + 0.1f, y			, z + 0.45f + 0.1f));mtextures.push_back(new Vector2(right, down));mColour.push_back(new Vector3(1,1,1));
+		mPosition.push_back(new Vector3(x + 0.45f + 0.1f, y + 0.6f	, z + 0.45f + 0.1f));mtextures.push_back(new Vector2(right, up));mColour.push_back(new Vector3(1,1,1));
+		mPosition.push_back(new Vector3(x + 0.45f		, y + 0.6f	, z + 0.45f + 0.1f));mtextures.push_back(new Vector2(left, up));mColour.push_back(new Vector3(1,1,1));
 
 		mTriangle.push_back(new Vector3(iVertex, iVertex+1, iVertex+2));
 		mTriangle.push_back(new Vector3(iVertex+2, iVertex+3, iVertex));
 
 		iVertex += 4;
 
-		left = percent * blockType->sidePlane;
-		right = left + percent;
+		//y+1
+		{
+			down = 1.0f - percent * (blockType->textureRow + 1) + ((percent / (float)textureChunk) * 8);
+			up = down + ((percent / (float)textureChunk) * 2);
 
-		mPosition.push_back(new Vector3(x,   y+1, z));		mtextures.push_back(new Vector2(right, up)); mColour.push_back(new Vector3(BlockLight1,BlockLight1,BlockLight1));
-		mPosition.push_back(new Vector3(x+1, y+1, z));		mtextures.push_back(new Vector2(left, up)); mColour.push_back(new Vector3(BlockLight1,BlockLight1,BlockLight1));
-		mPosition.push_back(new Vector3(x+1, y,   z));		mtextures.push_back(new Vector2(left, down)); mColour.push_back(new Vector3(BlockLight1,BlockLight1,BlockLight1));
-		mPosition.push_back(new Vector3(x,   y,   z));		mtextures.push_back(new Vector2(right, down)); mColour.push_back(new Vector3(BlockLight1,BlockLight1,BlockLight1));
+			left = percent * blockType->sidePlane + ((percent / (float)textureChunk) * 7);
+			right = left + ((percent / (float)textureChunk) * 2);
 
-		mTriangle.push_back(new Vector3(iVertex, iVertex+1, iVertex+2));
-		mTriangle.push_back(new Vector3(iVertex+2, iVertex+3, iVertex));
+			mPosition.push_back(new Vector3(x + 0.45f		,y + 0.6f,z + 0.45f + 0.1f));mtextures.push_back(new Vector2(left, up));mColour.push_back(new Vector3(1,1,1));
+			mPosition.push_back(new Vector3(x + 0.45f + 0.1f,y + 0.6f,z + 0.45f + 0.1f));mtextures.push_back(new Vector2(right, up));mColour.push_back(new Vector3(1,1,1));
+			mPosition.push_back(new Vector3(x + 0.45f + 0.1f,y + 0.6f,z + 0.45f));mtextures.push_back(new Vector2(right, down));mColour.push_back(new Vector3(1,1,1));
+			mPosition.push_back(new Vector3(x + 0.45f		,y + 0.6f,z + 0.45f));mtextures.push_back(new Vector2(left, down));mColour.push_back(new Vector3(1,1,1));
 
-		iVertex += 4;
+			mTriangle.push_back(new Vector3(iVertex, iVertex+1, iVertex+2));
+			mTriangle.push_back(new Vector3(iVertex+2, iVertex+3, iVertex));
 
-		left = percent * blockType->sidePlane;
-		right = left + percent;
-
-		mPosition.push_back(new Vector3(x,   y,   z+1));		mtextures.push_back(new Vector2(left, down)); mColour.push_back(new Vector3(BlockLight1,BlockLight1,BlockLight1));
-		mPosition.push_back(new Vector3(x+1, y,   z+1));		mtextures.push_back(new Vector2(right, down)); mColour.push_back(new Vector3(BlockLight1,BlockLight1,BlockLight1));
-		mPosition.push_back(new Vector3(x+1, y+1, z+1));		mtextures.push_back(new Vector2(right, up)); mColour.push_back(new Vector3(BlockLight1,BlockLight1,BlockLight1));
-		mPosition.push_back(new Vector3(x,   y+1, z+1));		mtextures.push_back(new Vector2(left, up)); mColour.push_back(new Vector3(BlockLight1,BlockLight1,BlockLight1));
-
-		mTriangle.push_back(new Vector3(iVertex, iVertex+1, iVertex+2));
-		mTriangle.push_back(new Vector3(iVertex+2, iVertex+3, iVertex));
-
-		iVertex += 4;
-
+			iVertex += 4;
+		}
 
 		blockTypes[i].vertices = (CraftPSPVertex*)memalign(16,( mTriangle.size() * 3) * sizeof(CraftPSPVertex));
 		//build verts
@@ -1424,12 +1392,188 @@ void CraftWorld::buildblocksVerts()
 			delete mColour[aa];
 		}
 		mPosition.clear();
-		mtextures.clear();
-		mColour.clear();
+			mtextures.clear();
+			mColour.clear();
 
-		for(unsigned int aa = 0;aa < mTriangle.size();aa++)
-			delete 		mTriangle[aa];
-		mTriangle.clear();
+			for(unsigned int aa = 0;aa < mTriangle.size();aa++)
+				delete 		mTriangle[aa];
+			mTriangle.clear();
+	}
+}
+
+void CraftWorld::GetNormalBlockVerts(int i,BaseBlock *blockType)
+{
+	std::vector<Vector3*> mPosition;
+	std::vector<Vector3*> mColour;
+	std::vector<Vector2*> mtextures;
+	std::vector<Vector3*> mTriangle;
+
+	int iVertex = 0;
+
+	float x = -0.5f;
+	float y = -0.5f;
+	float z = -0.5f;
+
+	float down = 1.0f - percent * (blockType->textureRow + 1);
+	float up = down + percent;
+
+	float left = percent * blockType->upPlane;
+	float right = left + percent;
+
+	iVertex = 0;
+
+	//light
+	float BlockLight  = 1.0f;  //For the two x faces
+	float BlockLight1 = BlockLight * 0.9f;		//For the two z faces
+	float BlockLight2 = BlockLight * 0.8f;		//For the two y faces
+
+
+	//x
+	left = percent * blockType->sidePlane;
+	right = left + percent;
+
+	mPosition.push_back(new Vector3(x, y, z+1));	mtextures.push_back(new Vector2(right, down)); mColour.push_back(new Vector3(BlockLight,BlockLight,BlockLight));
+	mPosition.push_back(new Vector3(x, y+1, z+1));	mtextures.push_back(new Vector2(right, up)); mColour.push_back(new Vector3(BlockLight,BlockLight,BlockLight));
+	mPosition.push_back(new Vector3(x, y+1, z));		mtextures.push_back(new Vector2(left, up)); mColour.push_back(new Vector3(BlockLight,BlockLight,BlockLight));
+	mPosition.push_back(new Vector3(x, y,   z));		mtextures.push_back(new Vector2(left, down)); mColour.push_back(new Vector3(BlockLight,BlockLight,BlockLight));
+
+	mTriangle.push_back(new Vector3(iVertex, iVertex+1, iVertex+2));
+	mTriangle.push_back(new Vector3(iVertex+2, iVertex+3, iVertex));
+
+	iVertex += 4;
+
+	//x
+
+	left = percent * blockType->sidePlane;
+	right = left + percent;
+
+	mPosition.push_back(new Vector3(x+1, y,   z));	mtextures.push_back(new Vector2(right, down));mColour.push_back(new Vector3(BlockLight,BlockLight,BlockLight));
+	mPosition.push_back(new Vector3(x+1, y+1, z));	mtextures.push_back(new Vector2(right, up));mColour.push_back(new Vector3(BlockLight,BlockLight,BlockLight));
+	mPosition.push_back(new Vector3(x+1, y+1, z+1));	mtextures.push_back(new Vector2(left, up));mColour.push_back(new Vector3(BlockLight,BlockLight,BlockLight));
+	mPosition.push_back(new Vector3(x+1, y,   z+1));	mtextures.push_back(new Vector2(left, down));mColour.push_back(new Vector3(BlockLight,BlockLight,BlockLight));
+
+	mTriangle.push_back(new Vector3(iVertex, iVertex+1, iVertex+2));
+	mTriangle.push_back(new Vector3(iVertex+2, iVertex+3, iVertex));
+
+	iVertex += 4;
+
+	//up
+	left = percent * blockType->downPlane;
+	right = left + percent;
+
+	mPosition.push_back(new Vector3(x,   y, z));		mtextures.push_back(new Vector2(left, up)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
+	mPosition.push_back(new Vector3(x+1, y, z));		mtextures.push_back(new Vector2(right, up)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
+	mPosition.push_back(new Vector3(x+1, y, z+1));	mtextures.push_back(new Vector2(right, down)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
+	mPosition.push_back(new Vector3(x,   y, z+1));	mtextures.push_back(new Vector2(left, down)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
+
+	mTriangle.push_back(new Vector3(iVertex, iVertex+1, iVertex+2));
+	mTriangle.push_back(new Vector3(iVertex+2, iVertex+3, iVertex));
+
+	iVertex += 4;
+
+	//down
+	left = percent * blockType->upPlane;
+	right = left + percent;
+
+	mPosition.push_back(new Vector3(x,   y+1, z+1));		mtextures.push_back(new Vector2(left, up)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
+	mPosition.push_back(new Vector3(x+1, y+1, z+1));		mtextures.push_back(new Vector2(right, up)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
+	mPosition.push_back(new Vector3(x+1, y+1, z));		mtextures.push_back(new Vector2(right, down)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
+	mPosition.push_back(new Vector3(x,   y+1, z));		mtextures.push_back(new Vector2(left, down)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
+
+	mTriangle.push_back(new Vector3(iVertex, iVertex+1, iVertex+2));
+	mTriangle.push_back(new Vector3(iVertex+2, iVertex+3, iVertex));
+
+	iVertex += 4;
+
+	left = percent * blockType->sidePlane;
+	right = left + percent;
+
+	mPosition.push_back(new Vector3(x,   y+1, z));		mtextures.push_back(new Vector2(right, up)); mColour.push_back(new Vector3(BlockLight1,BlockLight1,BlockLight1));
+	mPosition.push_back(new Vector3(x+1, y+1, z));		mtextures.push_back(new Vector2(left, up)); mColour.push_back(new Vector3(BlockLight1,BlockLight1,BlockLight1));
+	mPosition.push_back(new Vector3(x+1, y,   z));		mtextures.push_back(new Vector2(left, down)); mColour.push_back(new Vector3(BlockLight1,BlockLight1,BlockLight1));
+	mPosition.push_back(new Vector3(x,   y,   z));		mtextures.push_back(new Vector2(right, down)); mColour.push_back(new Vector3(BlockLight1,BlockLight1,BlockLight1));
+
+	mTriangle.push_back(new Vector3(iVertex, iVertex+1, iVertex+2));
+	mTriangle.push_back(new Vector3(iVertex+2, iVertex+3, iVertex));
+
+	iVertex += 4;
+
+	left = percent * blockType->sidePlane;
+	right = left + percent;
+
+	mPosition.push_back(new Vector3(x,   y,   z+1));		mtextures.push_back(new Vector2(left, down)); mColour.push_back(new Vector3(BlockLight1,BlockLight1,BlockLight1));
+	mPosition.push_back(new Vector3(x+1, y,   z+1));		mtextures.push_back(new Vector2(right, down)); mColour.push_back(new Vector3(BlockLight1,BlockLight1,BlockLight1));
+	mPosition.push_back(new Vector3(x+1, y+1, z+1));		mtextures.push_back(new Vector2(right, up)); mColour.push_back(new Vector3(BlockLight1,BlockLight1,BlockLight1));
+	mPosition.push_back(new Vector3(x,   y+1, z+1));		mtextures.push_back(new Vector2(left, up)); mColour.push_back(new Vector3(BlockLight1,BlockLight1,BlockLight1));
+
+	mTriangle.push_back(new Vector3(iVertex, iVertex+1, iVertex+2));
+	mTriangle.push_back(new Vector3(iVertex+2, iVertex+3, iVertex));
+
+	iVertex += 4;
+
+
+	blockTypes[i].vertices = (CraftPSPVertex*)memalign(16,( mTriangle.size() * 3) * sizeof(CraftPSPVertex));
+	//build verts
+	//vertices
+	int vert = 0;
+	unsigned int size =  mTriangle.size();
+	for(unsigned int j = 0;j < size;j++)
+	{
+		blockTypes[i].vertices[vert].u = mtextures[mTriangle[j]->x]->x;
+		blockTypes[i].vertices[vert].v = mtextures[mTriangle[j]->x]->y;
+		blockTypes[i].vertices[vert].color = GU_COLOR( mColour[mTriangle[j]->x]->x,mColour[mTriangle[j]->x]->y,mColour[mTriangle[j]->x]->z,1.0f);
+		blockTypes[i].vertices[vert].x = mPosition[mTriangle[j]->x]->x;
+		blockTypes[i].vertices[vert].y = mPosition[mTriangle[j]->x]->y;
+		blockTypes[i].vertices[vert].z = mPosition[mTriangle[j]->x]->z;
+		vert++;
+
+		blockTypes[i].vertices[vert].u = mtextures[mTriangle[j]->y]->x;
+		blockTypes[i].vertices[vert].v = mtextures[mTriangle[j]->y]->y;
+		blockTypes[i].vertices[vert].color = GU_COLOR( mColour[mTriangle[j]->y]->x,mColour[mTriangle[j]->y]->y,mColour[mTriangle[j]->y]->z,1.0f);
+		blockTypes[i].vertices[vert].x = mPosition[mTriangle[j]->y]->x;
+		blockTypes[i].vertices[vert].y = mPosition[mTriangle[j]->y]->y;
+		blockTypes[i].vertices[vert].z = mPosition[mTriangle[j]->y]->z;
+		vert++;
+
+		blockTypes[i].vertices[vert].u = mtextures[mTriangle[j]->z]->x;
+		blockTypes[i].vertices[vert].v = mtextures[mTriangle[j]->z]->y;
+		blockTypes[i].vertices[vert].color = GU_COLOR( mColour[mTriangle[j]->z]->x,mColour[mTriangle[j]->z]->y,mColour[mTriangle[j]->z]->z,1.0f);
+		blockTypes[i].vertices[vert].x = mPosition[mTriangle[j]->z]->x;
+		blockTypes[i].vertices[vert].y = mPosition[mTriangle[j]->z]->y;
+		blockTypes[i].vertices[vert].z = mPosition[mTriangle[j]->z]->z;
+		vert++;
+	}
+
+	//clear the cache or there will be some errors
+	sceKernelDcacheWritebackInvalidateRange(blockTypes[i].vertices,( mTriangle.size() * 3) * sizeof(CraftPSPVertex));
+	//sceKernelDcacheWritebackInvalidateAll();
+
+	for(unsigned int aa = 0;aa < mPosition.size();aa++)
+	{
+		delete mPosition[aa];
+		delete mtextures[aa];
+		delete mColour[aa];
+	}
+	mPosition.clear();
+	mtextures.clear();
+	mColour.clear();
+
+	for(unsigned int aa = 0;aa < mTriangle.size();aa++)
+		delete 		mTriangle[aa];
+	mTriangle.clear();
+}
+
+void CraftWorld::buildblocksVerts()
+{
+	//create vertices for each block type
+	for(unsigned int i = 1;i < blockTypes.size();i++)
+	{
+		BaseBlock *blockType = &blockTypes[i];
+
+		if(blockType->blockSpecial)
+			GetSpecialBlockVerts(i,blockType);
+		else
+			GetNormalBlockVerts(i,blockType);
 	}
 }
 

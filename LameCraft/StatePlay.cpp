@@ -1055,7 +1055,7 @@ void StatePlay::Update(StateManager* sManager)
 		}
 	}
 
-	/*mWorld->UpdateWorldTime(dt);
+	mWorld->UpdateWorldTime(dt);
 
 	if(!mWorld->freezeDayTime)
 	{
@@ -1092,7 +1092,7 @@ void StatePlay::Update(StateManager* sManager)
 				sunMoonSwitch = false;
 			}
 		}
-	}*/
+	}
 }
 
 void StatePlay::Draw(StateManager* sManager)

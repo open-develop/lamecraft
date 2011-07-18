@@ -5,6 +5,7 @@
 #include <Aurora/Math/BoundingBox.h>
 #include <Aurora/Math/BoundingSphere.h>
 #include <Aurora/Math/Plane.h>
+#include <pspmath.h>
 
 namespace Aurora
 {

@@ -51,17 +51,21 @@ int main()
 
 	//splash screens
 	SplashScreen *screen = new SplashScreen("Assets/Lamecraft/genesis.png",0,0,480,272,3);
+	Logger::Instance()->LogMessage("loaded genesis.png");
 	screen->ShowSplash();
 	delete screen;
 	SplashScreen *screen2 = new SplashScreen("Assets/Lamecraft/pspteam.png",0,0,424,72,3);
+	Logger::Instance()->LogMessage("loaded pspteam.png");
 	screen2->ShowSplash();
 	delete screen2;
 
 	RenderManager::InstancePtr()->SetClearColour(0xFFF5B783);
+	Logger::Instance()->LogMessage("created render manager");
 
 	//new active state
 	StateMenu *statePlay = new StateMenu();
 	statePlay->Init();
+	Logger::Instance()->LogMessage("made new stateplay");
 
 	stateManager.ChangeState(statePlay);
 

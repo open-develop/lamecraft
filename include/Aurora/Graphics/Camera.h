@@ -3,6 +3,7 @@
 
 #include <Aurora/Math/Vector3.h>
 #include <Aurora/Math/Frustum.h>
+#include <pspmath.h>
 
 using namespace Aurora::Math;
 
@@ -45,6 +46,9 @@ namespace Aurora
 
 			// The camera's position
 			Vector3 m_vPosition;
+			
+			// The camera's offset
+			Vector3 m_vOffset;
 
 			// The camera's view
 			Vector3 m_vView;

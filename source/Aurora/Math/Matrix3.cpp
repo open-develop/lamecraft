@@ -37,12 +37,12 @@ namespace Aurora
 			pitchDegrees = Math::degreesToRadians(pitchDegrees);
 			rollDegrees = Math::degreesToRadians(rollDegrees);
 
-			float cosH = cosf(headDegrees);
-			float cosP = cosf(pitchDegrees);
-			float cosR = cosf(rollDegrees);
-			float sinH = sinf(headDegrees);
-			float sinP = sinf(pitchDegrees);
-			float sinR = sinf(rollDegrees);
+			float cosH = vfpu_cosf(headDegrees);
+			float cosP = vfpu_cosf(pitchDegrees);
+			float cosR = vfpu_cosf(rollDegrees);
+			float sinH = vfpu_sinf(headDegrees);
+			float sinP = vfpu_sinf(pitchDegrees);
+			float sinR = vfpu_sinf(rollDegrees);
 
 			mtx[0][0] = cosR * cosH - sinR * sinP * sinH;
 			mtx[0][1] = sinR * cosH + cosR * sinP * sinH;
@@ -199,8 +199,8 @@ namespace Aurora
 			float x = axis.x;
 			float y = axis.y;
 			float z = axis.z;
-			float c = cosf(degrees);
-			float s = sinf(degrees);
+			float c = vfpu_cosf(degrees);
+			float s = vfpu_sinf(degrees);
 
 			mtx[0][0] = (x * x) * (1.0f - c) + c;
 			mtx[0][1] = (x * y) * (1.0f - c) + (z * s);
@@ -242,7 +242,7 @@ namespace Aurora
 			//  David Eberly, "Euler Angle Formulas", Geometric Tools web site,
 			//  http://www.geometrictools.com/Documentation/EulerAngles.pdf.
 
-			float thetaX = asinf(mtx[1][2]);
+			float thetaX = vfpu_asinf(mtx[1][2]);
 			float thetaY = 0.0f;
 			float thetaZ = 0.0f;
 
@@ -250,20 +250,20 @@ namespace Aurora
 			{
 				if (thetaX > -Math::HALF_PI)
 				{
-					thetaZ = atan2f(-mtx[1][0], mtx[1][1]);
-					thetaY = atan2f(-mtx[0][2], mtx[2][2]);
+					thetaZ = vfpu_atan2f(-mtx[1][0], mtx[1][1]);
+					thetaY = vfpu_atan2f(-mtx[0][2], mtx[2][2]);
 				}
 				else
 				{
 					// Not a unique solution.
-					thetaZ = -atan2f(mtx[2][0], mtx[0][0]);
+					thetaZ = -vfpu_atan2f(mtx[2][0], mtx[0][0]);
 					thetaY = 0.0f;
 				}
 			}
 			else
 			{
 				// Not a unique solution.
-				thetaZ = atan2f(mtx[2][0], mtx[0][0]);
+				thetaZ = vfpu_atan2f(mtx[2][0], mtx[0][0]);
 				thetaY = 0.0f;
 			}
 

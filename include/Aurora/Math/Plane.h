@@ -2,6 +2,7 @@
 #define AURORA_PLANE_H
 
 #include <Aurora/Math/Vector3.h>
+#include <pspmath.h>
 
 namespace Aurora
 {

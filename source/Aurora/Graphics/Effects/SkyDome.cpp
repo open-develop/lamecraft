@@ -41,9 +41,9 @@ namespace Aurora
 				{
 					/* vertex (phi + dphi, theta) */
 					TexturesPSPVertex vert1;
-					vert1.x = 320.0f + radius * cosf((phi + dphi) * DEG_TO_RAD) *cosf(theta * DEG_TO_RAD);
-					vert1.y = radius * sinf((phi + dphi) * DEG_TO_RAD);
-					vert1.z = 320.0f + radius * cosf((phi + dphi) * DEG_TO_RAD) * sinf(theta * DEG_TO_RAD);
+					vert1.x = 320.0f + radius * vfpu_cosf((phi + dphi) * DEG_TO_RAD) *vfpu_cosf(theta * DEG_TO_RAD);
+					vert1.y = radius * vfpu_sinf((phi + dphi) * DEG_TO_RAD);
+					vert1.z = 320.0f + radius * vfpu_cosf((phi + dphi) * DEG_TO_RAD) * vfpu_sinf(theta * DEG_TO_RAD);
 					vert1.u = 0;
 					vert1.v = (1.0f / 64) * vert1.y * textureScale;
 					memcpy(&domeVertices[i],&vert1,sizeof(TexturesPSPVertex));
@@ -51,9 +51,9 @@ namespace Aurora
 
 					/* vertex (phi, theta) */
 					TexturesPSPVertex vert2;
-					vert2.x = 320.0f + radius * cosf(phi * DEG_TO_RAD) * cosf(theta * DEG_TO_RAD);
-					vert2.y = radius * sinf(phi * DEG_TO_RAD);
-					vert2.z = 320.0f + radius * cosf(phi * DEG_TO_RAD) * sinf(theta * DEG_TO_RAD);
+					vert2.x = 320.0f + radius * vfpu_cosf(phi * DEG_TO_RAD) * vfpu_cosf(theta * DEG_TO_RAD);
+					vert2.y = radius * vfpu_sinf(phi * DEG_TO_RAD);
+					vert2.z = 320.0f + radius * vfpu_cosf(phi * DEG_TO_RAD) * vfpu_sinf(theta * DEG_TO_RAD);
 					vert2.u = 0;
 					vert2.v = (1.0f / 64) * vert2.y * textureScale;
 					memcpy(&domeVertices[i],&vert2,sizeof(TexturesPSPVertex));

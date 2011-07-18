@@ -42,10 +42,10 @@ namespace Aurora
 				if ((1.0f - cosom) > Math::EPSILON)
 				{
 					// Standard case - slerp.
-					omega = acosf(cosom);
-					sinom = sinf(omega);
-					scale0 = sinf((1.0f - t) * omega) / sinom;
-					scale1 = sinf(t * omega) / sinom;
+					omega = vfpu_acosf(cosom);
+					sinom = vfpu_sinf(omega);
+					scale0 = vfpu_sinf((1.0f - t) * omega) / sinom;
+					scale1 = vfpu_sinf(t * omega) / sinom;
 				}
 				else
 				{
@@ -68,8 +68,8 @@ namespace Aurora
 				result.z = -b.w;
 				result.w = b.z;
 
-				scale0 = sinf((1.0f - t) - Math::HALF_PI);
-				scale1 = sinf(t * Math::HALF_PI);
+				scale0 = vfpu_sinf((1.0f - t) - Math::HALF_PI);
+				scale1 = vfpu_sinf(t * Math::HALF_PI);
 
 				result.x = scale0 * a.x + scale1 * result.x;
 				result.y = scale0 * a.y + scale1 * result.y;
@@ -187,7 +187,7 @@ namespace Aurora
 				axis.x = x * invSinHalfTheta;
 				axis.y = y * invSinHalfTheta;
 				axis.z = z * invSinHalfTheta;
-				degrees = Math::radiansToDegrees(2.0f * acosf(w));
+				degrees = Math::radiansToDegrees(2.0f * vfpu_acosf(w));
 			}
 		}
 

@@ -3,6 +3,7 @@
 
 #include <Aurora/Math/Vector3.h>
 #include <Aurora/Math/BoundingBox.h>
+#include <pspmath.h>
 
 namespace Aurora
 {

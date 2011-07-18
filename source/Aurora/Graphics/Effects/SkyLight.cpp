@@ -54,9 +54,9 @@ namespace Aurora
 
 			//printf("angle: %f\n", angle);
 			float r = 450.0f;
-			sun_x = 320.0f + (r * sinf((angle - dis) * DEG_TO_RAD));
-			sun_y = -r * cosf((angle - dis) * DEG_TO_RAD) * cosf(sun_tilt);
-			sun_z = 320.0f + (r * cosf((angle - dis) * DEG_TO_RAD) * sinf(sun_tilt));
+			sun_x = 320.0f + (r * vfpu_sinf((angle - dis) * DEG_TO_RAD));
+			sun_y = -r * vfpu_cosf((angle - dis) * DEG_TO_RAD) * vfpu_cosf(sun_tilt);
+			sun_z = 320.0f + (r * vfpu_cosf((angle - dis) * DEG_TO_RAD) * vfpu_sinf(sun_tilt));
 
 			//float textureScale = 1.0f / stepScale;
 			int i = 0;

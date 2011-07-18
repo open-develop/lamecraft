@@ -66,7 +66,7 @@ namespace Aurora
 				float angle = dotProduct / vectorsMagnitude;
 
 				if(vectorsMagnitude != 0.0f && angle != 0.0f && angle >= -1.0f && angle< 1.0f)
-					angle = acosf( angle );
+					angle = vfpu_acosf( angle );
 
 				if(angle > 1000.0f || angle < -1000.0f)
 					return 0;

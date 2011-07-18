@@ -59,7 +59,7 @@ PSP_LARGE_MEMORY = 1
 
 LIBDIR = 
 LDFLAGS =
-LIBS=  -lNoisepp -lpspaudiolib -lpspaudio -lmikmod -lmmio -lpspaudiocodec -lpng -lz -lpspgum -lpspgu -lstdc++ -lpsprtc -lpspctrl -lm -lpspvfpu -lpspsdk -lpsppower -lpsphttp #-lpsp_req -lcurl -lTiny
+LIBS=  -lNoisepp -lpspaudiolib -lpspaudio -lmikmod -lmmio -lpspaudiocodec -lpng -lz -lpspgum_vfpu -lpspgu -lstdc++ -lpsprtc -lpspctrl -lm -lpspvfpu -lpspsdk -lpsppower -lpsphttp -lpspmath #-lpsp_req -lcurl -lTiny
 
 EXTRA_TARGETS = EBOOT.PBP
 PSP_EBOOT_TITLE = LameCraft

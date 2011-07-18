@@ -8,6 +8,7 @@ namespace Aurora
 		{
 			//needUpdate = true;
 			upDownAngle = 0.0f;
+			m_vOffset = Vector3(0.0f, 0.0f, 0.0f);
 		}
 
 		Camera::~Camera()
@@ -22,37 +23,37 @@ namespace Aurora
 			m_vPosition	= Vector3(positionX, positionY, positionZ);
 			m_vView		= Vector3(viewX, viewY, viewZ);
 			m_vUpVector	= Vector3(upVectorX, upVectorY, upVectorZ);
-			vVector = m_vView - m_vPosition;
+			vVector = m_vView - (m_vPosition + m_vOffset);
 			vVector.normalize();
 			needUpdate = true;
 		}
 
 		void Camera::Move(float speed)
 		{
-			vVector = m_vView - m_vPosition;
+			vVector = m_vView - (m_vPosition + m_vOffset);
 			vVector.normalize();
 
 			m_vVelocity = vVector * speed;
 			m_vPosition = m_vPosition + m_vVelocity;
-			m_vView = m_vPosition + vVector;
+			m_vView = m_vPosition + m_vOffset + vVector;
 
 			needUpdate = true;
 		}
 
 		void Camera::MoveTo(Vector3 newPos)
 		{
-			vVector = m_vView - m_vPosition;
+			vVector = m_vView - (m_vPosition + m_vOffset);
 			vVector.normalize();
 
 			m_vPosition = newPos;
-			m_vView = m_vPosition + vVector;
+			m_vView = m_vPosition + m_vOffset + vVector;
 
 			needUpdate = true;
 		}
 
 		void Camera::MovePhysic(float speed)
 		{
-			vVector = m_vView - m_vPosition;
+			vVector = m_vView - (m_vPosition + m_vOffset);
 			vVector.normalize();
 
 			m_vVelocity += vVector * speed;
@@ -61,7 +62,7 @@ namespace Aurora
 
 		void Camera::MovePhysicNoY(float speed)
 		{
-			vVector = m_vView - m_vPosition;
+			vVector = m_vView - (m_vPosition + m_vOffset);
 			vVector.y = 0.0f;
 			vVector.normalize();
 
@@ -71,7 +72,7 @@ namespace Aurora
 
 		Vector3 Camera::MoveFoCollision(float speed)
 		{
-			vVector = m_vView - m_vPosition;
+			vVector = m_vView - (m_vPosition + m_vOffset);
 			vVector.normalize();
 
 			m_vVelocity = vVector * speed;
@@ -84,7 +85,7 @@ namespace Aurora
 		void Camera::MoveAfterCollision(Vector3 newPos)
 		{
 			m_vPosition = newPos + m_vVelocity;
-			m_vView = m_vPosition + vVector;
+			m_vView = m_vPosition + m_vOffset + vVector;
 			needUpdate = true;
 		}
 
@@ -162,11 +163,11 @@ namespace Aurora
 			Vector3 vNewView;
 
 			// Get the view vector (The direction we are facing)
-			Vector3 vView = m_vView - m_vPosition;
+			Vector3 vView = m_vView - (m_vPosition + m_vOffset);
 
 			// Calculate the sine and cosine of the angle once
-			float cosTheta = cosf(angle);
-			float sinTheta = sinf(angle);
+			float cosTheta = vfpu_cosf(angle);
+			float sinTheta = vfpu_sinf(angle);
 
 			// Find the new x position for the new rotated point
 			vNewView.x  = (cosTheta + (1 - cosTheta) * x * x)		* vView.x;
@@ -185,7 +186,7 @@ namespace Aurora
 
 			// Now we just add the newly rotated vector to our position to set
 			// our new rotated view of our camera.
-			m_vView = m_vPosition + vNewView;
+			m_vView = m_vPosition + m_vOffset + vNewView;
 
 			vVector = vNewView;
 			needUpdate = true;

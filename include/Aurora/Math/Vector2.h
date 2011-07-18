@@ -2,6 +2,7 @@
 #define AURORA_VECTOR2_H
 
 #include <Aurora/Math/MathLib.h>
+#include <pspmath.h>
 
 namespace Aurora
 {

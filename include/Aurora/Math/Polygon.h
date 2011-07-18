@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <Aurora/Math/Vector3.h>
+#include <pspmath.h>
 
 namespace Aurora
 {

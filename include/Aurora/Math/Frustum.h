@@ -8,6 +8,7 @@
 #include <Aurora/Math/BoundingBox.h>
 #include <Aurora/Math/BoundingSphere.h>
 #include <Aurora/Graphics/Vertex.h>
+#include <pspmath.h>
 
 using namespace Aurora::Graphics;
 

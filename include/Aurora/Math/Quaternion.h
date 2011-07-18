@@ -4,6 +4,7 @@
 #include <Aurora/Math/MathLib.h>
 #include <Aurora/Math/Matrix3.h>
 #include <Aurora/Math/Matrix4.h>
+#include <pspmath.h>
 
 namespace Aurora
 {

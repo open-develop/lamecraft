@@ -167,7 +167,7 @@ void StatePlay::InitParametric(int terrainType,bool makeFlat,bool makeTrees,bool
 	mWorld->initRandompMap(128,16,terrainType,makeFlat,makeTrees,makeWater,makeCaves);
 	mWorld->setTextureSize(128,16);
 	mWorld->initWorldBlocksLight();
-	mWorld->SetWolrdTime(5);
+	mWorld->SetWolrdTime(21);
 	mWorld->UpdatePlayerZoneBB(playerPosition);
 	mWorld->buildMap();
 	mWorld->buildblocksVerts();
@@ -365,7 +365,7 @@ void StatePlay::LoadMap(std::string fileName,bool compressed)
 
 void StatePlay::SetDayTimeAfterLoad()
 {
-	if(mWorld->worldVersion >=3)
+	if(mWorld->worldVersion >= 3)
 	{
 		if(mWorld->worldDayTime >= 5.0f && mWorld->worldDayTime < 21.0f)
 		{
@@ -570,15 +570,15 @@ void StatePlay::HandleEvents(StateManager* sManager)
 			Vector3 rayDir = fppCam->m_vView - fppCam->m_vPosition;
 			rayDir.normalize();
 
-			//pobieramy pozycje gdzie patrzymy jak i nasz¹ pozycje
+			//get position and view vector
 			Vector3 testPos;
 
-			//jedziemy co kawa³ek a¿ do celu np. co 0.5
+			//move to the target +=0.5
 			for(float i = 0;i < 5.25f;i+=0.25f)
 			{
 				testPos = fppCam->m_vPosition + (rayDir * i);
 
-				//sprawdzamy czy tykamy coœ
+				//check if we are touch something
 				if(mWorld->BlockEditable(testPos.x,testPos.y,testPos.z))
 				{
 					BoundingBox testBox = BoundingBox(Vector3(cubePos.x - 0.5f,cubePos.y - 0.5f,cubePos.z - 0.5f),Vector3(cubePos.x + 0.5f,cubePos.y + 0.5f,cubePos.z + 0.5f));
@@ -655,8 +655,13 @@ void StatePlay::HandleEvents(StateManager* sManager)
 										}
 										else
 										{
+											//check if there are light sources nearby
+											mWorld->UpdateLightAreaIn(testPos2);
+
+											//rebuild chunks
 											mWorld->rebuildChunk(chunkTarget);
 											mWorld->rebuildTransparentChunk(chunkTarget);
+											//rebuild chunks that are near this chunk
 											mWorld->rebuildNearestChunks(chunkTarget,testPos2);
 										}
 									}
@@ -682,10 +687,10 @@ void StatePlay::HandleEvents(StateManager* sManager)
 			Vector3 rayDir = fppCam->m_vView - fppCam->m_vPosition;
 			rayDir.normalize();
 
-			//pobieramy pozycje gdzie patrzymy jak i nasz¹ pozycje
+			//we are takin our positiona and view vector
 			Vector3 testPos;
 
-			//jedziemy co kawa³ek a¿ do celu np. co 0.5
+			//we are moving slowly to the target +=0.5
 			for(float i = 0;i < 5.25f;i+=0.25f)
 			{
 				testPos = fppCam->m_vPosition + (rayDir * i);
@@ -717,6 +722,10 @@ void StatePlay::HandleEvents(StateManager* sManager)
 							mWorld->RebuildChunksLight(testPos,chunkTarget,oldBlock);
 						}else
 						{
+							//check if there are light sources nearby
+							mWorld->UpdateLightAreaIn(testPos);
+
+							//rebuild chunks
 							mWorld->rebuildChunk(chunkTarget);
 							mWorld->rebuildTransparentChunk(chunkTarget);
 							mWorld->rebuildNearestChunks(chunkTarget,testPos);
@@ -727,7 +736,6 @@ void StatePlay::HandleEvents(StateManager* sManager)
 					break;
 				}
 			}
-
 		}
 
 		//jump
@@ -1001,7 +1009,7 @@ void StatePlay::Update(StateManager* sManager)
 				playerVelocity.y = 0.0f;
 
 
-			//teraz kolizje ze œciankami
+			//collision with walls
 			isWalking = false;
 			Vector3 moveVector = fppCam->m_vVelocity;
 
@@ -1047,7 +1055,7 @@ void StatePlay::Update(StateManager* sManager)
 		}
 	}
 
-	mWorld->UpdateWorldTime(dt);
+	/*mWorld->UpdateWorldTime(dt);
 
 	if(!mWorld->freezeDayTime)
 	{
@@ -1084,7 +1092,7 @@ void StatePlay::Update(StateManager* sManager)
 				sunMoonSwitch = false;
 			}
 		}
-	}
+	}*/
 }
 
 void StatePlay::Draw(StateManager* sManager)

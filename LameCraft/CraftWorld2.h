@@ -95,7 +95,9 @@ public:
 	bool CanPutBlockHere(const int x, const int y, const int z,int blockID);
 	void SetLigtSourcePosition(const int x, const int y, const int z,int blockID);
 	void RemoveLigtSourceAtPosition(const int x, const int y, const int z,int blockID);
+	void AddChunkToUpdate(const int x, const int y, const int z);
 	void RebuildChunksLight(Vector3 pos,int currentChunk,int blockID);
+	void UpdateLightAreaIn(Vector3 pos);
 	void UpdateWorldLightForChunk(int chunkID);
 
 	int GetDrawntTrianglesCount() { return drawnTriangles; }

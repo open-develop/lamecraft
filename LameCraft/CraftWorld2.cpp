@@ -2504,6 +2504,43 @@ void CraftWorld::UpdateWorldLightForChunk(int chunkID)
 	}
 }
 
+void CraftWorld::UpdateLightAreaIn(Vector3 pos)
+{
+	int biggestLight = 8;
+
+	int startx = pos.x - biggestLight > 0 ? pos.x - biggestLight : 0;
+	int starty = pos.y - biggestLight > 0 ? pos.y - biggestLight : 0;
+	int startz = pos.z - biggestLight > 0 ? pos.z - biggestLight : 0;
+
+	int endx = pos.x + biggestLight < WORLD_SIZE ? pos.x + biggestLight : WORLD_SIZE;
+	int endy = pos.y + biggestLight < WORLD_SIZE ? pos.y + biggestLight : WORLD_SIZE;
+	int endz = pos.z + biggestLight < WORLD_SIZE ? pos.z + biggestLight : WORLD_SIZE;
+
+	for (int z = startz; z < endz; ++z)
+	{
+		for (int y = starty; y < endy; ++y)
+		{
+			for (int x = startx; x < endx; ++x)
+			{
+				block_t Block = GetBlock(x,y,z);
+				if(LightSourceBlock(Block))
+				{
+					RemoveLigtSourceAtPosition(x,y,z,Block);
+					SetLigtSourcePosition(x,y,z,Block);
+					AddChunkToUpdate(x,y,z);
+				}
+			}
+		}
+	}
+}
+
+void CraftWorld::AddChunkToUpdate(const int x, const int y, const int z)
+{
+	int chunkTarget = getChunkId(Vector3(x,y,z));
+	if(chunkTarget != -1)
+		mChunks[chunkTarget]->needUpdate = true;
+}
+
 void CraftWorld::RebuildChunksLight(Vector3 pos,int currentChunk,int blockID)
 {
 	if(blockID == JackOLantern::getID() || blockID == Torch::getID())
@@ -2851,7 +2888,7 @@ bool CraftWorld::SolidAtPoint(Vector3 pos)
 	if (x <= 0 || y <= 0 || z <= 0  || x >= WORLD_SIZE-1 || y >= WORLD_SIZE-1 || z >= WORLD_SIZE-1) return true;
 
 	//don't collide with water and air
-	if(GetBlock(x,y,z) == 0 || GetBlock(x,y,z) == 4)
+	if(GetBlock(x,y,z) == 0 || GetBlock(x,y,z) == 4 || GetBlock(x,y,z) == Torch::getID())
 	{
 		//
 		return false;
@@ -2883,7 +2920,7 @@ bool CraftWorld::SolidAtPointForPlayer(Vector3 pos)
 	if (x <= 0 || y <= 0 || z <= 0  || x >= WORLD_SIZE-1 || y >= WORLD_SIZE-1 || z >= WORLD_SIZE-1) return true;
 
 	//don't collide with water and air
-	if(GetBlock(x,y,z) == 0 || GetBlock(x,y,z) == 4)
+	if(GetBlock(x,y,z) == 0 || GetBlock(x,y,z) == 4 || GetBlock(x,y,z) == Torch::getID())
 	{
 		//4 corners
 		if(SolidAtPoint(Vector3(pos.x-0.15f,pos.y,pos.z-0.15f))) return true;

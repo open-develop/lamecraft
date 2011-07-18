@@ -7,10 +7,12 @@
 	?+ add moon when sun is not visible
 	?experiment more with values for sun and moon
 + add torch generator
-	- torch model in game
-	- torch model in block bar	
+	+ torch model in game
+	+ torch model in block bar	
 + add lamp/torch
 //commit 30
+
++ fix autoupdater downloading to correct folder
 
 - removing torch when supporting block is destroyed
 - fix water blocks
@@ -23,7 +25,7 @@
 
 - add switch for map carving
 - make torches not collidable
-- fix autoupdater downloading to correct folder
+
 - fix strange error with map rewriting - if copied from elswhere
 - add question when exiting from game
 - add example map with all features of the game

@@ -13,7 +13,7 @@ Sprite* backSprite;
 LoadingScreen::LoadingScreen()
 {
 	// the loadingscreen is loaded as a thread
-	thid_ = sceKernelCreateThread("LoadingThread", RunLoadingScreen, 0x18, 0x10000, 0, NULL);
+	thid_ = sceKernelCreateThread("LoadingThread", RunLoadingScreen, 0x18, 0x10000, PSP_THREAD_ATTR_VFPU, NULL);
 	// start the thread
 	sceKernelStartThread(thid_, 0, 0);
 }

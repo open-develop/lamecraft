@@ -381,6 +381,7 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize)
 	}
 
 	//carve terrain
+	/*
 	float *data2 = new float[worldSize * worldSize];
 	float *data3 = new float[worldSize * worldSize];
 
@@ -407,8 +408,8 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize)
 	{
 		for (int x = 0; x < WORLD_SIZE; ++x)
 		{
-			height1 = data2[x + z*WORLD_SIZE]* 10/*WORLD_SIZE/12*/ + WORLD_SIZE/2;
-			height2 = data3[x + z*WORLD_SIZE]* 12/*WORLD_SIZE/12*/ + WORLD_SIZE/2;
+			height1 = data2[x + z*WORLD_SIZE]* 10 + WORLD_SIZE/2;
+			height2 = data3[x + z*WORLD_SIZE]* 12 + WORLD_SIZE/2;
 
 			if (height2 > height1)
 			{
@@ -428,7 +429,7 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize)
 
 	//delete tempdata
 	delete []data2;
-	delete []data3;
+	delete []data3;*/
 
 	//caves?
 	noisepp::RidgedMultiModule NoiseSource;
@@ -571,8 +572,7 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize,int terrainType,bool
 
 		//data = new float[worldSize * worldSize];
 
-		float *data2 = new float[worldSize * worldSize];
-		float *data3 = new float[worldSize * worldSize];
+
 
 		noisepp::utils::PlaneBuilder2D builder;
 		builder.setModule(perlin);
@@ -608,6 +608,11 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize,int terrainType,bool
 		}
 
 		//carve terrain
+
+		/*
+		float *data2 = new float[worldSize * worldSize];
+		float *data3 = new float[worldSize * worldSize];
+
 		perlin.setSeed(seed+1);
 		noisepp::utils::PlaneBuilder2D builder2;
 		builder2.setModule(perlin);
@@ -631,8 +636,8 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize,int terrainType,bool
 		{
 			for (int x = 0; x < WORLD_SIZE; ++x)
 			{
-				height1 = data2[x + z*WORLD_SIZE]* 10/*WORLD_SIZE/12*/ + WORLD_SIZE/2;
-				height2 = data3[x + z*WORLD_SIZE]* 12/*WORLD_SIZE/12*/ + WORLD_SIZE/2;
+				height1 = data2[x + z*WORLD_SIZE]* 10 + WORLD_SIZE/2;
+				height2 = data3[x + z*WORLD_SIZE]* 12 + WORLD_SIZE/2;
 
 				if (height2 > height1)
 				{
@@ -652,7 +657,7 @@ void CraftWorld::initRandompMap(int worldSize,int chunkSize,int terrainType,bool
 
 		//delete tempdata
 		delete []data2;
-		delete []data3;
+		delete []data3;*/
 
 	}else
 	{
@@ -1166,59 +1171,10 @@ void CraftWorld::LightTravel(int x,int y,int z,int steps,int lightLevel)
 
 void CraftWorld::SetLigtSourcePosition(const int x, const int y, const int z,int blockID)
 {
-	int current  = 0;
-	int distance = 0;
-	int new_light = 255;
-
 	//put correct light based on lightsource type
 	if(blockID == JackOLantern::getID() || blockID == Torch::getID())
 	{
 		LightTravel(x,y,z,7,15);
-		//central light is 255
-		/*for(int zz = z-7;zz < z+7;zz++)
-		{
-			for(int xx = x-7;xx < x+7;xx++)
-			{
-				for(int yy = y-7;yy < y+7;yy++)
-				{
-					//in map range
-					if (xx >= 0 || yy >= 0 || zz >= 0  || xx < WORLD_SIZE || yy < WORLD_SIZE || zz < WORLD_SIZE)
-					{
-						distance = Vector3::distance(Vector3(x,y,z),Vector3(xx,yy,zz));
-
-						if(distance > 7)
-							distance = 7;
-
-						new_light = 255 - (32 * distance);
-						new_light /= 16;//because we can store 0-15 in 4 bits
-
-						//check if it's lightened
-						if((GetBlockSettings(xx,yy,zz) & OpLighSource) != 0)//lightened
-						{
-							//get current value
-							current = GetBlockSettings(xx,yy,zz) & 0xF;
-							//set new only if it's brighter
-							if(current < new_light)
-							{
-								//clear this value
-								GetBlockSettings(xx,yy,zz) ^= current & 0xF;
-								//set new value
-								GetBlockSettings(xx,yy,zz) ^= new_light & 0xF;
-							}
-						}else //not lightened
-						{
-							current = GetBlockSettings(xx,yy,zz) & 0xF;
-							//clear this value
-							GetBlockSettings(xx,yy,zz) ^= current & 0xF;
-							//set new value
-							GetBlockSettings(xx,yy,zz) ^= new_light & 0xF;
-							//mark as lightened
-							GetBlockSettings(xx,yy,zz) ^= OpLighSource;
-						}
-					}
-				}
-			}
-		}*/
 	}
 }
 
@@ -2094,7 +2050,8 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 		if((GetBlockSettings(x-1,y,z) & OpLighSource) != 0)//block is lightened
 		{
 			float lightened = (GetBlockSettings(x-1, y, z) & 0xF) / 15.0f;
-			BlockColorx1.x = BlockColorx1.y = BlockColorx1.z = lightened;
+			if(lightened > BlockColorx1.x)
+				BlockColorx1.x = BlockColorx1.y = BlockColorx1.z = lightened;
 		}
 
 		light1 = light2 = light3 = light4 = BlockColorx1;
@@ -2164,7 +2121,8 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 		if((GetBlockSettings(x+1,y,z) & OpLighSource) != 0)//block is lightened
 		{
 			float lightened = (GetBlockSettings(x+1, y, z) & 0xF) / 15.0f;
-			BlockColorx2.x = BlockColorx2.y = BlockColorx2.z = lightened;
+			if(lightened > BlockColorx2.x)
+				BlockColorx2.x = BlockColorx2.y = BlockColorx2.z = lightened;
 		}
 
 		light1 = light2 = light3 = light4 = BlockColorx2;
@@ -2234,7 +2192,8 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 		if((GetBlockSettings(x,y-1,z) & OpLighSource) != 0)//block is lightened
 		{
 			float lightened = (GetBlockSettings(x, y-1, z) & 0xF) / 15.0f;
-			BlockColory2.x = BlockColory2.y = BlockColory2.z = lightened;
+			if(lightened > BlockColory2.x)
+				BlockColory2.x = BlockColory2.y = BlockColory2.z = lightened;
 		}
 
 		light1 = light2 = light3 = light4 = BlockColory2;
@@ -2300,7 +2259,8 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 		if((GetBlockSettings(x,y+1,z) & OpLighSource) != 0)//block is lightened
 		{
 			float lightened = (GetBlockSettings(x, y+1, z) & 0xF) / 15.0f;
-			BlockColory1.x = BlockColory1.y = BlockColory1.z = lightened;
+			if(lightened > BlockColory1.x)
+				BlockColory1.x = BlockColory1.y = BlockColory1.z = lightened;
 		}
 
 		light1 = light2 = light3 = light4 = BlockColory1;
@@ -2371,7 +2331,8 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 		if((GetBlockSettings(x,y,z-1) & OpLighSource) != 0)//block is lightened
 		{
 			float lightened = (GetBlockSettings(x, y, z-1) & 0xF) / 15.0f;
-			BlockColorz1.x = BlockColorz1.y = BlockColorz1.z = lightened;
+			if(lightened > BlockColorz1.x)
+				BlockColorz1.x = BlockColorz1.y = BlockColorz1.z = lightened;
 		}
 
 		light1 = light2 = light3 = light4 = BlockColorz1;
@@ -2441,7 +2402,8 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 		if((GetBlockSettings(x,y,z+1) & OpLighSource) != 0)//block is lightened
 		{
 			float lightened = (GetBlockSettings(x, y, z+1) & 0xF) / 15.0f;
-			BlockColorz2.x = BlockColorz2.y = BlockColorz2.z = lightened;
+			if(lightened > BlockColorz2.x)
+				BlockColorz2.x = BlockColorz2.y = BlockColorz2.z = lightened;
 		}
 
 		light1 = light2 = light3 = light4 = BlockColorz2;

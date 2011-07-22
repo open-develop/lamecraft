@@ -698,15 +698,21 @@ void StatePlay::HandleEvents(StateManager* sManager)
 				//check if we touch something
 				if(mWorld->BlockEditable(testPos.x,testPos.y,testPos.z))
 				{
+					//check if it's light source
 					if(mWorld->LightSourceBlock(mWorld->GetBlock(testPos.x,testPos.y,testPos.z)))//if it's light block
 					{
 						oldBlock = mWorld->GetBlock(testPos.x,testPos.y,testPos.z);
 						wasLight = true;
 					}
 
+					//remove block
 					mSoundMgr->PlayWalkSound(mWorld->BlockSoundAtPos(testPos));
 					mWorld->GetBlock(testPos.x,testPos.y,testPos.z) = 0;
 					int	chunkTarget = mWorld->getChunkId(testPos);
+
+					//check if this block is a support for light block
+					mWorld->CheckForTorchSupport(testPos.x,testPos.y,testPos.z,mWorld->GetBlock(testPos.x,testPos.y,testPos.z));
+
 
 					//before rebuilding update light info
 					if(wasLight)
@@ -909,18 +915,18 @@ void StatePlay::Update(StateManager* sManager)
 			Vector3 rayDir = fppCam->m_vView - fppCam->m_vPosition;
 			rayDir.normalize();
 
-			//pobieramy pozycje gdzie patrzymy jak i nasz¹ pozycje
+			//we take position and view vector
 			Vector3 testPos ;
 
-			//jedziemy co kawa³ek a¿ do celu np. co 0.5
+			//moving slowly to the target
 			for(float i = 0;i < 5.25f;i+=0.25f)
 			{
 				testPos = fppCam->m_vPosition + (rayDir * i);
 
-				//sprawdzamy czy tykamy coœ
+				//check if we touching something
 				if(mWorld->BlockEditable(testPos.x,testPos.y,testPos.z))
 				{
-					//i pokazujemy pickniêty cube
+					//if yes then show pick cube
 					cubePos.x = (int)testPos.x + 0.5f;
 					cubePos.y = (int)testPos.y + 0.5f;
 					cubePos.z = (int)testPos.z + 0.5f;

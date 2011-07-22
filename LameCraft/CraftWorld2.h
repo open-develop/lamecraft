@@ -94,6 +94,7 @@ public:
 	bool LightSourceBlock(int id);
 	bool CanPutBlockHere(const int x, const int y, const int z,int blockID);
 	void SetLigtSourcePosition(const int x, const int y, const int z,int blockID);
+	void CheckForTorchSupport(const int x, const int y, const int z,int blockID);
 	void RemoveLigtSourceAtPosition(const int x, const int y, const int z,int blockID);
 	void AddChunkToUpdate(const int x, const int y, const int z);
 	void RebuildChunksLight(Vector3 pos,int currentChunk,int blockID);

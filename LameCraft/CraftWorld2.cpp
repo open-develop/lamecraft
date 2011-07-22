@@ -1046,6 +1046,27 @@ block_t& CraftWorld::GetBlockSettings(const int x, const int y, const int z)
 	return m_BlockSettings[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE];
 }
 
+void CraftWorld::CheckForTorchSupport(const int x, const int y, const int z,int blockID)
+{
+	for(int zz = z-1;zz < z+2;zz++)
+	{
+		for(int xx = x-1;xx < x+2;xx++)
+		{
+			for(int yy = y-1;yy < y+2;yy++)
+			{
+				if(GetBlock(xx,yy,zz) == Torch::getID())
+				{
+					if(!CanPutBlockHere(xx,yy,zz,Torch::getID()))
+					{
+						GetBlock(xx,yy,zz) = 0;
+						RemoveLigtSourceAtPosition(xx,yy,zz,Torch::getID());
+					}
+				}
+			}
+		}
+	}
+}
+
 void CraftWorld::RemoveLigtSourceAtPosition(const int x, const int y, const int z,int blockID)
 {
 	if(blockID == JackOLantern::getID()|| blockID == Torch::getID())

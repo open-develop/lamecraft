@@ -13,8 +13,9 @@
 //commit 30
 
 + fix autoupdater downloading to correct folder
++ make torches not collidable
++ removing torch when supporting block is destroyed
 
-- removing torch when supporting block is destroyed
 - fix water blocks
 - fix that stupid looking up/down glitch...... !!!!!!!!!!!!!!!!!!
 
@@ -24,8 +25,6 @@
 	~ add different block generators like in Mn. ex BlockGenrator,LadderGenerator,TreesGenerator
 
 - add switch for map carving
-- make torches not collidable
-
 - fix strange error with map rewriting - if copied from elswhere
 - add question when exiting from game
 - add example map with all features of the game

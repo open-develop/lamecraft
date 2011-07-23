@@ -1,4 +1,5 @@
 #include "StatePlay.h"
+#include "TextureHelper.h"
 
 StatePlay::StatePlay()
 {
@@ -66,12 +67,10 @@ void StatePlay::Init()
 	mSoundMgr = SoundManager::Instance();
 	mIhelper = InputHelper::Instance();
 
-	//
 	playerPosition = newPlayerPos = oldPlayerPos = Vector3(64.0f,90.0f,64.0f);
 
 	//then create our perfect world
 	mWorld = new CraftWorld();
-
 	mWorld->initRandompMap(128,16);
 	mWorld->setTextureSize(128,16);
 	mWorld->initWorldBlocksLight();
@@ -82,64 +81,12 @@ void StatePlay::Init()
 
 	dt = mTimer.GetDeltaTime();
 
-	Logger::Instance()->LogMessage("created chunks: %d\n",mWorld->createdChunksCount);
-
 	//block sets info
 	allcubes = mWorld->GetBlockTypesCount();
 	//selectedCubeEnd = allcubes - 2;//because we don't want first one and last one
 	cubesSets = std::floor(allcubes / 9);//9 cubes is set
 
-
-	//texture
-	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/terrain_medium.png");
-	texture = TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/terrain_medium.png");
-
-	//water filter
-	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/blue.png");
-	blue  = TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/blue.png");
-
-	//bar image
-	barSprite = new Sprite("Assets/Lamecraft/utils.png",0,0,182,22);
-	barSprite->SetPosition(240,253);
-	barSprite->Scale(1.75f,1.75f);
-
-	selectSprite = new Sprite("Assets/Lamecraft/utils.png",1,23,22,22);
-	selectSprite->SetPosition(100,253);
-	selectSprite->Scale(1.75f,1.75f);
-
-	crossSprite = new Sprite("Assets/Lamecraft/utils.png",201,13,9,9);
-	crossSprite->SetPosition(240,136);
-	crossSprite->Scale(2.0f,2.0f);
-
-	buttonSprite = new Sprite("Assets/Lamecraft/utils.png",24,22,200,20);
-	buttonSprite->SetPosition(240,150);
-
-	sbuttonSprite = new Sprite("Assets/Lamecraft/utils.png",24,42,200,20);
-	sbuttonSprite->SetPosition(240,150);
-
-	//ram2 = mSystemMgr->ramAvailable();
-
-	cubeModel = new ObjModel();
-	cubeModel->LoadObj("Assets/Lamecraft/textureCube.obj");
-	cubeModel->Optimize();
-
-	//sky dome
-	skyDome = new SkyDome();
-	skyDome->CreateSkyDomeMesh();
-
-	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/sky.png");
-	skyDome->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sky.png"));
-	skyDome->timeOfDay = 0.1f;
-
-	//sky light
-	//8 am = 28800 seconds
-	// 10 am = 36000 seconds
-	// 12 pm = 43200 seconds
-	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/sun.png");
-	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/moon.png");
-
-	skyLight = new SkyLight();
-	skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sun.png"));
+	LoadTextures();
 
 	menuOptions = false;
 	optionsMenuPos = 0;
@@ -174,64 +121,12 @@ void StatePlay::InitParametric(int terrainType,bool makeFlat,bool makeTrees,bool
 
 	dt = mTimer.GetDeltaTime();
 
-	Logger::Instance()->LogMessage("created chunks: %d\n",mWorld->createdChunksCount);
-
 	//block sets info
 	allcubes = mWorld->GetBlockTypesCount();
 	//selectedCubeEnd = allcubes - 2;//because we don't want first one and last one
 	cubesSets = std::floor(allcubes / 9);//9 cubes is set
 
-
-	//texture
-	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/terrain_medium.png");
-	texture = TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/terrain_medium.png");
-
-	//water filter
-	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/blue.png");
-	blue  = TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/blue.png");
-
-	//bar image
-	barSprite = new Sprite("Assets/Lamecraft/utils.png",0,0,182,22);
-	barSprite->SetPosition(240,253);
-	barSprite->Scale(1.75f,1.75f);
-
-	selectSprite = new Sprite("Assets/Lamecraft/utils.png",1,23,22,22);
-	selectSprite->SetPosition(100,253);
-	selectSprite->Scale(1.75f,1.75f);
-
-	crossSprite = new Sprite("Assets/Lamecraft/utils.png",201,13,9,9);
-	crossSprite->SetPosition(240,136);
-	crossSprite->Scale(2.0f,2.0f);
-
-	buttonSprite = new Sprite("Assets/Lamecraft/utils.png",24,22,200,20);
-	buttonSprite->SetPosition(240,150);
-
-	sbuttonSprite = new Sprite("Assets/Lamecraft/utils.png",24,42,200,20);
-	sbuttonSprite->SetPosition(240,150);
-
-	//ram2 = mSystemMgr->ramAvailable();
-
-	cubeModel = new ObjModel();
-	cubeModel->LoadObj("Assets/Lamecraft/textureCube.obj");
-	cubeModel->Optimize();
-
-	//sky dome
-	skyDome = new SkyDome();
-	skyDome->CreateSkyDomeMesh();
-
-	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/sky.png");
-	skyDome->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sky.png"));
-	skyDome->timeOfDay = 0.1f;
-
-	//sky light
-	//8 am = 28800 seconds
-	// 10 am = 36000 seconds
-	// 12 pm = 43200 seconds
-	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/sun.png");
-	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/moon.png");
-
-	skyLight = new SkyLight();
-	skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sun.png"));
+	LoadTextures();
 
 	menuOptions = false;
 	optionsMenuPos = 0;
@@ -282,75 +177,19 @@ void StatePlay::LoadMap(std::string fileName,bool compressed)
 		mWorld->SetWolrdTime(5);
 	}
 
-
-
 	mWorld->setTextureSize(128,16);
-
 	mWorld->UpdatePlayerZoneBB(playerPosition);
 	mWorld->buildMap();
 	mWorld->buildblocksVerts();
 
 	dt = mTimer.GetDeltaTime();
 
-	Logger::Instance()->LogMessage("created chunks: %d\n",mWorld->createdChunksCount);
-
-
 	//block sets info
 	allcubes = mWorld->GetBlockTypesCount();
 	//selectedCubeEnd = allcubes - 2;//because we don't want first one and last one
 	cubesSets = std::floor(allcubes / 9);//9 cubes is set
 
-
-	//texture
-	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/terrain_medium.png");
-	texture = TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/terrain_medium.png");
-
-	//water filter
-	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/blue.png");
-	blue  = TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/blue.png");
-
-	//bar image
-	barSprite = new Sprite("Assets/Lamecraft/utils.png",0,0,182,22);
-	barSprite->SetPosition(240,253);
-	barSprite->Scale(1.75f,1.75f);
-
-	selectSprite = new Sprite("Assets/Lamecraft/utils.png",1,23,22,22);
-	selectSprite->SetPosition(100,253);
-	selectSprite->Scale(1.75f,1.75f);
-
-	crossSprite = new Sprite("Assets/Lamecraft/utils.png",201,13,9,9);
-	crossSprite->SetPosition(240,136);
-	crossSprite->Scale(2.0f,2.0f);
-
-	buttonSprite = new Sprite("Assets/Lamecraft/utils.png",24,22,200,20);
-	buttonSprite->SetPosition(240,150);
-
-	sbuttonSprite = new Sprite("Assets/Lamecraft/utils.png",24,42,200,20);
-	sbuttonSprite->SetPosition(240,150);
-
-	//ram2 = mSystemMgr->ramAvailable();
-
-	cubeModel = new ObjModel();
-	cubeModel->LoadObj("Assets/Lamecraft/textureCube.obj");
-	cubeModel->Optimize();
-
-	//sky dome
-	skyDome = new SkyDome();
-	skyDome->CreateSkyDomeMesh();
-
-	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/sky.png");
-	skyDome->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sky.png"));
-	skyDome->timeOfDay = 0.1f;
-
-	//sky light
-	//8 am = 28800 seconds
-	// 10 am = 36000 seconds
-	// 12 pm = 43200 seconds
-	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/sun.png");
-	TextureManager::Instance()->LoadTexture("Assets/Lamecraft/moon.png");
-
-	skyLight = new SkyLight();
-	skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sun.png"));
+	LoadTextures();
 
 	menuOptions = false;
 	optionsMenuPos = 0;
@@ -363,17 +202,59 @@ void StatePlay::LoadMap(std::string fileName,bool compressed)
 	SetDayTimeAfterLoad();
 }
 
+void StatePlay::LoadTextures()
+{
+	//terrain texure
+	texture = TextureHelper::Instance()->GetTexture(TextureHelper::Terrain);
+
+	//water filter
+	blue = TextureHelper::Instance()->GetTexture(TextureHelper::Blue);
+
+	//bar image
+	barSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Utils),0,0,182,22);
+	barSprite->SetPosition(240,253);
+	barSprite->Scale(1.75f,1.75f);
+
+	selectSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Utils),1,23,22,22);
+	selectSprite->SetPosition(100,253);
+	selectSprite->Scale(1.75f,1.75f);
+
+	crossSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Utils),201,13,9,9);
+	crossSprite->SetPosition(240,136);
+	crossSprite->Scale(2.0f,2.0f);
+
+	buttonSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Utils),24,22,200,20);
+	buttonSprite->SetPosition(240,150);
+
+	sbuttonSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Utils),24,42,200,20);
+	sbuttonSprite->SetPosition(240,150);
+
+	cubeModel = new ObjModel();
+	cubeModel->LoadObj("Assets/Lamecraft/textureCube.obj");
+	cubeModel->Optimize();
+
+	//sky dome
+	skyDome = new SkyDome();
+	skyDome->CreateSkyDomeMesh();
+
+	skyDome->SetTexture(TextureHelper::Instance()->GetTexture(TextureHelper::Sky));
+	skyDome->timeOfDay = 0.1f;
+
+	skyLight = new SkyLight();
+	skyLight->SetTexture(TextureHelper::Instance()->GetTexture(TextureHelper::Sun));
+}
+
 void StatePlay::SetDayTimeAfterLoad()
 {
 	if(mWorld->worldVersion >= 3)
 	{
 		if(mWorld->worldDayTime >= 5.0f && mWorld->worldDayTime < 21.0f)
 		{
-			skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sun.png"));
+			skyLight->SetTexture(TextureHelper::Instance()->GetTexture(TextureHelper::Sun));
 			sunMoonSwitch = true;
 		}else
 		{
-			skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/moon.png"));
+			skyLight->SetTexture(TextureHelper::Instance()->GetTexture(TextureHelper::Moon));
 			sunMoonSwitch = false;
 		}
 

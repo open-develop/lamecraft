@@ -37,6 +37,7 @@ LameCraft/StatePlay.o \
 LameCraft/LoadingScreen.o \
 LameCraft/SplashScreen.o \
 LameCraft/InputHelper.o \
+LameCraft/TextureHelper.o \
 LameCraft/SoundManager.o \
 LameCraft/sound_utils/vfsFile.o \
 LameCraft/sound_utils/VirtualFile.o \
@@ -48,7 +49,7 @@ Lamecraft.o
 
 INCDIR = $(PSPPATH)/include
 INCDIR += ./include ./source ./3libs
-CFLAGS = -O2 -G0 -Wall -mpreferred-stack-boundary=4 #-enable-newlib-hw-fp -ffast-math
+CFLAGS = -O3 -G0 -Wall -mpreferred-stack-boundary=4 #-enable-newlib-hw-fp -ffast-math
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS = $(CFLAGS)
 

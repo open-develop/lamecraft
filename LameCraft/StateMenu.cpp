@@ -3,6 +3,7 @@
 #include "StatePlay.h"
 #include "LoadingScreen.h"
 #include "InputHelper.h"
+#include "TextureHelper.h"
 
 #include <Aurora/System/NetworkManager.h>
 
@@ -28,20 +29,20 @@ void StateMenu::Init()
 	mSystemMgr = SystemManager::Instance();
 	mSoundMgr = SoundManager::Instance();
 
-	logoSprite = new Sprite("Assets/Lamecraft/logo.png",0,0,256,64);
+	logoSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Logo),0,0,256,64);
 	logoSprite->Scale(1.5f,1.5f);
 	logoSprite->SetPosition(240,50);
 
-	buttonSprite = new Sprite("Assets/Lamecraft/utils.png",24,22,200,20);
+	buttonSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Utils),24,22,200,20);
 	buttonSprite->SetPosition(240,150);
 
-	sbuttonSprite = new Sprite("Assets/Lamecraft/utils.png",24,42,200,20);
+	sbuttonSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Utils),24,42,200,20);
 	sbuttonSprite->SetPosition(240,150);
 
-	backSprite = new Sprite("Assets/Lamecraft/dirt.png",0,0,16,16);
+	backSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Dirt),0,0,16,16);
 	backSprite->Scale(2,2);
 
-	selectSaveSprite = new Sprite("Assets/Lamecraft/glass.png",0,0,64,64);
+	selectSaveSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Glass),0,0,64,64);
 	selectSaveSprite->Scale(7,0.6f);
 
 	selectPos = 0;

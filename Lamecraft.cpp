@@ -5,14 +5,13 @@
 #include <Aurora/Utils/Logger.h>
 #include <Aurora/Utils/Timer.h>
 #include <Aurora/System/SystemManager.h>
-
 #include <Aurora/Graphics/Camera.h>
-
 #include <Aurora/Utils/StateManager.h>
 
 #include "LameCraft/StateMenu.h"
 #include "LameCraft/SplashScreen.h"
 #include "LameCraft/SoundManager.h"
+#include "LameCraft/TextureHelper.h"
 
 using namespace Aurora::Graphics;
 using namespace Aurora::Utils;
@@ -21,9 +20,8 @@ using namespace Aurora;
 
 PSP_MODULE_INFO("Tutorial1", 0, 1, 1);
 PSP_MAIN_THREAD_ATTR(THREAD_ATTR_VFPU|THREAD_ATTR_USER);
-//PSP_HEAP_SIZE_KB(48*1024);
 PSP_HEAP_SIZE_KB(-1024);
-//PSP_HEAP_SIZE_MAX();
+
 int main()
 {
 	SetupCallbacks();
@@ -50,23 +48,18 @@ int main()
 	RenderManager::InstancePtr()->SetClearColour(0xFF000000);
 
 	//splash screens
-	SplashScreen *screen = new SplashScreen("Assets/Lamecraft/genesis.png",0,0,480,272,3);
-	Logger::Instance()->LogMessage("loaded genesis.png");
+	SplashScreen *screen = new SplashScreen(TextureHelper::Instance()->GetTexture(TextureHelper::Genesis),0,0,480,272,3);
 	screen->ShowSplash();
 	delete screen;
-	SplashScreen *screen2 = new SplashScreen("Assets/Lamecraft/pspteam.png",0,0,424,72,3);
-	Logger::Instance()->LogMessage("loaded pspteam.png");
+	SplashScreen *screen2 = new SplashScreen(TextureHelper::Instance()->GetTexture(TextureHelper::PspTeam),0,0,424,72,3);
 	screen2->ShowSplash();
 	delete screen2;
 
 	RenderManager::InstancePtr()->SetClearColour(0xFFF5B783);
-	Logger::Instance()->LogMessage("created render manager");
 
 	//new active state
 	StateMenu *statePlay = new StateMenu();
 	statePlay->Init();
-	Logger::Instance()->LogMessage("made new stateplay");
-
 	stateManager.ChangeState(statePlay);
 
 	//trun

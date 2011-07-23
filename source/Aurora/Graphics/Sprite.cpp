@@ -25,8 +25,7 @@ namespace Aurora
 
 		Sprite::Sprite(const char* filename)
 		{
-			if(!TextureManager::Instance()->TextureExist(filename))
-				TextureManager::Instance()->LoadTexture(filename);
+			TextureManager::Instance()->LoadTexture(filename);
 
 			imageNumber = TextureManager::Instance()->GetTextureNumber(filename);
 
@@ -49,14 +48,38 @@ namespace Aurora
 				vertices[3] = getVertex(wPercent,hPercent,img->Width/2, img->Height/2,0.0f);
 			}
 
-			sceKernelDcacheWritebackInvalidateAll();
+			sceKernelDcacheWritebackInvalidateRange(vertices, 4 * sizeof(TexturesPSPVertex));
+		}
 
+		Sprite::Sprite(int textureNumer)
+		{
+			imageNumber = textureNumer;
+
+			//generate wertices
+			vertices = (TexturesPSPVertex*)memalign(16, 4 * sizeof(TexturesPSPVertex) );
+
+			Image *img = TextureManager::Instance()->Images[imageNumber];
+
+			width = img->Width;
+			height = img->Height;
+
+			float hPercent = (float)img->Height / (float)img->power2Height;
+			float wPercent = (float)img->Width / (float)img->power2Width;
+
+			if( vertices )
+			{
+				vertices[0] = getVertex(0.0f,0.0f,-img->Width/2,-img->Height/2,0.0f);
+				vertices[1] = getVertex(0.0f,hPercent,-img->Width/2, img->Height/2,0.0f);
+				vertices[2] = getVertex(wPercent,0.0f,img->Width/2,-img->Height/2,0.0f);
+				vertices[3] = getVertex(wPercent,hPercent,img->Width/2, img->Height/2,0.0f);
+			}
+
+			sceKernelDcacheWritebackInvalidateRange(vertices, 4 * sizeof(TexturesPSPVertex));
 		}
 
 		Sprite::Sprite(const char* filename,int startW,int startH,int endW,int endH)
 		{
-			if(!TextureManager::Instance()->TextureExist(filename))
-				TextureManager::Instance()->LoadTexture(filename);
+			TextureManager::Instance()->LoadTexture(filename);
 
 			imageNumber = TextureManager::Instance()->GetTextureNumber(filename);
 
@@ -83,7 +106,35 @@ namespace Aurora
 
 			//sceKernelDcacheWritebackInvalidateAll();
 			sceKernelDcacheWritebackInvalidateRange(vertices, 4 * sizeof(TexturesPSPVertex));
+		}
 
+		Sprite::Sprite(int textureNumer,int startW,int startH,int endW,int endH)
+		{
+			imageNumber = textureNumer;
+
+			//generate wertices
+			vertices = (TexturesPSPVertex*)memalign(16, 4 * sizeof(TexturesPSPVertex) );
+
+			Image *img = TextureManager::Instance()->Images[imageNumber];
+
+			width = endW;
+			height = endH;
+
+			float hstart = (float)startH / (float)img->power2Height;
+			float wstart = (float)startW / (float)img->power2Width;
+			float hPercent = (float)(startH + endH) / (float)img->power2Height;
+			float wPercent = (float)(startW + endW) / (float)img->power2Width;
+
+			if( vertices )
+			{
+				vertices[0] = getVertex(wstart,hstart,-width/2,-height/2,0.0f);
+				vertices[1] = getVertex(wstart,hPercent,-width/2, height/2,0.0f);
+				vertices[2] = getVertex(wPercent,hstart,width/2,-height/2,0.0f);
+				vertices[3] = getVertex(wPercent,hPercent,width/2, height/2,0.0f);
+			}
+
+			//sceKernelDcacheWritebackInvalidateAll();
+			sceKernelDcacheWritebackInvalidateRange(vertices, 4 * sizeof(TexturesPSPVertex));
 		}
 
 		Sprite::~Sprite()

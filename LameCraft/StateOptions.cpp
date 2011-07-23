@@ -1,5 +1,6 @@
 #include "StateOptions.h"
 #include "InputHelper.h"
+#include "TextureHelper.h"
 
 StateOptions::StateOptions()
 {
@@ -18,29 +19,29 @@ void StateOptions::Init()
 	mSystemMgr = SystemManager::Instance();
 	mSoundMgr = SoundManager::Instance();
 
-	logoSprite = new Sprite("Assets/Lamecraft/logo.png",0,0,256,64);
+	logoSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Logo),0,0,256,64);
 	logoSprite->Scale(1.5f,1.5f);
 	logoSprite->SetPosition(240,50);
 
-	buttonSprite = new Sprite("Assets/Lamecraft/utils.png",24,22,200,20);
+	buttonSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Utils),24,22,200,20);
 	buttonSprite->SetPosition(240,150);
 
-	sbuttonSprite = new Sprite("Assets/Lamecraft/utils.png",24,42,200,20);
+	sbuttonSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Utils),24,42,200,20);
 	sbuttonSprite->SetPosition(240,150);
 
-	halfbuttonSprite = new Sprite("Assets/Lamecraft/utils.png",24,22,200,20);
+	halfbuttonSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Utils),24,22,200,20);
 	halfbuttonSprite->Scale(0.75f,1);
 	halfbuttonSprite->SetPosition(240,150);
 
-	halfsbuttonSprite = new Sprite("Assets/Lamecraft/utils.png",24,42,200,20);
+	halfsbuttonSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Utils),24,42,200,20);
 	halfsbuttonSprite->Scale(0.75f,1);
 	halfsbuttonSprite->SetPosition(240,150);
 
-	backSprite = new Sprite("Assets/Lamecraft/dirt.png",0,0,16,16);
+	backSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Dirt),0,0,16,16);
 	backSprite->Scale(2,2);
 
-	moverSprite = new Sprite("Assets/Lamecraft/utils.png",191,2,9,20);
-	smoverSprite = new Sprite("Assets/Lamecraft/utils.png",182,2,9,20);
+	moverSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Utils),191,2,9,20);
+	smoverSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Utils),182,2,9,20);
 
 	selectPos = 0;
 	menuState = 0;

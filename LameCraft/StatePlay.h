@@ -41,6 +41,8 @@ public:
 	void Pause();
 	void Resume();
 
+	void LoadTextures();
+
 	void HandleEvents(StateManager* sManager);
 	void Update(StateManager* sManager);
 	void Draw(StateManager* sManager);

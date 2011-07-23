@@ -44,11 +44,6 @@ namespace Aurora
 
 		typedef struct
 		{
-			float x,y,z;
-		}__attribute__((aligned(16))) BBVertex;
-
-		typedef struct
-		{
 			unsigned int color;
 			float x,y,z;
 		}__attribute__((packed)) SimplePSPVertex;
@@ -78,30 +73,11 @@ namespace Aurora
 			char x, y, z;
 		}__attribute__((packed)) TexturesPSPVertex8;
 
-
-		//{32767	, 32767	, 0xc21f, 32767, 32767, 32767}, // 5
-		//sceGumDrawArray(GU_TRIANGLES,GU_TEXTURE_16BIT|GU_COLOR_4444|GU_VERTEX_16BIT|GU_TRANSFORM_3D,12*3,0,vertices16);
-
-
 		struct MorphVertex
 		{
 			TexturesPSPVertex v0;
 			TexturesPSPVertex v1;
 		};
-
-		/*class Vertex
-		{
-		public:
-
-			Vertex(Math::Vector3 position)			  
-			{
-				Position = position;
-			}
-
-			Math::Vector3 Position;
-			Math::Vector3 Normal;
-			Math::Vector3 UV;
-		};*/
 	}
 }
 

@@ -13,7 +13,9 @@ namespace Aurora
 		public:
 			Sprite();
 			Sprite(const char* filename);
+			Sprite(int textureNumer);
 			Sprite(const char* filename,int startW,int startH,int endW,int endH);
+			Sprite(int textureNumer,int startW,int startH,int endW,int endH);
 			~Sprite();
 
 

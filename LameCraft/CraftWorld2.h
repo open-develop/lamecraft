@@ -33,12 +33,10 @@ public:
 	block_t& GetBlockLight (const int x, const int y, const int z);
 	block_t& GetBlockSettings (const int x, const int y, const int z);
 	block_t BlockAtPoint(Vector3 pos);
-
+	
 	//map creation
-	void initRandompMap(int worldSize,int chunkSize);
-	void initRandompMap(int worldSize,int chunkSize,int terrainType,bool makeFlat,bool makeTrees,bool makeWater,bool makeCaves);
+	void initWorld(int worldSize,int chunkSize);
 	void initWorldBlocksLight();
-	void initTrees(int treeChoose);
 	void setTextureSize(int texture,int chunk);
 
 

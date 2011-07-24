@@ -39,6 +39,7 @@ LameCraft/SplashScreen.o \
 LameCraft/InputHelper.o \
 LameCraft/TextureHelper.o \
 LameCraft/SoundManager.o \
+LameCraft/WorldGenerator.o \
 LameCraft/sound_utils/vfsFile.o \
 LameCraft/sound_utils/VirtualFile.o \
 LameCraft/sound_utils/audio.o \

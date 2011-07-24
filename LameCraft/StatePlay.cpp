@@ -1,6 +1,8 @@
 #include "StatePlay.h"
 #include "TextureHelper.h"
 
+#include "WorldGenerator.h"
+
 StatePlay::StatePlay()
 {
 	mRender = NULL;
@@ -69,9 +71,14 @@ void StatePlay::Init()
 
 	playerPosition = newPlayerPos = oldPlayerPos = Vector3(64.0f,90.0f,64.0f);
 
+	WorldGenerator *mGen = new WorldGenerator();
+	
 	//then create our perfect world
 	mWorld = new CraftWorld();
-	mWorld->initRandompMap(128,16);
+	mWorld->initWorld(128, 16);
+	mGen->initRandompMap(128, 16, mWorld);	
+	delete mGen;
+	//mWorld->initRandompMap(128,16);
 	mWorld->setTextureSize(128,16);
 	mWorld->initWorldBlocksLight();
 	mWorld->SetWolrdTime(5);
@@ -110,8 +117,12 @@ void StatePlay::InitParametric(int terrainType,bool makeFlat,bool makeTrees,bool
 
 	//then create our perfect world
 	mWorld = new CraftWorld();
-
-	mWorld->initRandompMap(128,16,terrainType,makeFlat,makeTrees,makeWater,makeCaves);
+	mWorld->initWorld(128, 16);
+	
+	WorldGenerator *mGen = new WorldGenerator();
+	mGen->initRandompMap(128,16, mWorld, terrainType,makeFlat,makeTrees,makeWater,makeCaves);
+	delete mGen;
+	//mWorld->initRandompMap(128,16,terrainType,makeFlat,makeTrees,makeWater,makeCaves);
 	mWorld->setTextureSize(128,16);
 	mWorld->initWorldBlocksLight();
 	mWorld->SetWolrdTime(5);

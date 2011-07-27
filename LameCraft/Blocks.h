@@ -2,6 +2,11 @@
 #define BLOCKS_H
 
 #include "BaseBlock.h"
+#include <vector>
+
+extern std::vector<BaseBlock*> blockTypes;
+void initBlocks();
+void deleteBlocks();
 
 class GrassBlock : public BaseBlock
 {
@@ -201,6 +206,7 @@ class CactusBlock : public BaseBlock
 public:
 
 	CactusBlock();
+	virtual bool canStay(CraftWorld *world, int x, int y, int z);
 	static block_t getID();
 };
 

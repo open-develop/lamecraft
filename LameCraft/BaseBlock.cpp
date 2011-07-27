@@ -1,6 +1,6 @@
 #include "BaseBlock.h"
 
-
+#include "CraftWorld2.h"
 BaseBlock::BaseBlock()
 {
 	textureRow = 0;
@@ -25,5 +25,7 @@ BaseBlock::~BaseBlock()
 		free(vertices);
 	}
 }
+
+bool BaseBlock::canStay(CraftWorld *world, int x, int y, int z) { return true;}
 
 block_t BaseBlock::getBaseID(){	return 0;}

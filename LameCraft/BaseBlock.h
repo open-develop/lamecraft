@@ -7,6 +7,8 @@ using namespace Aurora::Graphics;
 
 typedef unsigned char block_t;
 
+class CraftWorld;
+
 class BaseBlock
 {
 public:
@@ -27,6 +29,8 @@ public:
 	bool transparent;
 	bool lightSource;
 	bool blockSpecial;
+	
+	virtual bool canStay(CraftWorld *world, int x, int y, int z);
 
 	BaseBlock();
 	virtual ~BaseBlock();

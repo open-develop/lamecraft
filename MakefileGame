@@ -25,6 +25,7 @@ source/Aurora/Graphics/intraFont/intraFont.o \
 source/Aurora/Utils/Logger.o \
 source/Aurora/Utils/Timer.o \
 source/Aurora/Utils/StateManager.o \
+source/Aurora/Utils/Types.o \
 source/Aurora/System/SystemManager.o \
 source/Aurora/System/NetworkManager.o \
 LameCraft/BaseBlock.o \

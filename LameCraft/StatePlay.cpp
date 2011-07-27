@@ -3,8 +3,10 @@
 
 #include "WorldGenerator.h"
 
+#include "Blocks.h"
+
 StatePlay::StatePlay()
-{
+{	
 	mRender = NULL;
 	mSystemMgr = NULL;
 	fppCam = NULL;
@@ -63,6 +65,7 @@ void StatePlay::InitCamera()
 
 void StatePlay::Init()
 {
+	initBlocks();
 	//set render manager instance
 	mRender = RenderManager::InstancePtr();
 	mSystemMgr = SystemManager::Instance();
@@ -106,6 +109,7 @@ void StatePlay::Init()
 
 void StatePlay::InitParametric(int terrainType,bool makeFlat,bool makeTrees,bool makeWater,bool makeCaves)
 {
+	initBlocks();
 	//set render manager instance
 	mRender = RenderManager::InstancePtr();
 	mSystemMgr = SystemManager::Instance();
@@ -120,7 +124,7 @@ void StatePlay::InitParametric(int terrainType,bool makeFlat,bool makeTrees,bool
 	mWorld->initWorld(128, 16);
 	
 	WorldGenerator *mGen = new WorldGenerator();
-	mGen->initRandompMap(128,16, mWorld, terrainType,makeFlat,makeTrees,makeWater,makeCaves);
+	mGen->initParametricRandompMap(128,16, mWorld, terrainType,makeFlat,makeTrees,makeWater,makeCaves);
 	delete mGen;
 	//mWorld->initRandompMap(128,16,terrainType,makeFlat,makeTrees,makeWater,makeCaves);
 	mWorld->setTextureSize(128,16);

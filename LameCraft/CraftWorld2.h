@@ -88,6 +88,8 @@ public:
 	bool BlockTransparent(const int x, const int y, const int z);
 	bool BlockSpecial(const int x, const int y, const int z);
 	bool BlockEditable(const int x, const int y, const int z);
+	
+	bool isSolid(const int x, const int y, const int z);
 
 	bool LightSourceBlock(int id);
 	bool CanPutBlockHere(const int x, const int y, const int z,int blockID);
@@ -134,10 +136,6 @@ private:
 	block_t* m_BlockLight;
 
 	block_t* m_BlockSettings;
-
-	std::vector<BaseBlock> blockTypes;
-
-	float *data;
 
 	//player zone aabb
 	BoundingBox playerZoneBB;

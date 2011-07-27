@@ -1,5 +1,8 @@
 #include "Blocks.h"
 
+#include "CraftWorld2.h"
+
+std::vector<BaseBlock*> blockTypes;
 
 GrassBlock::GrassBlock():BaseBlock()
 {
@@ -343,6 +346,32 @@ CactusBlock::CactusBlock():BaseBlock()
 	transparent = true;
 	soundType = 3;
 }
+
+bool CactusBlock::canStay(CraftWorld *world, int x, int y, int z)
+{
+    if(world->isSolid(x - 1, y, z))
+    {
+        return false;
+    }
+    if(world->isSolid(x + 1, y, z))
+    {
+        return false;
+    }
+    if(world->isSolid(x, y, z - 1))
+    {
+        return false;
+    }
+    if(world->isSolid(x, y, z + 1))
+    {
+        return false;
+    }
+	else
+	{
+		return world->GetBlock(x,y-1,z) == SandBlock::getID() || world->GetBlock(x,y-1,z) == CactusBlock::getID();
+	}
+}
+	
+
 block_t CactusBlock::getID(){ return 25;}
 
 AllSnowBlock::AllSnowBlock():BaseBlock()
@@ -664,3 +693,75 @@ IronBlock::IronBlock():BaseBlock()
 	soundType = 2;
 }
 block_t IronBlock::getID(){ return 49;}
+
+void initBlocks()
+{
+	//air
+	blockTypes.push_back(new BaseBlock());
+
+	//normal blocks
+	blockTypes.push_back(new GrassBlock());
+	blockTypes.push_back(new DirtBlock());
+	blockTypes.push_back(new RockBlock());
+	blockTypes.push_back(new WaterBlock());
+	blockTypes.push_back(new GoldBlock());
+	blockTypes.push_back(new LadderBlock());
+	blockTypes.push_back(new SandBlock());
+	blockTypes.push_back(new WoodBlock());
+	blockTypes.push_back(new LeavesBlock());
+
+	blockTypes.push_back(new TNTBlock());
+	blockTypes.push_back(new BlackWoolBlock());
+	blockTypes.push_back(new RedWoolBlock());
+	blockTypes.push_back(new DarkGreyWoolBlock());
+	blockTypes.push_back(new BrownWoolBlock());
+	blockTypes.push_back(new LightBlackWoolBlock());
+	blockTypes.push_back(new PinkWoolBlock());
+	blockTypes.push_back(new LightGreenWoolBlock());
+	blockTypes.push_back(new YellowWoolBlock());
+
+	blockTypes.push_back(new BlueWoolBlock());
+	blockTypes.push_back(new LightBlueWoolBlock());
+	blockTypes.push_back(new FioletWoolBlock());
+	blockTypes.push_back(new PastelWoolBlock());
+	blockTypes.push_back(new LightFioletWoolBlock());
+	blockTypes.push_back(new OrangeWoolBlock());
+	blockTypes.push_back(new CactusBlock());
+	blockTypes.push_back(new SnowBlock());
+	blockTypes.push_back(new BrickBlock());
+
+	blockTypes.push_back(new CageBlock());
+	blockTypes.push_back(new AllSnowBlock());
+	blockTypes.push_back(new DarkWoodBlock());
+	blockTypes.push_back(new WhiteWoodBlock());
+	blockTypes.push_back(new IceBlock());
+	blockTypes.push_back(new CaneBlock());
+	blockTypes.push_back(new BoxBlock());
+	blockTypes.push_back(new ShelfBlock());
+	blockTypes.push_back(new WallBlock());
+
+	blockTypes.push_back(new DrySandBlock());
+	blockTypes.push_back(new SnowLewesBlock());
+	blockTypes.push_back(new MudBlock());
+	blockTypes.push_back(new GlassBlock());
+	blockTypes.push_back(new BrownCoailBlock());
+	blockTypes.push_back(new BlackCoailBlock());
+	blockTypes.push_back(new BlueCoailBlock());
+	blockTypes.push_back(new RedCoailBlock());
+
+	blockTypes.push_back(new SlamRockBlock());
+	blockTypes.push_back(new WaterRockBlock());
+	blockTypes.push_back(new JackOLantern());
+	blockTypes.push_back(new Torch());
+
+
+	//can't destroy this one
+	blockTypes.push_back(new IronBlock());
+}
+
+void deleteBlocks()
+{
+	//delete block vertices
+	blockTypes.clear();
+
+}

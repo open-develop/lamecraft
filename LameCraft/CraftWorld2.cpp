@@ -17,68 +17,6 @@ CraftWorld::CraftWorld()
 	chunksCreatedInFrameCount = 0;
 	transparentchunksCreatedInFrameCount = 0;
 
-	//air
-	blockTypes.push_back(BaseBlock());
-
-	//normal blocks
-	blockTypes.push_back(GrassBlock());
-	blockTypes.push_back(DirtBlock());
-	blockTypes.push_back(RockBlock());
-	blockTypes.push_back(WaterBlock());
-	blockTypes.push_back(GoldBlock());
-	blockTypes.push_back(LadderBlock());
-	blockTypes.push_back(SandBlock());
-	blockTypes.push_back(WoodBlock());
-	blockTypes.push_back(LeavesBlock());
-
-	blockTypes.push_back(TNTBlock());
-	blockTypes.push_back(BlackWoolBlock());
-	blockTypes.push_back(RedWoolBlock());
-	blockTypes.push_back(DarkGreyWoolBlock());
-	blockTypes.push_back(BrownWoolBlock());
-	blockTypes.push_back(LightBlackWoolBlock());
-	blockTypes.push_back(PinkWoolBlock());
-	blockTypes.push_back(LightGreenWoolBlock());
-	blockTypes.push_back(YellowWoolBlock());
-
-	blockTypes.push_back(BlueWoolBlock());
-	blockTypes.push_back(LightBlueWoolBlock());
-	blockTypes.push_back(FioletWoolBlock());
-	blockTypes.push_back(PastelWoolBlock());
-	blockTypes.push_back(LightFioletWoolBlock());
-	blockTypes.push_back(OrangeWoolBlock());
-	blockTypes.push_back(CactusBlock());
-	blockTypes.push_back(SnowBlock());
-	blockTypes.push_back(BrickBlock());
-
-	blockTypes.push_back(CageBlock());
-	blockTypes.push_back(AllSnowBlock());
-	blockTypes.push_back(DarkWoodBlock());
-	blockTypes.push_back(WhiteWoodBlock());
-	blockTypes.push_back(IceBlock());
-	blockTypes.push_back(CaneBlock());
-	blockTypes.push_back(BoxBlock());
-	blockTypes.push_back(ShelfBlock());
-	blockTypes.push_back(WallBlock());
-
-	blockTypes.push_back(DrySandBlock());
-	blockTypes.push_back(SnowLewesBlock());
-	blockTypes.push_back(MudBlock());
-	blockTypes.push_back(GlassBlock());
-	blockTypes.push_back(BrownCoailBlock());
-	blockTypes.push_back(BlackCoailBlock());
-	blockTypes.push_back(BlueCoailBlock());
-	blockTypes.push_back(RedCoailBlock());
-
-	blockTypes.push_back(SlamRockBlock());
-	blockTypes.push_back(WaterRockBlock());
-	blockTypes.push_back(JackOLantern());
-	blockTypes.push_back(Torch());
-
-
-	//can't destroy this one
-	blockTypes.push_back(IronBlock());
-
 	transOrderCont = 0;
 	lightShadowFactor = 0.4f;
 	lightFactor = Vector3(1.0f,1.0f,1.0f);
@@ -110,10 +48,6 @@ CraftWorld::~CraftWorld()
 		delete mTransparentChunks[i];
 	}
 	mTransparentChunks.clear();
-
-
-	//delete block vertices
-	blockTypes.clear();
 
 }
 
@@ -639,7 +573,7 @@ bool CraftWorld::BlockTransparentOrSpecial(const int x, const int y, const int z
 {
 	if (x < 0 || y < 0 || z < 0  || x >= WORLD_SIZE || y >= WORLD_SIZE || z >= WORLD_SIZE) return true;
 
-	if(blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]].transparent || blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]].blockSpecial)
+	if(blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]]->transparent || blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]]->blockSpecial)
 		return true;
 
 	return false;
@@ -649,33 +583,33 @@ bool CraftWorld::BlockTransparentOrLightSource(const int x, const int y, const i
 {
 	if (x < 0 || y < 0 || z < 0  || x >= WORLD_SIZE || y >= WORLD_SIZE || z >= WORLD_SIZE) return true;
 
-	return (blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]].transparent || blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]].lightSource);
+	return (blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]]->transparent || blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]]->lightSource);
 }
 
 bool CraftWorld::BlockTransparent(const int x, const int y, const int z)
 {
 	if (x < 0 || y < 0 || z < 0  || x >= WORLD_SIZE || y >= WORLD_SIZE || z >= WORLD_SIZE) return true;
 
-	return blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]].transparent;
+	return blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]]->transparent;
 }
 
 bool CraftWorld::BlockSpecial(const int x, const int y, const int z)
 {
 	if (x < 0 || y < 0 || z < 0  || x >= WORLD_SIZE || y >= WORLD_SIZE || z >= WORLD_SIZE) return true;
 
-	return blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]].blockSpecial;
+	return blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]]->blockSpecial;
 }
 
 bool CraftWorld::BlockEditable(const int x, const int y, const int z)
 {
 	if (x < 0 || y < 0 || z < 0  || x >= WORLD_SIZE || y >= WORLD_SIZE || z >= WORLD_SIZE) return false;
 
-	return blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]].editable;
+	return blockTypes[m_Blocks[x + y * WORLD_SIZE + z * WORLD_SIZE * WORLD_SIZE]]->editable;
 }
 
 bool CraftWorld::LightSourceBlock(int id)
 {
-	return blockTypes[id].lightSource;
+	return blockTypes[id]->lightSource;
 }
 
 void CraftWorld::GetSpecialBlockVerts(int i,BaseBlock* blockType)
@@ -762,40 +696,40 @@ void CraftWorld::GetSpecialBlockVerts(int i,BaseBlock* blockType)
 			iVertex += 4;
 		}
 
-		blockTypes[i].vertices = (CraftPSPVertex*)memalign(16,( mTriangle.size() * 3) * sizeof(CraftPSPVertex));
+		blockTypes[i]->vertices = (CraftPSPVertex*)memalign(16,( mTriangle.size() * 3) * sizeof(CraftPSPVertex));
 		//build verts
 		//vertices
 		int vert = 0;
 		unsigned int size =  mTriangle.size();
 		for(unsigned int j = 0;j < size;j++)
 		{
-			blockTypes[i].vertices[vert].u = mtextures[mTriangle[j]->x]->x;
-			blockTypes[i].vertices[vert].v = mtextures[mTriangle[j]->x]->y;
-			blockTypes[i].vertices[vert].color = GU_COLOR( mColour[mTriangle[j]->x]->x,mColour[mTriangle[j]->x]->y,mColour[mTriangle[j]->x]->z,1.0f);
-			blockTypes[i].vertices[vert].x = mPosition[mTriangle[j]->x]->x;
-			blockTypes[i].vertices[vert].y = mPosition[mTriangle[j]->x]->y;
-			blockTypes[i].vertices[vert].z = mPosition[mTriangle[j]->x]->z;
+			blockTypes[i]->vertices[vert].u = mtextures[mTriangle[j]->x]->x;
+			blockTypes[i]->vertices[vert].v = mtextures[mTriangle[j]->x]->y;
+			blockTypes[i]->vertices[vert].color = GU_COLOR( mColour[mTriangle[j]->x]->x,mColour[mTriangle[j]->x]->y,mColour[mTriangle[j]->x]->z,1.0f);
+			blockTypes[i]->vertices[vert].x = mPosition[mTriangle[j]->x]->x;
+			blockTypes[i]->vertices[vert].y = mPosition[mTriangle[j]->x]->y;
+			blockTypes[i]->vertices[vert].z = mPosition[mTriangle[j]->x]->z;
 			vert++;
 
-			blockTypes[i].vertices[vert].u = mtextures[mTriangle[j]->y]->x;
-			blockTypes[i].vertices[vert].v = mtextures[mTriangle[j]->y]->y;
-			blockTypes[i].vertices[vert].color = GU_COLOR( mColour[mTriangle[j]->y]->x,mColour[mTriangle[j]->y]->y,mColour[mTriangle[j]->y]->z,1.0f);
-			blockTypes[i].vertices[vert].x = mPosition[mTriangle[j]->y]->x;
-			blockTypes[i].vertices[vert].y = mPosition[mTriangle[j]->y]->y;
-			blockTypes[i].vertices[vert].z = mPosition[mTriangle[j]->y]->z;
+			blockTypes[i]->vertices[vert].u = mtextures[mTriangle[j]->y]->x;
+			blockTypes[i]->vertices[vert].v = mtextures[mTriangle[j]->y]->y;
+			blockTypes[i]->vertices[vert].color = GU_COLOR( mColour[mTriangle[j]->y]->x,mColour[mTriangle[j]->y]->y,mColour[mTriangle[j]->y]->z,1.0f);
+			blockTypes[i]->vertices[vert].x = mPosition[mTriangle[j]->y]->x;
+			blockTypes[i]->vertices[vert].y = mPosition[mTriangle[j]->y]->y;
+			blockTypes[i]->vertices[vert].z = mPosition[mTriangle[j]->y]->z;
 			vert++;
 
-			blockTypes[i].vertices[vert].u = mtextures[mTriangle[j]->z]->x;
-			blockTypes[i].vertices[vert].v = mtextures[mTriangle[j]->z]->y;
-			blockTypes[i].vertices[vert].color = GU_COLOR( mColour[mTriangle[j]->z]->x,mColour[mTriangle[j]->z]->y,mColour[mTriangle[j]->z]->z,1.0f);
-			blockTypes[i].vertices[vert].x = mPosition[mTriangle[j]->z]->x;
-			blockTypes[i].vertices[vert].y = mPosition[mTriangle[j]->z]->y;
-			blockTypes[i].vertices[vert].z = mPosition[mTriangle[j]->z]->z;
+			blockTypes[i]->vertices[vert].u = mtextures[mTriangle[j]->z]->x;
+			blockTypes[i]->vertices[vert].v = mtextures[mTriangle[j]->z]->y;
+			blockTypes[i]->vertices[vert].color = GU_COLOR( mColour[mTriangle[j]->z]->x,mColour[mTriangle[j]->z]->y,mColour[mTriangle[j]->z]->z,1.0f);
+			blockTypes[i]->vertices[vert].x = mPosition[mTriangle[j]->z]->x;
+			blockTypes[i]->vertices[vert].y = mPosition[mTriangle[j]->z]->y;
+			blockTypes[i]->vertices[vert].z = mPosition[mTriangle[j]->z]->z;
 			vert++;
 		}
 
 		//clear the cache or there will be some errors
-		sceKernelDcacheWritebackInvalidateRange(blockTypes[i].vertices,( mTriangle.size() * 3) * sizeof(CraftPSPVertex));
+		sceKernelDcacheWritebackInvalidateRange(blockTypes[i]->vertices,( mTriangle.size() * 3) * sizeof(CraftPSPVertex));
 		//sceKernelDcacheWritebackInvalidateAll();
 
 		for(unsigned int aa = 0;aa < mPosition.size();aa++)
@@ -925,40 +859,40 @@ void CraftWorld::GetNormalBlockVerts(int i,BaseBlock *blockType)
 	iVertex += 4;
 
 
-	blockTypes[i].vertices = (CraftPSPVertex*)memalign(16,( mTriangle.size() * 3) * sizeof(CraftPSPVertex));
+	blockTypes[i]->vertices = (CraftPSPVertex*)memalign(16,( mTriangle.size() * 3) * sizeof(CraftPSPVertex));
 	//build verts
 	//vertices
 	int vert = 0;
 	unsigned int size =  mTriangle.size();
 	for(unsigned int j = 0;j < size;j++)
 	{
-		blockTypes[i].vertices[vert].u = mtextures[mTriangle[j]->x]->x;
-		blockTypes[i].vertices[vert].v = mtextures[mTriangle[j]->x]->y;
-		blockTypes[i].vertices[vert].color = GU_COLOR( mColour[mTriangle[j]->x]->x,mColour[mTriangle[j]->x]->y,mColour[mTriangle[j]->x]->z,1.0f);
-		blockTypes[i].vertices[vert].x = mPosition[mTriangle[j]->x]->x;
-		blockTypes[i].vertices[vert].y = mPosition[mTriangle[j]->x]->y;
-		blockTypes[i].vertices[vert].z = mPosition[mTriangle[j]->x]->z;
+		blockTypes[i]->vertices[vert].u = mtextures[mTriangle[j]->x]->x;
+		blockTypes[i]->vertices[vert].v = mtextures[mTriangle[j]->x]->y;
+		blockTypes[i]->vertices[vert].color = GU_COLOR( mColour[mTriangle[j]->x]->x,mColour[mTriangle[j]->x]->y,mColour[mTriangle[j]->x]->z,1.0f);
+		blockTypes[i]->vertices[vert].x = mPosition[mTriangle[j]->x]->x;
+		blockTypes[i]->vertices[vert].y = mPosition[mTriangle[j]->x]->y;
+		blockTypes[i]->vertices[vert].z = mPosition[mTriangle[j]->x]->z;
 		vert++;
 
-		blockTypes[i].vertices[vert].u = mtextures[mTriangle[j]->y]->x;
-		blockTypes[i].vertices[vert].v = mtextures[mTriangle[j]->y]->y;
-		blockTypes[i].vertices[vert].color = GU_COLOR( mColour[mTriangle[j]->y]->x,mColour[mTriangle[j]->y]->y,mColour[mTriangle[j]->y]->z,1.0f);
-		blockTypes[i].vertices[vert].x = mPosition[mTriangle[j]->y]->x;
-		blockTypes[i].vertices[vert].y = mPosition[mTriangle[j]->y]->y;
-		blockTypes[i].vertices[vert].z = mPosition[mTriangle[j]->y]->z;
+		blockTypes[i]->vertices[vert].u = mtextures[mTriangle[j]->y]->x;
+		blockTypes[i]->vertices[vert].v = mtextures[mTriangle[j]->y]->y;
+		blockTypes[i]->vertices[vert].color = GU_COLOR( mColour[mTriangle[j]->y]->x,mColour[mTriangle[j]->y]->y,mColour[mTriangle[j]->y]->z,1.0f);
+		blockTypes[i]->vertices[vert].x = mPosition[mTriangle[j]->y]->x;
+		blockTypes[i]->vertices[vert].y = mPosition[mTriangle[j]->y]->y;
+		blockTypes[i]->vertices[vert].z = mPosition[mTriangle[j]->y]->z;
 		vert++;
 
-		blockTypes[i].vertices[vert].u = mtextures[mTriangle[j]->z]->x;
-		blockTypes[i].vertices[vert].v = mtextures[mTriangle[j]->z]->y;
-		blockTypes[i].vertices[vert].color = GU_COLOR( mColour[mTriangle[j]->z]->x,mColour[mTriangle[j]->z]->y,mColour[mTriangle[j]->z]->z,1.0f);
-		blockTypes[i].vertices[vert].x = mPosition[mTriangle[j]->z]->x;
-		blockTypes[i].vertices[vert].y = mPosition[mTriangle[j]->z]->y;
-		blockTypes[i].vertices[vert].z = mPosition[mTriangle[j]->z]->z;
+		blockTypes[i]->vertices[vert].u = mtextures[mTriangle[j]->z]->x;
+		blockTypes[i]->vertices[vert].v = mtextures[mTriangle[j]->z]->y;
+		blockTypes[i]->vertices[vert].color = GU_COLOR( mColour[mTriangle[j]->z]->x,mColour[mTriangle[j]->z]->y,mColour[mTriangle[j]->z]->z,1.0f);
+		blockTypes[i]->vertices[vert].x = mPosition[mTriangle[j]->z]->x;
+		blockTypes[i]->vertices[vert].y = mPosition[mTriangle[j]->z]->y;
+		blockTypes[i]->vertices[vert].z = mPosition[mTriangle[j]->z]->z;
 		vert++;
 	}
 
 	//clear the cache or there will be some errors
-	sceKernelDcacheWritebackInvalidateRange(blockTypes[i].vertices,( mTriangle.size() * 3) * sizeof(CraftPSPVertex));
+	sceKernelDcacheWritebackInvalidateRange(blockTypes[i]->vertices,( mTriangle.size() * 3) * sizeof(CraftPSPVertex));
 	//sceKernelDcacheWritebackInvalidateAll();
 
 	for(unsigned int aa = 0;aa < mPosition.size();aa++)
@@ -981,7 +915,7 @@ void CraftWorld::buildblocksVerts()
 	//create vertices for each block type
 	for(unsigned int i = 1;i < blockTypes.size();i++)
 	{
-		BaseBlock *blockType = &blockTypes[i];
+		BaseBlock *blockType = blockTypes[i];
 
 		if(blockType->blockSpecial)
 			GetSpecialBlockVerts(i,blockType);
@@ -1153,7 +1087,7 @@ void CraftWorld::GetSpecialBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk
 	if(Block == Torch::getID())
 	{
 		//texture stuff
-		BaseBlock *blockType = &blockTypes[Block];
+		BaseBlock *blockType = blockTypes[Block];
 		float down = 1.0f - percent * (blockType->textureRow + 1);
 		float up = down + percent - ((percent / (float)textureChunk) * 6);
 
@@ -1369,7 +1303,7 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 	Vector3 BlockColorz2;     //Front/back faces
 
 	//texture stuff
-	BaseBlock *blockType = &blockTypes[Block];
+	BaseBlock *blockType = blockTypes[Block];
 
 	float down = 1.0f - percent * (blockType->textureRow + 1);
 	float up = down + percent;
@@ -2104,10 +2038,10 @@ void CraftWorld::drawCubes(int i)
 {
 	sceGuColor(0xFFFFFFFF);
 	sceGuEnable(GU_TEXTURE_2D);
-	if(blockTypes[i].transparent)
+	if(blockTypes[i]->transparent)
 		sceGuEnable(GU_BLEND);
-	sceGumDrawArray(GU_TRIANGLES, GU_TEXTURE_32BITF |GU_COLOR_8888| GU_VERTEX_32BITF | GU_TRANSFORM_3D, 36, 0, blockTypes[i].vertices);
-	if(blockTypes[i].transparent)
+	sceGumDrawArray(GU_TRIANGLES, GU_TEXTURE_32BITF |GU_COLOR_8888| GU_VERTEX_32BITF | GU_TRANSFORM_3D, 36, 0, blockTypes[i]->vertices);
+	if(blockTypes[i]->transparent)
 		sceGuDisable(GU_BLEND);
 	sceGuDisable(GU_TEXTURE_2D);
 }
@@ -2268,6 +2202,11 @@ void CraftWorld::UpdateWorldTime(float dt)
 	}
 }
 
+bool CraftWorld::isSolid(const int x, const int y, const int z)
+{
+	return !(GetBlock(x,y,z) == 0 || GetBlock(x,y,z) == 4 || GetBlock(x,y,z) == Torch::getID());
+}
+
 int CraftWorld::GetBlockTypesCount()
 {
 	return blockTypes.size();
@@ -2326,7 +2265,7 @@ int CraftWorld::BlockSoundAtPos(Vector3 pos)
 	//outside the world so collision
 	if (x <= 0 || y <= 0 || z <= 0  || x >= WORLD_SIZE-1 || y >= WORLD_SIZE-1 || z >= WORLD_SIZE-1) return -1;
 
-	return blockTypes[GetBlock(x,y,z)].soundType;
+	return blockTypes[GetBlock(x,y,z)]->soundType;
 }
 
 bool CraftWorld::SolidAtPointForPlayer(Vector3 pos)

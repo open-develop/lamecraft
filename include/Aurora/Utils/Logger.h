@@ -10,7 +10,13 @@ namespace Aurora
 		{
 		private:
 
+			Logger()
+			{
+				logActive = false;
+			}
+
 			static Logger m_Logger;
+			bool logActive;
 
 		public:
 
@@ -20,7 +26,7 @@ namespace Aurora
 			}
 
 			void LogMessage(const char *message, ...);
-
+			void SetLoggerActive(bool on);
 		};
 	}
 }

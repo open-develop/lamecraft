@@ -823,8 +823,8 @@ void CraftWorld::GetNormalBlockVerts(int i,BaseBlock *blockType)
 	left = percent * blockType->upPlane;
 	right = left + percent;
 
-	mPosition.push_back(new Vector3(x,   y+1, z+1));		mtextures.push_back(new Vector2(left, up)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
-	mPosition.push_back(new Vector3(x+1, y+1, z+1));		mtextures.push_back(new Vector2(right, up)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
+	mPosition.push_back(new Vector3(x,   y+1, z+1));	mtextures.push_back(new Vector2(left, up)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
+	mPosition.push_back(new Vector3(x+1, y+1, z+1));	mtextures.push_back(new Vector2(right, up)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
 	mPosition.push_back(new Vector3(x+1, y+1, z));		mtextures.push_back(new Vector2(right, down)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
 	mPosition.push_back(new Vector3(x,   y+1, z));		mtextures.push_back(new Vector2(left, down)); mColour.push_back(new Vector3(BlockLight2,BlockLight2,BlockLight2));
 
@@ -1591,7 +1591,7 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 		}
 
 		light1 = light2 = light3 = light4 = BlockColory2;
-		lightFactor = BlockColory1 * lightShadowFactor;
+		lightFactor = BlockColory2 * lightShadowFactor;
 
 		//simple shadows
 		if(!BlockTransparentOrLightSource(x-1,y-1,z) || !BlockTransparentOrLightSource(x-1,y-1,z-1) || !BlockTransparentOrLightSource(x,y-1,z-1))
@@ -1658,7 +1658,7 @@ void CraftWorld::GetNormalBlock(int x,int y, int z,int &iVertex,SimpleMeshChunk*
 		}
 
 		light1 = light2 = light3 = light4 = BlockColory1;
-		lightFactor = BlockColory2 * lightShadowFactor;
+		lightFactor = BlockColory1 * lightShadowFactor;
 
 		//simple shadows
 		if(!BlockTransparentOrLightSource(x,y+1,z+1) || !BlockTransparentOrLightSource(x-1,y+1,z+1) || !BlockTransparentOrLightSource(x-1,y+1,z))

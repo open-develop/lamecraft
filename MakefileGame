@@ -28,6 +28,8 @@ source/Aurora/Utils/StateManager.o \
 source/Aurora/Utils/Types.o \
 source/Aurora/System/SystemManager.o \
 source/Aurora/System/NetworkManager.o \
+source/Aurora/System/Mutex.o \
+source/Aurora/System/Thread.o \
 LameCraft/BaseBlock.o \
 LameCraft/Blocks.o \
 LameCraft/SimpleMeshChunk2.o \
@@ -59,9 +61,9 @@ BUILD_PRX = 1
 PSP_FW_VERSION=371
 PSP_LARGE_MEMORY = 1
 
-LIBDIR += ./3libs/noisepp ./3libs/libpspmath 
+LIBDIR += ./3libs/noisepp ./3libs/libpspmath ./3libs/pthreads-emb-1.0
 LDFLAGS =
-LIBS=  -lNoisepp -lpspaudiolib -lpspaudio -lmikmod -lmmio -lpspaudiocodec -lpng -lz -lpspgum -lpspgu -lstdc++ -lpsprtc -lpspctrl -lm -lpspvfpu -lpspsdk -lpsppower -lpsphttp -lpspmath #-lpsp_req -lcurl -lTiny
+LIBS= -lNoisepp -lpspaudiolib -lpspaudio -lmikmod -lmmio -lpspaudiocodec -lpng -lz -lpspgum -lpspgu -lstdc++ -lpsprtc -lpspctrl -lm -lpspvfpu -lpspsdk -lpsppower -lpsphttp -lpspmath -lpthread-psp  #-lpsp_req -lcurl -lTiny
 
 EXTRA_TARGETS = EBOOT.PBP
 PSP_EBOOT_TITLE = LameCraft

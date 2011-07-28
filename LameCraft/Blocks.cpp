@@ -762,6 +762,9 @@ void initBlocks()
 void deleteBlocks()
 {
 	//delete block vertices
+	for(unsigned int i = 0;i < blockTypes.size(); i++)
+		delete blockTypes[i];
+
 	blockTypes.clear();
 
 }

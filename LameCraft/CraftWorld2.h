@@ -134,7 +134,6 @@ private:
 
 	block_t* m_Blocks;
 	block_t* m_BlockLight;
-
 	block_t* m_BlockSettings;
 
 	//player zone aabb

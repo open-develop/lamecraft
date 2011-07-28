@@ -34,6 +34,7 @@ CraftWorld::~CraftWorld()
 	//delete arrays
 	delete [] m_Blocks;
 	delete [] m_BlockLight;
+	delete [] m_BlockSettings;
 
 	//delete chunks
 	for(unsigned int i = 0;i < mChunks.size();i++)
@@ -738,13 +739,15 @@ void CraftWorld::GetSpecialBlockVerts(int i,BaseBlock* blockType)
 			delete mtextures[aa];
 			delete mColour[aa];
 		}
+		
 		mPosition.clear();
-			mtextures.clear();
-			mColour.clear();
+		mtextures.clear();
+		mColour.clear();
 
-			for(unsigned int aa = 0;aa < mTriangle.size();aa++)
-				delete 		mTriangle[aa];
-			mTriangle.clear();
+		for(unsigned int aa = 0;aa < mTriangle.size();aa++)
+			delete mTriangle[aa];
+		
+		mTriangle.clear();
 	}
 }
 
@@ -774,7 +777,6 @@ void CraftWorld::GetNormalBlockVerts(int i,BaseBlock *blockType)
 	float BlockLight1 = BlockLight * 0.9f;		//For the two z faces
 	float BlockLight2 = BlockLight * 0.8f;		//For the two y faces
 
-
 	//x
 	left = percent * blockType->sidePlane;
 	right = left + percent;
@@ -790,7 +792,6 @@ void CraftWorld::GetNormalBlockVerts(int i,BaseBlock *blockType)
 	iVertex += 4;
 
 	//x
-
 	left = percent * blockType->sidePlane;
 	right = left + percent;
 
@@ -901,12 +902,14 @@ void CraftWorld::GetNormalBlockVerts(int i,BaseBlock *blockType)
 		delete mtextures[aa];
 		delete mColour[aa];
 	}
+	
 	mPosition.clear();
 	mtextures.clear();
 	mColour.clear();
 
 	for(unsigned int aa = 0;aa < mTriangle.size();aa++)
-		delete 		mTriangle[aa];
+		delete mTriangle[aa];
+		
 	mTriangle.clear();
 }
 

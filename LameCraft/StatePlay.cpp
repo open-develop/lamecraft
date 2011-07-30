@@ -296,8 +296,8 @@ void StatePlay::CleanUp()
 	delete cubeModel;
 	delete skyDome;
 	delete skyLight;
-	//delete fppCam;
 	delete mWorld;
+	deleteBlocks();
 }
 
 void StatePlay::Pause()

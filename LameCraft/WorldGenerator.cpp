@@ -277,14 +277,13 @@ void WorldGenerator::reshapeChunk(CraftWorld *world, int terrainType, int tx, in
 		initCactus(world, nx, ny, nz);
     }
 	num = 0;
-	if(terrainType != 2 && makeTrees) num += 10;
+	if(terrainType != 2 && makeTrees) num += 3;
     for(int i = 0; i < num; i++)
     {
         int nx = x + rand()%16;
 		int nz = z + rand()%16;
         int ny = world->groundHeight(nx, nz);
 		if(ny <= 0) continue;
-        
 		initTree(terrainType, world, nx, ny, nz);
     }
 	
@@ -318,36 +317,37 @@ void WorldGenerator::initTree(int treeChoose, CraftWorld *world, int x, int y, i
 	}
 
 	//if(flag == 0)continue;
-
-
-	//Create the tree trunk
-	for (int y1 = y + 1; y1 < y + 1 + TrunkHeight && y1 < WORLD_SIZE; ++y1)
+	if(flag == 1)
 	{
-		block_t& Block = world->GetBlock(x, y1, z);
-		if (Block == 0)
+		//Create the tree trunk
+		for (int y1 = y + 1; y1 < y + 1 + TrunkHeight && y1 < WORLD_SIZE; ++y1)
 		{
-			if(treeChoose == 0) Block = 8;
-			else Block = 31;
-		}
-	}
-
-	//create my leaves
-	for(int yy = 0;yy < 3;yy++)
-		for(int xx = 0;xx < 3;xx++)
-			for(int zz = 0;zz < 3;zz++)
+			block_t& Block = world->GetBlock(x, y1, z);
+			if (Block == 0)
 			{
-				int x1 = xx + x - 1;// :D - what a shitty code
-				int y1 = yy + y + TrunkHeight - 1;
-				int z1 = zz + z - 1;
-
-				if (x1 < 0 || y1 < 0 || z1 < 0) continue;
-				if (x1 >= WORLD_SIZE || y1 >= WORLD_SIZE || z1 >= WORLD_SIZE) continue;
-
-				block_t& Block = world->GetBlock(x1, y1, z1);
-				if (Block == 0)
-				{
-					if(treeChoose == 0) Block = 9;
-					else Block = 38;
-				}
+				if(treeChoose == 0) Block = 8;
+				else Block = 31;
 			}
+		}
+
+		//create my leaves
+		for(int yy = 0;yy < 3;yy++)
+			for(int xx = 0;xx < 3;xx++)
+				for(int zz = 0;zz < 3;zz++)
+				{
+					int x1 = xx + x - 1;// :D - what a shitty code
+					int y1 = yy + y + TrunkHeight - 1;
+					int z1 = zz + z - 1;
+
+					if (x1 < 0 || y1 < 0 || z1 < 0) continue;
+					if (x1 >= WORLD_SIZE || y1 >= WORLD_SIZE || z1 >= WORLD_SIZE) continue;
+
+					block_t& Block = world->GetBlock(x1, y1, z1);
+					if (Block == 0)
+					{
+						if(treeChoose == 0) Block = 9;
+						else Block = 38;
+					}
+				}
+	}
 }

@@ -52,7 +52,7 @@ LameCraft/sound_utils/mod.o \
 Lamecraft.o
 
 INCDIR = $(PSPPATH)/include
-INCDIR += ./include ./source ./3libs
+INCDIR += ./include ./source ./3libs ./3libs/pthreads-emb-1.0/platform/psp
 CFLAGS = -O3 -G0 -Wall -mpreferred-stack-boundary=4 #-enable-newlib-hw-fp -ffast-math
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS = $(CFLAGS)
@@ -61,7 +61,7 @@ BUILD_PRX = 1
 PSP_FW_VERSION=371
 PSP_LARGE_MEMORY = 1
 
-LIBDIR += ./3libs/noisepp ./3libs/libpspmath ./3libs/pthreads-emb-1.0
+LIBDIR += ./3libs/noisepp ./3libs/libpspmath ./3libs/pthreads-emb-1.0 
 LDFLAGS =
 LIBS= -lNoisepp -lpspaudiolib -lpspaudio -lmikmod -lmmio -lpspaudiocodec -lpng -lz -lpspgum -lpspgu -lstdc++ -lpsprtc -lpspctrl -lm -lpspvfpu -lpspsdk -lpsppower -lpsphttp -lpspmath -lpthread-psp  #-lpsp_req -lcurl -lTiny
 

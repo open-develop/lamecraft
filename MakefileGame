@@ -26,6 +26,7 @@ source/Aurora/Utils/Logger.o \
 source/Aurora/Utils/Timer.o \
 source/Aurora/Utils/StateManager.o \
 source/Aurora/Utils/Types.o \
+source/Aurora/Utils/pgeZip.o \
 source/Aurora/System/SystemManager.o \
 source/Aurora/System/NetworkManager.o \
 source/Aurora/System/Mutex.o \
@@ -53,7 +54,7 @@ Lamecraft.o
 
 INCDIR = $(PSPPATH)/include
 INCDIR += ./include ./source ./3libs ./3libs/pthreads-emb-1.0/platform/psp
-CFLAGS = -O3 -G0 -Wall -mpreferred-stack-boundary=4 #-enable-newlib-hw-fp -ffast-math
+CFLAGS = -O2 -G0 -Wall -mpreferred-stack-boundary=4 #-enable-newlib-hw-fp -ffast-math
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS = $(CFLAGS)
 

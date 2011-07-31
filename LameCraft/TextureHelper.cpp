@@ -1,16 +1,32 @@
 #include "TextureHelper.h"
 #include <Aurora/Graphics/RenderManager.h>
+#include <Aurora/Utils/pgeZip.h>
 
 TextureHelper::TextureHelper()
 {
-	defaulPatch = "Assets/";
-	defaultFolder = "Lamecraft/";
-	texturePatch = "Assets/Lamecraft/";
+	defaulPatch = "Assets/Lamecraft/";
+	texturePatch = "Assets/Lamecraft/Lamecraft.zip";
 }
 
 TextureHelper::~TextureHelper()
 {
 
+}
+
+int TextureHelper::GetTextureFromZip(const char* name)
+{
+	if(!TextureManager::Instance()->TextureExist(name))
+	{
+		pgeZip* theZip = pgeZipOpen(texturePatch.c_str());
+		pgeZipFile* fileInZip = pgeZipFileRead(theZip, name, NULL);
+		pgeZipClose(theZip);
+
+		TextureManager::Instance()->LoadTexture(name,fileInZip->data,fileInZip->size);
+
+		pgeZipFileFree(fileInZip);
+	}
+
+	return TextureManager::Instance()->GetTextureNumber(name);
 }
 
 int TextureHelper::GetTexture(Textures texture)
@@ -19,79 +35,57 @@ int TextureHelper::GetTexture(Textures texture)
 	{
 		case Genesis:
 		{
-			fileName = texturePatch + "genesis.png";
-			TextureManager::Instance()->LoadTexture(fileName);
-			return TextureManager::Instance()->GetTextureNumber(fileName);
+			return GetTextureFromZip("genesis.png");
 		}
 		break;
 		case PspTeam:
 		{
-			fileName = texturePatch + "pspteam.png";
-			TextureManager::Instance()->LoadTexture(fileName);
-			return TextureManager::Instance()->GetTextureNumber(fileName);
+			return GetTextureFromZip("pspteam.png");
 		}
 		break;
 		case Logo:
 		{
-			fileName = texturePatch + "logo.png";
-			TextureManager::Instance()->LoadTexture(fileName);
-			return TextureManager::Instance()->GetTextureNumber(fileName);
+			return GetTextureFromZip("logo.png");
 		}
 		break;
 		case Utils:
 		{
-			fileName = texturePatch + "utils.png";
-			TextureManager::Instance()->LoadTexture(fileName);
-			return TextureManager::Instance()->GetTextureNumber(fileName);
+			return GetTextureFromZip("utils.png");
 		}
 		break;
 		case Dirt:
 		{
-			fileName = texturePatch + "dirt.png";
-			TextureManager::Instance()->LoadTexture(fileName);
-			return TextureManager::Instance()->GetTextureNumber(fileName);
+			return GetTextureFromZip("dirt.png");
 		}
 		break;
 		case Glass:
 		{
-			fileName = texturePatch + "glass.png";
-			TextureManager::Instance()->LoadTexture(fileName);
-			return TextureManager::Instance()->GetTextureNumber(fileName);
+			return GetTextureFromZip("glass.png");
 		}
 		break;
 		case Terrain:
 		{
-			fileName = texturePatch + "terrain_medium.png";
-			TextureManager::Instance()->LoadTexture(fileName);
-			return TextureManager::Instance()->GetTextureNumber(fileName);
+			return GetTextureFromZip("terrain_medium.png");
 		}
 		break;
 		case Blue:
 		{
-			fileName = texturePatch + "blue.png";
-			TextureManager::Instance()->LoadTexture(fileName);
-			return TextureManager::Instance()->GetTextureNumber(fileName);
+			return GetTextureFromZip("blue.png");
 		}
 		break;
 		case Sky:
 		{
-			fileName = texturePatch + "sky.png";
-			TextureManager::Instance()->LoadTexture(fileName);
-			return TextureManager::Instance()->GetTextureNumber(fileName);
+			return GetTextureFromZip("sky.png");
 		}
 		break;
 		case Sun:
 		{
-			fileName = texturePatch + "sun.png";
-			TextureManager::Instance()->LoadTexture(fileName);
-			return TextureManager::Instance()->GetTextureNumber(fileName);
+			return GetTextureFromZip("sun.png");
 		}
 		break;
 		case Moon:
 		{
-			fileName = texturePatch + "moon.png";
-			TextureManager::Instance()->LoadTexture(fileName);
-			return TextureManager::Instance()->GetTextureNumber(fileName);
+			return GetTextureFromZip("moon.png");
 		}
 		break;
 	}
@@ -99,10 +93,10 @@ int TextureHelper::GetTexture(Textures texture)
 	return 0;
 }
 
-void TextureHelper::SetTextureFolderName(std::string name)
+void TextureHelper::SetTextureZipName(std::string name)
 {
-	defaultFolder = name;
-	texturePatch = defaulPatch + defaultFolder;
+	defaultZip = name;
+	texturePatch = defaulPatch + defaultZip;
 }
 
 TextureHelper TextureHelper::m_TextureHelper;

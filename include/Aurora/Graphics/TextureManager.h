@@ -55,7 +55,6 @@ namespace Aurora
 
 			static TextureManager m_TextureManager;
 
-
 			int PowerOfTwo(int value)
 			{
 				int poweroftwo = 1;
@@ -143,6 +142,9 @@ namespace Aurora
 		public:
 
 			Image* LoadPng(const char* filename,int ColorMode,int Swizzle,int Vram);
+			Image* LoadPngFromMemory(const unsigned char* data,int len,int ColorMode,int Swizzle,int Vram);
+
+			Image* loadPngImageImpl(png_structp png_ptr, int len,int ColorMode,int Swizzle,int Vram);
 
 			std::vector<std::string> Names;
 			std::vector<Image*> Images;
@@ -163,6 +165,7 @@ namespace Aurora
 			void SetMipMapsTextures(int texture,int mipmap1,int mipmap2,int mipmap3);
 
 			void LoadTexture(std::string fileName);
+			void LoadTexture(std::string fileName,const unsigned char* data,int len);
 			void LoadTexureVFS(std::string fileName);
 
 			void RemoveTexture(int number);

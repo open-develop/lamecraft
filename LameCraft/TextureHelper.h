@@ -8,9 +8,8 @@ class TextureHelper
 private:
 
 	std::string defaulPatch;
-	std::string defaultFolder;
+	std::string defaultZip;
 	std::string texturePatch;
-	std::string fileName;
 
 public:
 
@@ -37,8 +36,8 @@ public:
 	~TextureHelper();
 
 	int GetTexture(Textures texture);
-
-	void SetTextureFolderName(std::string name);
+	int GetTextureFromZip(const char* name);
+	void SetTextureZipName(std::string name);
 };
 
 #endif

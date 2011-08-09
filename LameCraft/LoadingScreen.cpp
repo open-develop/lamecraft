@@ -1,4 +1,5 @@
 #include "LoadingScreen.h"
+#include "TextureHelper.h"
 #include <pspthreadman.h>
 #include <pspgu.h>
 #include <pspgum.h>
@@ -31,7 +32,7 @@ void LoadingScreen::KillLoadingScreen()
 int LoadingScreen::RunLoadingScreen(SceSize args, void *argp)
 {
 	// load up the images
-	backSprite = new Sprite("Assets/Lamecraft/dirt.png",0,0,16,16);
+	backSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Dirt),0,0,16,16);
 	backSprite->Scale(2,2);
 
 

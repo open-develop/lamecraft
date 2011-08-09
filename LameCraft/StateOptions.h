@@ -47,6 +47,7 @@ private:
 	Sprite *moverSprite;
 	Sprite *smoverSprite;
 	Sprite *backSprite;
+	Sprite *selectSaveSprite;
 
 	RenderManager *mRender;
 	SystemManager *mSystemMgr;
@@ -68,6 +69,12 @@ private:
 
 	//analog stick
 	int currentAnalogPos;
+
+	int loadSelectPos;
+	int loadSavePos;
+	int loadSaveStart;
+	int loadSaveEnd;
+	int loadSaveMax;
 
 };
 

@@ -583,7 +583,7 @@ namespace Aurora
 					{
 						//lest see if there is a lightmap with the same name as object
 						size_t found = pathName.find_last_of("/");
-						pathName = pathName.substr(0,found) + "/" + mesh->name + "VRayTotalLightingMap.png";//"LightingMap.png";
+						pathName = pathName.substr(0,found) + "/" + mesh->name + "LightingMap.png";//"LightingMap.png";
 
 						if (!tManager->TextureExist(pathName))
 						{
@@ -605,7 +605,7 @@ namespace Aurora
 
 					//lest see if there is a lightmap with the same name as object
 					size_t found = pathName.find_last_of("/");
-					pathName = pathName.substr(0,found) + "/" + mesh->name + "VRayTotalLightingMap.png";//"LightingMap.png";
+					pathName = pathName.substr(0,found) + "/" + mesh->name + "LightingMap.png";//"LightingMap.png";
 
 					if (!tManager->TextureExist(pathName))
 					{
@@ -740,11 +740,14 @@ namespace Aurora
 				mesh->meshVertices = (TexturesPSPVertex*)memalign(16,mesh->indicesCount * sizeof(TexturesPSPVertex));
 				fread(mesh->meshVertices,sizeof(TexturesPSPVertex),mesh->indicesCount,binaryFile);
 
+				sceKernelDcacheWritebackInvalidateRange(mesh->meshVertices,( mesh->mFace.size() * 3) * sizeof(TexturesPSPVertex));
+
 				mMeshes.push_back(mesh);
 			}
 
 			//clear the cache or there will be some errors
-			sceKernelDcacheWritebackInvalidateAll();
+
+			//sceKernelDcacheWritebackInvalidateAll();
 
 
 			fclose(binaryFile);

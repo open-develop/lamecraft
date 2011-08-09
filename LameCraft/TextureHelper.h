@@ -2,6 +2,7 @@
 #define TEXTUREHELPER_H_
 
 #include <string>
+#include <vector>
 
 class TextureHelper
 {
@@ -38,6 +39,13 @@ public:
 	int GetTexture(Textures texture);
 	int GetTextureFromZip(const char* name);
 	void SetTextureZipName(std::string name);
+
+	void CleanAllPackImages();
+	void RemoveTexture(const char* name);
+
+	void ScanForTexturePacks();
+
+	std::vector<std::string> packFiles;
 };
 
 #endif

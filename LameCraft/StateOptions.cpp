@@ -43,6 +43,9 @@ void StateOptions::Init()
 	moverSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Utils),191,2,9,20);
 	smoverSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Utils),182,2,9,20);
 
+	selectSaveSprite = new Sprite(TextureHelper::Instance()->GetTexture(TextureHelper::Glass),0,0,64,64);
+	selectSaveSprite->Scale(7,0.6f);
+
 	selectPos = 0;
 	menuState = 0;
 
@@ -76,6 +79,7 @@ void StateOptions::CleanUp()
 	delete backSprite;
 	delete moverSprite;
 	delete smoverSprite;
+	delete selectSaveSprite;
 }
 
 void StateOptions::Pause()
@@ -104,7 +108,7 @@ void StateOptions::HandleEvents(StateManager* sManager)
 			{
 				selectPos--;
 				if(selectPos < 0)
-					selectPos = 2;
+					selectPos = 3;
 
 				mSoundMgr->PlayMenuSound();
 			}
@@ -112,7 +116,7 @@ void StateOptions::HandleEvents(StateManager* sManager)
 			if(mSystemMgr->KeyPressed(PSP_CTRL_DOWN))
 			{
 				selectPos++;
-				if(selectPos > 2)
+				if(selectPos > 3)
 					selectPos = 0;
 
 				mSoundMgr->PlayMenuSound();
@@ -147,6 +151,21 @@ void StateOptions::HandleEvents(StateManager* sManager)
 					currentAnalogPos = 0;
 				}
 				if(selectPos == 2)
+				{
+					menuState = 3;
+					currentAnalogPos = 0;
+
+					TextureHelper::Instance()->ScanForTexturePacks();
+
+					loadSelectPos = 0;
+					loadSavePos = 0;
+					loadSaveStart = 0;
+					loadSaveEnd = TextureHelper::Instance()->packFiles.size();
+					loadSaveMax = 4;
+					if(loadSaveMax > loadSaveEnd)
+						loadSaveMax = loadSaveEnd;
+				}
+				if(selectPos == 3)
 				{
 					InputHelper::Instance()->Save();
 					sManager->PopState();
@@ -393,6 +412,99 @@ void StateOptions::HandleEvents(StateManager* sManager)
 			}
 		}
 		break;
+		case 3:
+		{
+			if(mSystemMgr->KeyPressed(PSP_CTRL_UP))
+			{
+				loadSelectPos--;
+				if(loadSelectPos < 0)
+					loadSelectPos = 1;
+
+				mSoundMgr->PlayMenuSound();
+			}
+
+			if(mSystemMgr->KeyPressed(PSP_CTRL_DOWN))
+			{
+				loadSelectPos++;
+				if(loadSelectPos > 1)
+					loadSelectPos = 0;
+
+				mSoundMgr->PlayMenuSound();
+			}
+
+			if(mSystemMgr->KeyPressed(PSP_CTRL_LTRIGGER))
+			{
+				loadSavePos--;
+				if(loadSaveEnd > 4)
+				{
+					loadSaveStart--;
+					loadSaveMax--;
+
+					if(loadSaveMax < 4)
+					{
+						loadSaveStart = 0;
+						loadSaveMax = 4;
+					}
+				}
+
+				if(loadSavePos < 0)
+				{
+					loadSavePos = TextureHelper::Instance()->packFiles.size() - 1;
+					loadSaveMax = loadSaveEnd;
+					loadSaveStart = loadSaveEnd - 4;
+					if(loadSaveStart < 0)
+						loadSaveStart = 0;
+				}
+			}
+
+			if(mSystemMgr->KeyPressed(PSP_CTRL_RTRIGGER))
+			{
+				loadSavePos++;
+				if(loadSavePos == loadSaveMax)
+				{
+					loadSaveStart++;
+					loadSaveMax++;
+					if(loadSaveMax > loadSaveEnd)
+					{
+						loadSaveStart = loadSaveEnd - 4;
+						if(loadSaveStart < 0)
+							loadSaveStart = 0;
+						loadSaveMax = loadSaveEnd;
+					}
+				}
+				if(loadSavePos >= TextureHelper::Instance()->packFiles.size())
+				{
+					loadSavePos = 0;
+					loadSaveStart = 0;
+					loadSaveMax = 4;
+					if(loadSaveMax > loadSaveEnd)
+						loadSaveMax = loadSaveEnd;
+				}
+			}
+
+			if(mSystemMgr->KeyPressed(PSP_CTRL_CIRCLE))
+			{
+				menuState = 0;
+			}
+
+			if(mSystemMgr->KeyPressed(PSP_CTRL_CROSS))
+			{
+				if(loadSelectPos == 0)//play state
+				{
+					if(TextureHelper::Instance()->packFiles.size() > 0)
+					{
+						TextureHelper::Instance()->SetTextureZipName(TextureHelper::Instance()->packFiles[loadSavePos]);
+						menuState = 0;
+					}
+
+				}
+				if(loadSelectPos == 1)
+				{
+					menuState = 0;
+				}
+			}
+		}
+		break;
 	}
 }
 
@@ -430,16 +542,20 @@ void StateOptions::Draw(StateManager* sManager)
 			buttonSprite->Draw();
 
 			//sensity - analog stick
-			buttonSprite->SetPosition(240,160);
+			buttonSprite->SetPosition(240,150);
+			buttonSprite->Draw();
+
+			//texture pack
+			buttonSprite->SetPosition(240,180);
 			buttonSprite->Draw();
 
 			//back
-			buttonSprite->SetPosition(240,200);
+			buttonSprite->SetPosition(240,210);
 			buttonSprite->Draw();
 
 
 			//selected button
-			sbuttonSprite->SetPosition(240,(selectPos * 40) + 120);
+			sbuttonSprite->SetPosition(240,(selectPos * 30) + 120);
 			sbuttonSprite->Draw();
 
 			sceGuDisable(GU_BLEND);
@@ -448,8 +564,9 @@ void StateOptions::Draw(StateManager* sManager)
 			//draw subtitles on buttons
 
 			mRender->DebugPrint(240,125,"Controls");
-			mRender->DebugPrint(240,165,"Analog stick");
-			mRender->DebugPrint(240,205,"Back");
+			mRender->DebugPrint(240,155,"Analog stick");
+			mRender->DebugPrint(240,185,"Texture pack");
+			mRender->DebugPrint(240,215,"Back");
 		}
 		break;
 		case 1://controls
@@ -585,6 +702,64 @@ void StateOptions::Draw(StateManager* sManager)
 			mRender->DebugPrint(240,165,"Analog left : %d%%",(int)(fabs(InputHelper::Instance()->analogXleft) * 100.0f));
 			mRender->DebugPrint(240,195,"Analog right : %d%%",(int)(fabs(InputHelper::Instance()->analogXright) * 100.0f));
 
+			mRender->DebugPrint(240,265,"Back");
+		}
+		break;
+		case 3:
+		{
+			sceGuDisable(GU_DEPTH_TEST);
+			sceGuEnable(GU_BLEND);
+			sceGuColor(GU_COLOR(1,1,1,1.0f));
+
+			for(int x = 0;x < 16;x++)
+			{
+				for(int y = 0;y < 9;y++)
+				{
+					backSprite->SetPosition(x*32,y*32);
+					backSprite->Draw();
+				}
+			}
+
+			//select sprite
+			if(TextureHelper::Instance()->packFiles.size() > 0)
+			{
+				selectSaveSprite->SetPosition(240,50 + (loadSavePos * 40) - (loadSaveStart * 40));
+				selectSaveSprite->Draw();
+			}
+
+			//tp files
+			for(int i = loadSaveStart;i <loadSaveMax;i++)
+			{
+				if(loadSavePos == i)
+				{
+					mRender->SetFontStyle(1.0f,0xFF000000,0xFFFFFFFF,0x00000000);
+					mRender->DebugPrint(30,50 + (i * 40) - (loadSaveStart * 40),"%s",TextureHelper::Instance()->packFiles[i].c_str());
+				}else
+				{
+					mRender->SetFontStyle(0.8f,0xFFFFFFFF,0xFF000000,0x00000000);
+					mRender->DebugPrint(30,50 + (i * 40) - (loadSaveStart * 40),"%s",TextureHelper::Instance()->packFiles[i].c_str());
+				}
+			}
+
+			//load
+			buttonSprite->SetPosition(240,235);
+			buttonSprite->Draw();
+
+			//back
+			buttonSprite->SetPosition(240,260);
+			buttonSprite->Draw();
+
+			//selected button
+			sbuttonSprite->SetPosition(240,(loadSelectPos * 25) + 235);
+			sbuttonSprite->Draw();
+
+			sceGuDisable(GU_BLEND);
+			sceGuEnable(GU_DEPTH_TEST);
+
+			mRender->SetFontStyle(0.5f,0xFFFFFFFF,0xFF000000,0x00000200);
+			mRender->DebugPrint(240,20,"Load Texture Pack");
+
+			mRender->DebugPrint(240,240,"Load");
 			mRender->DebugPrint(240,265,"Back");
 		}
 		break;

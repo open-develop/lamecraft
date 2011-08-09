@@ -1,6 +1,8 @@
 #include "TextureHelper.h"
 #include <Aurora/Graphics/RenderManager.h>
 #include <Aurora/Utils/pgeZip.h>
+#include <dirent.h>
+#include <fcntl.h>
 
 TextureHelper::TextureHelper()
 {
@@ -97,6 +99,66 @@ void TextureHelper::SetTextureZipName(std::string name)
 {
 	defaultZip = name;
 	texturePatch = defaulPatch + defaultZip;
+
+	//clean old textures
+	CleanAllPackImages();
+}
+
+void TextureHelper::CleanAllPackImages()
+{
+	RemoveTexture("logo.png");
+	RemoveTexture("utils.png");
+	RemoveTexture("dirt.png");
+	RemoveTexture("glass.png");
+	RemoveTexture("terrain_medium.png");
+	RemoveTexture("blue.png");
+	RemoveTexture("sky.png");
+	RemoveTexture("sun.png");
+	RemoveTexture("moon.png");
+
+	GetTextureFromZip("logo.png");
+	GetTextureFromZip("utils.png");
+	GetTextureFromZip("dirt.png");
+	GetTextureFromZip("glass.png");
+	GetTextureFromZip("terrain_medium.png");
+	GetTextureFromZip("blue.png");
+	GetTextureFromZip("sky.png");
+	GetTextureFromZip("sun.png");
+	GetTextureFromZip("moon.png");
+}
+
+void TextureHelper::RemoveTexture(const char* name)
+{
+	if(TextureManager::Instance()->TextureExist(name))
+	{
+		int id = TextureManager::Instance()->GetTextureNumber(name);
+		TextureManager::Instance()->RemoveTexture(id);
+	}
+}
+
+void TextureHelper::ScanForTexturePacks()
+{
+	packFiles.clear();
+
+	DIR *Dir;
+	struct dirent *DirEntry;
+	Dir = opendir(defaulPatch.c_str());
+
+	while((DirEntry = readdir(Dir)) != NULL)
+	{
+	   if ( DirEntry->d_stat.st_attr & FIO_SO_IFREG)
+	   {
+			std::string plik = DirEntry->d_name;
+			size_t found = plik.find(".zip");
+			size_t found2 = plik.find(".ZIP");
+			if(found != std::string::npos || found2 != std::string::npos)//not found
+			{
+				packFiles.push_back(plik);
+			}
+	   }
+	}
+
+	closedir(Dir);
 }
 
 TextureHelper TextureHelper::m_TextureHelper;

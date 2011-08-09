@@ -9,6 +9,7 @@
 #include <Aurora/Math/Polygon.h>
 #include <Aurora/Math/Ray.h>
 #include <Aurora/Graphics/Vertex.h>
+#include <Aurora/Graphics/TextureManager.h>
 
 using namespace Aurora::Math;
 
@@ -94,6 +95,11 @@ namespace Aurora
 
 				mipmapping = false;
 				lightmapping = false;
+			}
+
+			~ObjMaterial()
+			{
+				TextureManager::Instance()->RemoveTexture(texturID);
 			}
 
 		};

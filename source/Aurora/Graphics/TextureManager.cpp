@@ -51,7 +51,6 @@ namespace Aurora
 			//image
 			delete Images[number];
 			Images.erase(Images.begin() + number);
-
 		}
 
 		void TextureManager::SetTexture(int number,int minFilter,int maxFilter)

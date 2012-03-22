@@ -1,36 +1,39 @@
 TARGET = Tutorial1
-OBJS = source/Aurora/Math/MathLib.o \
-source/Aurora/Math/Matrix3.o \
-source/Aurora/Math/Matrix4.o \
-source/Aurora/Math/Quaternion.o \
-source/Aurora/Math/BoundingBox.o \
-source/Aurora/Math/BoundingSphere.o \
-source/Aurora/Math/Plane.o \
-source/Aurora/Math/Ray.o \
-source/Aurora/Math/Frustum.o \
-source/Aurora/Math/Polygon.o \
-source/Aurora/Graphics/common.o \
-source/Aurora/Graphics/vfram.o \
-source/Aurora/Graphics/vram.o \
-source/Aurora/Graphics/RenderManager.o \
-source/Aurora/Graphics/TextureManager.o \
-source/Aurora/Graphics/Camera.o \
-source/Aurora/Graphics/Sprite.o \
-source/Aurora/Graphics/Models/ObjModel.o \
-source/Aurora/Graphics/Effects/SkyLight.o \
-source/Aurora/Graphics/Effects/SkyDome.o \
-source/Aurora/Graphics/Models/ObjModel.o \
-source/Aurora/Graphics/intraFont/libccc.o \
-source/Aurora/Graphics/intraFont/intraFont.o \
-source/Aurora/Utils/Logger.o \
-source/Aurora/Utils/Timer.o \
-source/Aurora/Utils/StateManager.o \
-source/Aurora/Utils/Types.o \
-source/Aurora/Utils/pgeZip.o \
-source/Aurora/System/SystemManager.o \
-source/Aurora/System/NetworkManager.o \
-source/Aurora/System/Mutex.o \
-source/Aurora/System/Thread.o \
+OBJS = Aurora/Math/MathLib.o \
+Aurora/Math/Matrix3.o \
+Aurora/Math/Matrix4.o \
+Aurora/Math/Quaternion.o \
+Aurora/Math/BoundingBox.o \
+Aurora/Math/BoundingSphere.o \
+Aurora/Math/Plane.o \
+Aurora/Math/Ray.o \
+Aurora/Math/Frustum.o \
+Aurora/Math/Polygon.o \
+Aurora/Graphics/common.o \
+Aurora/Graphics/vfram.o \
+Aurora/Graphics/vram.o \
+Aurora/Graphics/RenderManager.o \
+Aurora/Graphics/TextureManager.o \
+Aurora/Graphics/Camera.o \
+Aurora/Graphics/Sprite.o \
+Aurora/Graphics/Models/ObjModel.o \
+Aurora/Graphics/Effects/SkyLight.o \
+Aurora/Graphics/Effects/SkyDome.o \
+Aurora/Graphics/Models/ObjModel.o \
+Aurora/Graphics/intraFont/libccc.o \
+Aurora/Graphics/intraFont/intraFont.o \
+Aurora/Utils/Logger.o \
+Aurora/Utils/Timer.o \
+Aurora/Utils/StateManager.o \
+Aurora/Utils/Types.o \
+Aurora/Utils/pgeZip.o \
+Aurora/System/SystemManager.o \
+Aurora/System/NetworkManager.o \
+Aurora/Misc/ioapi.o \
+Aurora/Misc/unzip.o \
+Aurora/Misc/zip.o \
+Aurora/Misc/ZipFile.o \
+Aurora/Misc/ZipPack.o \
 LameCraft/BaseBlock.o \
 LameCraft/Blocks.o \
 LameCraft/SimpleMeshChunk2.o \
@@ -53,8 +56,8 @@ LameCraft/sound_utils/mod.o \
 Lamecraft.o
 
 INCDIR = $(PSPPATH)/include
-INCDIR += ./include ./source ./3libs ./3libs/pthreads-emb-1.0/platform/psp
-CFLAGS = -O2 -G0 -Wall -mpreferred-stack-boundary=4 #-enable-newlib-hw-fp -ffast-math
+INCDIR += ./ ./3libs
+CFLAGS = -O2 -Wall -mpreferred-stack-boundary=4 -DUSE_FILE32API #-enable-newlib-hw-fp -ffast-math
 CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
 ASFLAGS = $(CFLAGS)
 
@@ -62,7 +65,7 @@ BUILD_PRX = 1
 PSP_FW_VERSION=371
 PSP_LARGE_MEMORY = 1
 
-LIBDIR += ./3libs/noisepp ./3libs/libpspmath ./3libs/pthreads-emb-1.0 
+LIBDIR += ./3libs/noisepp
 LDFLAGS =
 LIBS= -lNoisepp -lpspaudiolib -lpspaudio -lmikmod -lmmio -lpspaudiocodec -lpng -lz -lpspgum -lpspgu -lstdc++ -lpsprtc -lpspctrl -lm -lpspvfpu -lpspsdk -lpsppower -lpsphttp -lpspmath -lpthread-psp  #-lpsp_req -lcurl -lTiny
 

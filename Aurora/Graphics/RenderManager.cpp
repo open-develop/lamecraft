@@ -322,20 +322,8 @@ namespace Aurora
 				{
 					ObjMaterial *material = model->mMaterials[mesh->mMaterial];
 
-					if(material->mipmapping)
-					{
-						TextureManager::Instance()->SetMipMapsTextures(material->texturID,material->mipmap1,material->mipmap2,material->mipmap3);
+					TextureManager::Instance()->SetTexture(material->colorMapFilename,GU_NEAREST,GU_NEAREST);
 
-					}else
-					{
-						TextureManager::Instance()->SetTexture(material->texturID,GU_NEAREST,GU_NEAREST);
-					}
-				}
-
-				if (mesh->mMaterial != -1 && model->mMaterials[mesh->mMaterial]->lightmapping)
-				{
-					ObjMaterial *material = model->mMaterials[mesh->mMaterial];
-					TextureManager::Instance()->SetTexture(material->lightMapID);
 				}
 
 				if(mesh->triangles)

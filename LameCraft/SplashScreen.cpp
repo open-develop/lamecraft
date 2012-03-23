@@ -11,16 +11,6 @@ SplashScreen::SplashScreen(const char* filename,int startW,int startH,int endW,i
 	dt = mTimer.GetDeltaTime();
 }
 
-SplashScreen::SplashScreen(int textureNumber,int startW,int startH,int endW,int endH,float splashTime)
-{
-	sprite = new Sprite(textureNumber,startW,startH,endW,endH);
-	sprite->SetPosition(240,136);
-
-	finishTime = splashTime;
-	timer = 0.0f;
-	dt = mTimer.GetDeltaTime();
-}
-
 SplashScreen::~SplashScreen()
 {
 	sprite->RemoveImage();

@@ -980,7 +980,7 @@ void StatePlay::Update(StateManager* sManager)
 			sunTime += 49.375f * dt;//72
 			if(!sunMoonSwitch)//switch to sun texture and reset position
 			{
-				skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/sun.png"));
+				skyLight->SetTexture(TextureHelper::Instance()->GetTexture(TextureHelper::Sun));
 				sunTime = 21600.0f;//6 am
 				sunMoonSwitch = true;
 			}
@@ -989,7 +989,7 @@ void StatePlay::Update(StateManager* sManager)
 			sunTime += 98.75 * dt;//72
 			if(sunMoonSwitch)//switch to sun texture and reset position
 			{
-				skyLight->SetTexture(TextureManager::Instance()->GetTextureNumber("Assets/Lamecraft/moon.png"));
+				skyLight->SetTexture(TextureHelper::Instance()->GetTexture(TextureHelper::Moon));
 				sunTime = 21600.0f;//6 am
 				sunMoonSwitch = false;
 			}
@@ -1019,7 +1019,7 @@ void StatePlay::Draw(StateManager* sManager)
 		sceGumPopMatrix();
 	}
 
-	TextureManager::Instance()->SetTextureModeulate(texture);
+	TextureManager::Instance()->SetTextureModulate(texture);
 
 	//draw level
 
@@ -1064,7 +1064,7 @@ void StatePlay::Draw(StateManager* sManager)
 
 	//render cube in right hand
 	{
-		TextureManager::Instance()->SetTextureModeulate(texture);
+		TextureManager::Instance()->SetTextureModulate(texture);
 		sceGumPushMatrix();
 
 		//set view matrix to identity
@@ -1104,7 +1104,7 @@ void StatePlay::Draw(StateManager* sManager)
 		sceGuEnable(GU_BLEND);
 		sceGuEnable(GU_TEXTURE_2D);
 		sceGuColor(GU_COLOR(1,1,1,0.7f));
-		TextureManager::Instance()->SetTextureModeulate(blue);
+		TextureManager::Instance()->SetTextureModulate(blue);
 		advancedBlit(0,0,SCR_WIDTH,SCR_HEIGHT,0,0,32);
 		sceGuDisable(GU_BLEND);
 		sceGuDisable(GU_TEXTURE_2D);
@@ -1126,7 +1126,7 @@ void StatePlay::Draw(StateManager* sManager)
 
 
 	//draw 3d cubes on 2d panel
-	TextureManager::Instance()->SetTextureModeulate(texture);
+	TextureManager::Instance()->SetTextureModulate(texture);
 	int bloStartPos = 100;
 	int selectionEnd = 10;
 	if(selectedCubeSet == cubesSets * 9)

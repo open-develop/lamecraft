@@ -12,7 +12,7 @@ namespace Aurora
 
 			Logger()
 			{
-				logActive = false;
+				logActive = true;
 			}
 
 			static Logger m_Logger;

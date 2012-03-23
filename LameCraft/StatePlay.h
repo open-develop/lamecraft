@@ -114,8 +114,8 @@ private:
 	float dt;
 
 	//textures info
-	int texture;
-	int blue;
+	std::string texture;
+	std::string blue;
 	Sprite *barSprite;
 	Sprite *crossSprite;
 	Sprite *selectSprite;

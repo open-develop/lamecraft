@@ -16,7 +16,7 @@ namespace Aurora
 			~SkyLight();
 
 			float TimeToAngle(int seconds);
-			void SetTexture(int texture);
+			void SetTexture(const char* texture);
 			void UpdateLightSource(float angle);
 
 			void Render();
@@ -24,7 +24,7 @@ namespace Aurora
 		private:
 
 			TexturesPSPVertex *skyVertices;
-			int textureNumber;
+			const char* textureNumber;
 
 			int time_sunrise, time_sunset;
 			float sun_x, sun_y, sun_z;

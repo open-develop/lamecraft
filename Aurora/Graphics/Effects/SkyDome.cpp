@@ -65,7 +65,7 @@ namespace Aurora
 			sceKernelDcacheWritebackInvalidateAll();
 		}
 
-		void SkyDome::SetTexture(int texture)
+		void SkyDome::SetTexture(const char* texture)
 		{
 			textureNumber = texture;
 		}
@@ -74,7 +74,7 @@ namespace Aurora
 		{
 			sceGuColor(0xFFFFFFFF);
 			sceGuEnable(GU_TEXTURE_2D);
-			Image* image = TextureManager::Instance()->Images[textureNumber];
+			Image* image = TextureManager::Instance()->GetImage(textureNumber);
 
 			sceGuTexMode(image->ColorMode,0,0,image->Swizzle);
 			sceGuTexFunc( GU_TFX_REPLACE, GU_TCC_RGBA);

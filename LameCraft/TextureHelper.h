@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include <Aurora/Utils/pgeZip.h>
+
 class TextureHelper
 {
 private:
@@ -11,6 +13,8 @@ private:
 	std::string defaulPatch;
 	std::string defaultZip;
 	std::string texturePatch;
+
+	pgeZip* theZip;
 
 public:
 
@@ -36,8 +40,8 @@ public:
 	TextureHelper();
 	~TextureHelper();
 
-	int GetTexture(Textures texture);
-	int GetTextureFromZip(const char* name);
+	const char* GetTexture(Textures texture);
+	const char* GetTextureFromZip(const char* name);
 	void SetTextureZipName(std::string name);
 
 	void CleanAllPackImages();

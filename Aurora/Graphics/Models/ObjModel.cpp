@@ -132,75 +132,13 @@ namespace Aurora
 							size_t found = pathName.find_last_of("/");
 							newMaterial->colorMapFilename = pathName.substr(0,found)+ "/" + buffer;
 
-							TextureManager *tManager = TextureManager::Instance();
-
-							if (!tManager->TextureExist(newMaterial->colorMapFilename))
+							if (!TextureManager::Instance()->TextureExist(newMaterial->colorMapFilename))
 							{
-								tManager->LoadTexture(newMaterial->colorMapFilename);
+								TextureManager::Instance()->LoadTexture(newMaterial->colorMapFilename);
 							}
-
-							newMaterial->texturID = tManager->GetTextureNumber(newMaterial->colorMapFilename);
-
-
-							//try to load mipmap textures, currently only look for 3
-							/*std::string baseName = newMaterial->colorMapFilename.substr(0,newMaterial->colorMapFilename.find_last_of("."));
-
-							if(tManager->FileExist(baseName + "_mip1.png") == true)
-							{
-								newMaterial->mipmapping = true;
-
-								if (!tManager->TextureExist(baseName + "_mip1.png"))
-								{
-									tManager->LoadTexture(baseName + "_mip1.png");
-								}
-
-								newMaterial->mipmap1 = tManager->GetTextureNumber(baseName + "_mip1.png");
-							}
-
-							if(tManager->FileExist(baseName + "_mip2.png") == true)
-							{
-								newMaterial->mipmapping = true;
-
-								if (!tManager->TextureExist(baseName + "_mip2.png"))
-								{
-									tManager->LoadTexture(baseName + "_mip2.png");
-								}
-
-								newMaterial->mipmap2 = tManager->GetTextureNumber(baseName + "_mip2.png");
-							}
-
-							if(tManager->FileExist(baseName + "_mip3.png") == true)
-							{
-								newMaterial->mipmapping = true;
-
-								if (!tManager->TextureExist(baseName + "_mip3.png"))
-								{
-									tManager->LoadTexture(baseName + "_mip3.png");
-								}
-
-								newMaterial->mipmap3 = tManager->GetTextureNumber(baseName + "_mip3.png");
-							}*/
 
 							newMat = true;
 
-						}
-						else if (strstr(buffer, "map_bump") != 0)
-						{
-							fgets(buffer, sizeof(buffer), fp);
-							sscanf(buffer, "%s %s", buffer, buffer);
-
-							newMaterial->bumpMapFilename =  "Assets/Obj/";
-							newMaterial->bumpMapFilename += buffer;
-
-							TextureManager *tManager = TextureManager::Instance();
-
-							if (!tManager->TextureExist(newMaterial->bumpMapFilename))
-							{
-								tManager->LoadTexture(newMaterial->bumpMapFilename);
-							}
-
-							newMaterial->normaltextureID = tManager->GetTextureNumber(newMaterial->bumpMapFilename);
-							newMat = true;
 						}
 						else
 						{
@@ -563,70 +501,6 @@ namespace Aurora
 
 		}
 
-		void ObjModel::FindLightMaps()
-		{
-			TextureManager *tManager = TextureManager::Instance();
-
-			for (unsigned int i = 0; i < mMeshes.size();i++)
-			{
-				ObjMesh *mesh = mMeshes[i];
-
-				//for each mesh we need to check if there is material
-				if (mesh->mMaterial != -1)
-				{
-					//there is material :) so we are in half way
-					//now check if there is already lightmap
-					if (mMaterials[mesh->mMaterial]->lightmapping)
-					{
-						//everything is ok - we don't do anything
-					}else
-					{
-						//lest see if there is a lightmap with the same name as object
-						size_t found = pathName.find_last_of("/");
-						pathName = pathName.substr(0,found) + "/" + mesh->name + "LightingMap.png";//"LightingMap.png";
-
-						if (!tManager->TextureExist(pathName))
-						{
-							tManager->LoadTexture(pathName);
-						}
-
-						int lightMap = tManager->GetTextureNumber(pathName);
-
-						if (lightMap != -1)
-						{
-							mMaterials[mesh->mMaterial]->lightmapping = true;
-							mMaterials[mesh->mMaterial]->lightMapID = lightMap;
-						}
-					}
-				}else
-				{
-					//if there is no material then make one :>
-					ObjMaterial *newMaterial = new ObjMaterial();
-
-					//lest see if there is a lightmap with the same name as object
-					size_t found = pathName.find_last_of("/");
-					pathName = pathName.substr(0,found) + "/" + mesh->name + "LightingMap.png";//"LightingMap.png";
-
-					if (!tManager->TextureExist(pathName))
-					{
-						tManager->LoadTexture(pathName);
-					}
-
-					int lightMap = tManager->GetTextureNumber(pathName);
-					if (lightMap != -1)
-					{
-						//set it as a main texture
-						newMaterial->texturID = lightMap;
-
-						//add to container
-						mMaterials.push_back(newMaterial);
-						//assign this material to mesh
-						mesh->mMaterial = mMaterials.size() - 1;
-					}
-				}
-			}
-		}
-
 		void ObjModel::LoadOptimized(const char *FileName)
 		{
 			FILE *binaryFile;
@@ -659,53 +533,10 @@ namespace Aurora
 				size_t found = pathName.find_last_of("/");
 				pathName = pathName.substr(0,found)+ "/" + textureName;
 
-
-
 				if (!tManager->TextureExist(pathName))
 				{
 					tManager->LoadTexture(pathName);
 				}
-
-				newMaterial->texturID = tManager->GetTextureNumber(pathName);
-
-				//try to load mipmap textures, currently only look for 3
-				/*std::string baseName = pathName.substr(0,pathName.find_last_of("."));
-
-				if(tManager->FileExist(baseName + "_mip1.png") == true)
-				{
-					newMaterial->mipmapping = true;
-
-					if (!tManager->TextureExist(baseName + "_mip1.png"))
-					{
-						tManager->LoadTexture(baseName + "_mip1.png");
-					}
-
-					newMaterial->mipmap1 = tManager->GetTextureNumber(baseName + "_mip1.png");
-				}
-
-				if(tManager->FileExist(baseName + "_mip2.png") == true)
-				{
-					newMaterial->mipmapping = true;
-
-					if (!tManager->TextureExist(baseName + "_mip2.png"))
-					{
-						tManager->LoadTexture(baseName + "_mip2.png");
-					}
-
-					newMaterial->mipmap2 = tManager->GetTextureNumber(baseName + "_mip2.png");
-				}
-
-				if(tManager->FileExist(baseName + "_mip3.png") == true)
-				{
-					newMaterial->mipmapping = true;
-
-					if (!tManager->TextureExist(baseName + "_mip3.png"))
-					{
-						tManager->LoadTexture(baseName + "_mip3.png");
-					}
-
-					newMaterial->mipmap3 = tManager->GetTextureNumber(baseName + "_mip3.png");
-				}*/
 
 				mMaterials.push_back(newMaterial);
 			}

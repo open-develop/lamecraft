@@ -31,7 +31,7 @@ namespace Aurora
 			return seconds / 240.0f;
 		}
 
-		void SkyLight::SetTexture(int texture)
+		void SkyLight::SetTexture(const char* texture)
 		{
 			textureNumber = texture;
 		}
@@ -102,7 +102,7 @@ namespace Aurora
 
 			sceGuBlendFunc(GU_ADD, GU_FIX,GU_FIX, 0xFFFFFFFF, 0xFFFFFFFF);
 
-			Image* image = TextureManager::Instance()->Images[textureNumber];
+			Image* image = TextureManager::Instance()->GetImage(textureNumber);
 
 			sceGuTexMode(image->ColorMode,0,0,image->Swizzle);
 			sceGuTexFunc( GU_TFX_MODULATE, GU_TCC_RGBA);

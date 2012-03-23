@@ -16,7 +16,7 @@ namespace Aurora
 			~SkyDome();
 
 			void CreateSkyDomeMesh();
-			void SetTexture(int texture);
+			void SetTexture(const char* texture);
 			void Render();
 
 			int dphi;
@@ -29,7 +29,7 @@ namespace Aurora
 		private:
 
 			TexturesPSPVertex *domeVertices;
-			int textureNumber;
+			const char* textureNumber;
 		};
 	}
 }

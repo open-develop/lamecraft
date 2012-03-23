@@ -1,6 +1,6 @@
 #include "TextureHelper.h"
 #include <Aurora/Graphics/RenderManager.h>
-#include <Aurora/Utils/pgeZip.h>
+#include <Aurora/Utils/Logger.h>
 #include <dirent.h>
 #include <fcntl.h>
 
@@ -15,23 +15,26 @@ TextureHelper::~TextureHelper()
 
 }
 
-int TextureHelper::GetTextureFromZip(const char* name)
+const char* TextureHelper::GetTextureFromZip(const char* name)
 {
 	if(!TextureManager::Instance()->TextureExist(name))
 	{
-		pgeZip* theZip = pgeZipOpen(texturePatch.c_str());
+		if(theZip == NULL)
+		{
+			theZip = pgeZipOpen(texturePatch.c_str());
+		}
+
 		pgeZipFile* fileInZip = pgeZipFileRead(theZip, name, NULL);
-		pgeZipClose(theZip);
 
 		TextureManager::Instance()->LoadTexture(name,fileInZip->data,fileInZip->size);
 
 		pgeZipFileFree(fileInZip);
 	}
 
-	return TextureManager::Instance()->GetTextureNumber(name);
+	return name;
 }
 
-int TextureHelper::GetTexture(Textures texture)
+const char* TextureHelper::GetTexture(Textures texture)
 {
 	switch(texture)
 	{
@@ -92,13 +95,19 @@ int TextureHelper::GetTexture(Textures texture)
 		break;
 	}
 
-	return 0;
+	return "";
 }
 
 void TextureHelper::SetTextureZipName(std::string name)
 {
 	defaultZip = name;
 	texturePatch = defaulPatch + defaultZip;
+
+	if(theZip != NULL)
+	{
+		pgeZipClose(theZip);
+	}
+	theZip = pgeZipOpen(texturePatch.c_str());
 
 	//clean old textures
 	CleanAllPackImages();
@@ -131,8 +140,7 @@ void TextureHelper::RemoveTexture(const char* name)
 {
 	if(TextureManager::Instance()->TextureExist(name))
 	{
-		int id = TextureManager::Instance()->GetTextureNumber(name);
-		TextureManager::Instance()->RemoveTexture(id);
+		TextureManager::Instance()->RemoveTexture(name);
 	}
 }
 

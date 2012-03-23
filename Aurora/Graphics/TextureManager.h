@@ -139,41 +139,39 @@ namespace Aurora
 					ysrc += src_row;
 				}
 			}
+
 		public:
+
+			static TextureManager* Instance();
+
+			Image* CreateImage(int width,int height,int ColorMode,int Vram);
+			Image* LoadPng(std::string fileName);
+			Image* LoadPngFromMemory(std::string fileName);
 
 			Image* LoadPng(const char* filename,int ColorMode,int Swizzle,int Vram);
 			Image* LoadPngFromMemory(const unsigned char* data,int len,int ColorMode,int Swizzle,int Vram);
-
 			Image* loadPngImageImpl(png_structp png_ptr, int len,int ColorMode,int Swizzle,int Vram);
 
-			std::vector<std::string> Names;
 			std::vector<Image*> Images;
 
 			int currentTexture;
-
-			static TextureManager* Instance();
 
 			void Init();
 
 			bool FileExist(std::string fileName);
 
 			bool TextureExist(std::string name);
-			int GetTextureNumber(std::string name);
+			Image* GetImage(std::string fileName);
 
-			void SetTexture(int number,int minFilter = GU_LINEAR,int maxFilter = GU_LINEAR);
-			void SetTextureModeulate(int number);
-			void SetMipMapsTextures(int texture,int mipmap1,int mipmap2,int mipmap3);
+			void SetTexture(std::string name,int minFilter = GU_LINEAR,int maxFilter = GU_LINEAR);
+			void SetTexture(Image* image,int minFilter = GU_LINEAR,int maxFilter = GU_LINEAR);
+			void SetTextureModulate(std::string name);
+			void SetTextureModulate(Image* image);
 
 			void LoadTexture(std::string fileName);
 			void LoadTexture(std::string fileName,const unsigned char* data,int len);
-			void LoadTexureVFS(std::string fileName);
 
-			void RemoveTexture(int number);
-
-			Image* LoadPng(std::string fileName);
-			Image* LoadPngFromMemory(std::string fileName);
-
-			Image* CreateImage(int width,int height,int ColorMode,int Vram);
+			void RemoveTexture(std::string fileName);
 		};
 
 	}

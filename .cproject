@@ -25,24 +25,25 @@
 							<tool id="org.eclipse.cdt.build.core.settings.holder.libs.124069704" name="holder for library settings" superClass="org.eclipse.cdt.build.core.settings.holder.libs"/>
 							<tool id="org.eclipse.cdt.build.core.settings.holder.1000059848" name="Assembly" superClass="org.eclipse.cdt.build.core.settings.holder">
 								<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.1242856686" name="Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;C:\pspsdk\psp\sdk\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\pspsdk\psp\include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\pspsdk\psp\include\c++\4.3.5&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\pspsdk\psp\sdk\include&quot;"/>
 								</option>
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.531714857" languageId="org.eclipse.cdt.core.assembly" languageName="Assembly" sourceContentType="org.eclipse.cdt.core.asmSource" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
 							<tool id="org.eclipse.cdt.build.core.settings.holder.1509926684" name="GNU C++" superClass="org.eclipse.cdt.build.core.settings.holder">
 								<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.759670817" name="Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;C:\pspsdk\include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\pspsdk\psp\include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\pspsdk\psp\sdk\include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\pspsdk\psp\include\c++\4.3.5&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\pspsdk\psp\sdk\include&quot;"/>
 								</option>
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.1261506954" languageId="org.eclipse.cdt.core.g++" languageName="GNU C++" sourceContentType="org.eclipse.cdt.core.cxxSource,org.eclipse.cdt.core.cxxHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>
 							<tool id="org.eclipse.cdt.build.core.settings.holder.686653370" name="GNU C" superClass="org.eclipse.cdt.build.core.settings.holder">
 								<option id="org.eclipse.cdt.build.core.settings.holder.incpaths.1190414579" name="Include Paths" superClass="org.eclipse.cdt.build.core.settings.holder.incpaths" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;C:\pspsdk\psp\sdk\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\pspsdk\psp\include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\pspsdk\psp\include\c++\4.3.5&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\pspsdk\psp\sdk\include&quot;"/>
 								</option>
 								<inputType id="org.eclipse.cdt.build.core.settings.holder.inType.1521856595" languageId="org.eclipse.cdt.core.gcc" languageName="GNU C" sourceContentType="org.eclipse.cdt.core.cSource,org.eclipse.cdt.core.cHeader" superClass="org.eclipse.cdt.build.core.settings.holder.inType"/>
 							</tool>

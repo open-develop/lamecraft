@@ -58,15 +58,6 @@ namespace Aurora
 
 			std::string name;
 			std::string colorMapFilename;
-			std::string bumpMapFilename;
-
-			int texturID;
-			int lightMapID;
-			int normaltextureID;
-
-			int mipmap1;
-			int mipmap2;
-			int mipmap3;
 
 			//mipmaps
 			bool mipmapping;
@@ -74,10 +65,6 @@ namespace Aurora
 
 			ObjMaterial()
 			{
-				texturID = 0;
-				normaltextureID = 0;
-				lightMapID = 0;
-
 				ambient[0] = 0.2f;
 				ambient[1] = 0.2f;
 				ambient[2] = 0.2f;
@@ -99,7 +86,7 @@ namespace Aurora
 
 			~ObjMaterial()
 			{
-				TextureManager::Instance()->RemoveTexture(texturID);
+				//TextureManager::Instance()->RemoveTexture(texturID);
 			}
 
 		};

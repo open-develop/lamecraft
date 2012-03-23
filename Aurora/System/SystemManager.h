@@ -48,6 +48,7 @@ namespace Aurora
 			void ShowMessageError(const char *message,int error);
 			int ShowMessageYesNo(const char *message);
 			int ShowOSK(unsigned short *descritpion,unsigned short *outtext,int maxtextinput);
+			int ShowOSKDanzeff(char *descritpion,char *outtext,int maxtextinput);
 			bool ShowNetworkDialog();
 
 			//input

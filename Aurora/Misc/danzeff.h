@@ -8,6 +8,8 @@
 // then use the pspctrlemu lib to convert a SDL_Joystick into a SceCtrlData
 #include <pspctrl.h>
 
+#define DANZEFF_SCEGU
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -49,19 +51,6 @@ void danzeff_set_orientation(const int new_orientation);
 void danzeff_render();
 
 
-///Functions only for particular renderers:
-
-#ifdef DANZEFF_SDL ///Functions only for SDL Renderer
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-//set the screen surface for rendering on.
-void danzeff_set_screen(SDL_Surface* screen);
-#endif //DANZEFF_SDL
-
-#ifdef DANZEFF_VRAM ///Functions only for direct VRAM Renderer
-//set the VRAM pointer for rendering.
-void danzeff_set_screen(void* vram_ptr, int width, int height, int bbp);
-#endif //DANZEFF_VRAM
 
 #ifdef DANZEFF_SCEGU ///Functions only for GU Renderer
 //Set pixel size (Bytes per pixel) and properties

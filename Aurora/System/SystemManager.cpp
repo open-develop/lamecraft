@@ -1,4 +1,5 @@
 #include <Aurora/System/SystemManager.h>
+#include <Aurora/Misc/danzeff.h>
 
 namespace Aurora
 {
@@ -160,6 +161,73 @@ namespace Aurora
 				return -1;
 			else
 				return 0;
+		}
+
+		int SystemManager::ShowOSKDanzeff(char *descritpion,char *outtext,int maxtextinput)
+		{
+			danzeff_load();
+			danzeff_moveTo(165,61);
+
+			outtext = descritpion;
+
+			bool run = true;
+			int textIndex = 10;
+
+			while(run)
+			{
+				//update input
+				InputUpdate();
+				char pressed = danzeff_readInput(newPadData);
+
+				switch (pressed)
+				{
+					case 0:
+					case '\n':
+					case DANZEFF_LEFT:
+					case DANZEFF_RIGHT:
+						break;
+					case DANZEFF_START:
+						run = false;
+						break;
+					case DANZEFF_SELECT:
+						//memset(outtext, 0, sizeof(outtext));
+						danzeff_free();
+						return -1;
+						break;
+					case 8:
+						if (textIndex)
+							outtext[--textIndex] = 0;
+						break;
+					default:
+						outtext[textIndex++] = pressed;
+						break;
+				}
+
+				//draw
+				Graphics::RenderManager::InstancePtr()->StartFrame();
+
+				sceGuDisable(GU_DEPTH_TEST);
+				sceGuEnable(GU_BLEND);
+
+				//render keyboard
+				danzeff_render();
+
+				//draw text
+				sceGuDisable(GU_BLEND);
+				sceGuEnable(GU_DEPTH_TEST);
+
+				Graphics::RenderManager::InstancePtr()->DebugPrint(240,50,outtext);
+
+				Graphics::RenderManager::InstancePtr()->DebugPrint(240,225,"Press START to continue.");
+				Graphics::RenderManager::InstancePtr()->DebugPrint(240,245,"Press SELECT to cancel.");
+
+				Graphics::RenderManager::InstancePtr()->EndFrame();
+			}
+
+
+
+			danzeff_free();
+			return 0;
 		}
 
 		int SystemManager::ShowOSK(unsigned short *descritpion,unsigned short *outtext,int maxtextinput)

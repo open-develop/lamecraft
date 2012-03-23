@@ -471,9 +471,9 @@ void StateMenu::HandleEvents(StateManager* sManager)
 				if(generateSelectPose == 0)
 				{
 					//ask for a name for new world
-					unsigned short test[128];
-					unsigned short opis[10] = {'W','o','r','l','d',' ','n','a','m','e'};
-					if(mSystemMgr->ShowOSK(opis,test,128) != -1)
+					char test[128];
+					char opis[11] = {'W','o','r','l','d',' ','n','a','m','e','\0'};
+					if(mSystemMgr->ShowOSKDanzeff(opis,test,128) != -1)
 					{
 						std::string newWorldName = "";
 						for(int j = 0; test[j]; j++)
@@ -554,9 +554,9 @@ void StateMenu::HandleEvents(StateManager* sManager)
 				if(generateSelectPose == 0)
 				{
 					//ask for a name for new world
-					unsigned short test[128];
-					unsigned short opis[10] = {'W','o','r','l','d',' ','n','a','m','e'};
-					if(mSystemMgr->ShowOSK(opis,test,128) != -1)
+					char test[128];
+					char opis[11] = {'W','o','r','l','d',' ','n','a','m','e','\0'};
+					if(mSystemMgr->ShowOSKDanzeff(opis,test,128) != -1)
 					{
 						std::string newWorldName = "";
 						for(int j = 0; test[j]; j++)

@@ -471,20 +471,13 @@ void StateMenu::HandleEvents(StateManager* sManager)
 				if(generateSelectPose == 0)
 				{
 					//ask for a name for new world
-					char test[128];
-					char opis[11] = {'W','o','r','l','d',' ','n','a','m','e','\0'};
-					if(mSystemMgr->ShowOSKDanzeff(opis,test,128) != -1)
+					char description[128];
+					char starting[11] = {'W','o','r','l','d',' ','n','a','m','e','\0'};
+					int lenght = 0;
+					mRender->SetOrtho(0,0,0,0,0,0);
+					if(mSystemMgr->ShowOSKDanzeff(starting,description,lenght) != -1)
 					{
-						std::string newWorldName = "";
-						for(int j = 0; test[j]; j++)
-						{
-							unsigned c = test[j];
-
-							if(32 <= c && c <= 127) // print ascii only
-								newWorldName += c;
-						}
-
-						//sprintf(worldName,"%s",newWorldName.c_str());
+						std::string newWorldName = description;
 
 						//push new state
 						StatePlay *statePlay = new StatePlay();
@@ -554,20 +547,13 @@ void StateMenu::HandleEvents(StateManager* sManager)
 				if(generateSelectPose == 0)
 				{
 					//ask for a name for new world
-					char test[128];
-					char opis[11] = {'W','o','r','l','d',' ','n','a','m','e','\0'};
-					if(mSystemMgr->ShowOSKDanzeff(opis,test,128) != -1)
+					char description[128];
+					char starting[11] = {'W','o','r','l','d',' ','n','a','m','e','\0'};
+					int lenght = 0;
+					mRender->SetOrtho(0,0,0,0,0,0);
+					if(mSystemMgr->ShowOSKDanzeff(starting,description,lenght) != -1)
 					{
-						std::string newWorldName = "";
-						for(int j = 0; test[j]; j++)
-						{
-							unsigned c = test[j];
-
-							if(32 <= c && c <= 127) // print ascii only
-								newWorldName += c;
-						}
-
-						//sprintf(worldName,"%s",newWorldName.c_str());
+						std::string newWorldName = description;
 
 						//push new state
 						StatePlay *statePlay = new StatePlay();

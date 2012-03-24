@@ -1,5 +1,7 @@
 #include <Aurora/System/SystemManager.h>
-#include <Aurora/Misc/danzeff.h>
+//#include <Aurora/Misc/danzeff.h>
+#include <Aurora/Misc/DanzeffOsk.h>
+
 
 namespace Aurora
 {
@@ -163,21 +165,22 @@ namespace Aurora
 				return 0;
 		}
 
-		int SystemManager::ShowOSKDanzeff(char *descritpion,char *outtext,int maxtextinput)
+		int SystemManager::ShowOSKDanzeff(char *descritpion,char *outtext,int &lenght)
 		{
-			danzeff_load();
-			danzeff_moveTo(165,61);
+			Misc::DanzeffOsk _osk;
+			_osk.Load();
+			_osk.Move(165,61);
 
 			outtext = descritpion;
 
 			bool run = true;
-			int textIndex = 10;
+			lenght = 10;
 
 			while(run)
 			{
 				//update input
 				InputUpdate();
-				char pressed = danzeff_readInput(newPadData);
+				char pressed = _osk.ProcessInput(newPadData);
 
 				switch (pressed)
 				{
@@ -187,19 +190,18 @@ namespace Aurora
 					case DANZEFF_RIGHT:
 						break;
 					case DANZEFF_START:
+						outtext[lenght++] = '\0';
 						run = false;
 						break;
 					case DANZEFF_SELECT:
-						//memset(outtext, 0, sizeof(outtext));
-						danzeff_free();
 						return -1;
 						break;
 					case 8:
-						if (textIndex)
-							outtext[--textIndex] = 0;
+						if (lenght)
+							outtext[--lenght] = 0;
 						break;
 					default:
-						outtext[textIndex++] = pressed;
+						outtext[lenght++] = pressed;
 						break;
 				}
 
@@ -210,7 +212,7 @@ namespace Aurora
 				sceGuEnable(GU_BLEND);
 
 				//render keyboard
-				danzeff_render();
+				_osk.Render();
 
 				//draw text
 				sceGuDisable(GU_BLEND);
@@ -224,13 +226,10 @@ namespace Aurora
 				Graphics::RenderManager::InstancePtr()->EndFrame();
 			}
 
-
-
-			danzeff_free();
 			return 0;
 		}
 
-		int SystemManager::ShowOSK(unsigned short *descritpion,unsigned short *outtext,int maxtextinput)
+		/*int SystemManager::ShowOSK(unsigned short *descritpion,unsigned short *outtext,int maxtextinput)
 		{
 			//osk params
 			SceUtilityOskData oskData;
@@ -297,7 +296,7 @@ namespace Aurora
 				return -1;
 
 			return 0;
-		}
+		}*/
 
 		void SystemManager::ShowMessageError(const char *message,int error)
 		{

@@ -29,7 +29,7 @@ Aurora/Utils/Types.o \
 Aurora/Utils/pgeZip.o \
 Aurora/System/SystemManager.o \
 Aurora/System/NetworkManager.o \
-Aurora/Misc/danzeff.o \
+Aurora/Misc/DanzeffOsk.o \
 LameCraft/BaseBlock.o \
 LameCraft/Blocks.o \
 LameCraft/SimpleMeshChunk2.o \

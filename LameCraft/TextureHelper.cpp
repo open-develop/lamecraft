@@ -1,8 +1,14 @@
 #include "TextureHelper.h"
 #include <Aurora/Graphics/RenderManager.h>
 #include <Aurora/Utils/Logger.h>
-#include <dirent.h>
+/*#include <dirent.h>
 #include <fcntl.h>
+
+#include <iostream>
+#include <fstream>
+#include <string>*/
+
+
 
 TextureHelper::TextureHelper()
 {
@@ -148,7 +154,48 @@ void TextureHelper::ScanForTexturePacks()
 {
 	packFiles.clear();
 
-	DIR *Dir;
+	FILE *infile;
+	char textLine[80];
+	char textPack[80];
+
+	infile = fopen("Assets/Lamecraft/texturePacks.txt","rt");
+
+	 while(fgets(textLine, 80, infile) != NULL)
+	 {
+		 sscanf(textLine,"%s",textPack);
+		 std::string texturePack = textPack;
+
+		 size_t found = texturePack.find(".zip");
+		 size_t found2 = texturePack.find(".ZIP");
+		 if(found != std::string::npos || found2 != std::string::npos)//not found
+		 {
+		 	packFiles.push_back(texturePack);
+		 }
+	 }
+	 fclose(infile);
+
+	//this is working but eboot is bigger by 400 kb O_o...
+	 /*std::ifstream infile;
+	infile.open ("Assets/Lamecraft/texturePacks.txt");
+
+	std::string texturePack = "";
+
+	while(!infile.eof()) // To get you all the lines.
+	{
+		texturePack = "";
+		getline(infile,texturePack); // Saves the line in STRING.
+
+		size_t found = texturePack.find(".zip");
+		size_t found2 = texturePack.find(".ZIP");
+		if(found != std::string::npos || found2 != std::string::npos)//not found
+		{
+			packFiles.push_back(texturePack);
+		}
+	}
+	infile.close();*/
+
+	//code below not working on Vita... thanks Sony....
+	/*DIR *Dir;
 	struct dirent *DirEntry;
 	Dir = opendir(defaulPatch.c_str());
 
@@ -166,7 +213,7 @@ void TextureHelper::ScanForTexturePacks()
 	   }
 	}
 
-	closedir(Dir);
+	closedir(Dir);*/
 }
 
 TextureHelper TextureHelper::m_TextureHelper;
